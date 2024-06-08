@@ -1,0 +1,1 @@
+PATH_FLOAT_ACCURACY = 3 #This is how many digits after the decimal point the intersection calculator will save for
