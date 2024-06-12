@@ -1,4 +1,4 @@
-from subsystems.pathing import beizerPath3coords, beizerPathCoords
+from subsystems.pathing import bezierPathCoords
 import time
 import random
 
@@ -9,17 +9,28 @@ steps = 60
 # total = 0
 
 # while tests<1000:
-#     coords = [(gen(),gen()),(gen(),gen()),(gen(),gen())]
+#     coords = [
+#         (gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),
+#         (gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),
+#         (gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),
+#         (gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),
+#         (gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),
+#         (gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),
+#         (gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),
+#         (gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),
+#         (gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),
+#         (gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen())
+#         ]
 #     start = time.time()
-#     beizerPath3coords(coords,steps)
+#     bezierPathCoords(coords,steps)
 #     end = time.time()
 #     total+=end-start
 #     tests+=1
 
 #     print(f"{tests} tests | avg: {total/tests} seconds")
 
-thing = beizerPathCoords([(0,0),(100.01,100.01),(-100.02,100.02),(-100.03,-100.03),(100.04,-100.04),(0.05,0.05)],30)
 
-for item in thing:
-    print(item[0])
-    print(item[1])
+
+coords = [(0,0),(7,1),(-10,3),(-10,-9),(3,-12),(8,-15)]
+coords = bezierPathCoords(coords,30)
+print(coords)
