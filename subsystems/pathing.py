@@ -58,16 +58,19 @@ def bezierCurve(coord1: tuple|list,coord2: tuple|list, coord3: tuple|list):
 
 def bezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
     if len(coords) >= 3:
-        iterate = range(0, steps)
+        stepsI = range(0, steps)
+        coordsI = range(1,len(coords)-1)
         totalPath = []
         coords.insert(1,coords[0])
         bezier = bezierCurve(coords[0],coords[1],coords[2])
-        for t in iterate:
+        for t in stepsI:
             totalPath.append(roundp(bezier(t/steps)))
-        for i in range(1,len(coords)-1):
-            bezier = bezierCurve(coords[i],multiplyP(subtractP(coords[i],coords[i-1]),2),coords[i+1])
-            for t in iterate:
+        for i in coordsI:
+            coords.insert(i*2+1, subtractP(multiplyP(coords[i*2],2),coords[i*2-1]))
+            bezier = bezierCurve(coords[i*2],coords[i*2+1],coords[i*2+2])
+            for t in stepsI:
                 totalPath.append(roundp(bezier(t/steps)))
+        totalPath.append(coords[-1])
         return totalPath
     else:
         raise IndexError(f"Input coords are too short, input was {len(coords)} long, should be at least 3")
