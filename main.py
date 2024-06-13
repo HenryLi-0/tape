@@ -1,4 +1,4 @@
-from subsystems.pathing import bezierPathCoords
+from subsystems.pathing import bezierPathCoords, straightPathCoords
 import time
 import random
 
@@ -22,7 +22,7 @@ while tests<1000:
         (gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen()),(gen(),gen())
         ]
     start = time.time()
-    bezierPathCoords(coords,steps)
+    straightPathCoords(coords,steps)
     end = time.time()
     total+=end-start
     tests+=1
@@ -31,5 +31,5 @@ while tests<1000:
 
 
 # coords = [(0,0),(0,10),(10,10),(20,0),(10,-10),(30,-20),(0,-20),(-20,0),(-20,10),(0,-10)]
-# coords = bezierPathCoords(coords,30)
+# coords = straightPathCoords(coords,30)
 # print(coords)
