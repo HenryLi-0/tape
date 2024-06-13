@@ -60,6 +60,8 @@ def bezierCurve(coord1: tuple|list,coord2: tuple|list, coord3: tuple|list):
     '''Returns a lambda that returns a point on a curve given t, the progression through the curve out of 1'''
     return lambda t: roundp((oneAxisCurve(coord1[0],coord2[0],coord3[0])(t),oneAxisCurve(coord1[1],coord2[1],coord3[1])(t)))
 
+# Paths
+
 def bezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
     if len(coords) >= 3:
         stepsI = range(0, steps)
