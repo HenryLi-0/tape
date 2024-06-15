@@ -1,32 +1,35 @@
-from settings import INTERFACE_FPS
+from settings import TICK_MS, PLACEHOLDER_IMAGE
 import tkinter as tk
 from PIL import ImageTk, Image
-import time
+import time, numpy, os
+from subsystems.interface import Interface
 
-TICK_MS = round((1/INTERFACE_FPS)*1000)
+class Window:
+    def __init__(self):
+        '''initalize tk window'''
+        self.window= tk.Tk()
+        self.window.grid()
+        self.window.title("Tape")
+        self.window.geometry("500x500")
+        self.window.configure(background='grey')
 
-window= tk.Tk()
-window.grid()
-window.title("test")
-window.geometry("500x500")
-window.configure(background='grey')
+        '''load test image'''
+        img = ImageTk.PhotoImage(PLACEHOLDER_IMAGE)
+        self.panel = tk.Label(self.window, image = img)
+        self.panel.pack(side = "bottom", fill = "both", expand = "yes")
 
-path = "C:/Users/henry/Documents/art!/f 5-30-2024 7-02 PM - colored 128x128.png"
-img = ImageTk.PhotoImage(Image.open(path))
-panel = tk.Label(window, image = img)
+        '''start interface'''
+        self.interface = Interface()
 
-panel.pack(side = "bottom", fill = "both", expand = "yes")
-
-def windowProcesses():
-    global window
-    if round(time.time()) % 2 == 0:
-        path = "C:/Users/henry/Documents/art!/f 5-30-2024 7-02 PM - colored 128x128.png"
-    else: 
-        path = "C:/Users/henry/Pictures/128x128/Screenshot 2023-11-23 153656.png"
-    img = ImageTk.PhotoImage(Image.open(path))
-    panel.configure(image = img)
-    panel.image=img
-    window.after(TICK_MS, windowProcesses)
-        
-window.after(TICK_MS, windowProcesses)
-window.mainloop()
+    def windowProcesses(self):
+        '''window processes'''
+        self.interface.tick()
+        img = ImageTk.PhotoImage(self.interface.getImage())
+        self.panel.configure(image = img)
+        self.panel.image=img
+        self.window.after(TICK_MS, self.windowProcesses)
+    
+    def start(self):
+        '''start window main loop'''
+        self.window.after(TICK_MS, self.windowProcesses)
+        self.window.mainloop()
