@@ -34,27 +34,27 @@ def placeOver(img1:Image.Image|numpy.ndarray, img2:Image.Image|numpy.ndarray, po
     img1H, img1W, temp = img1.shape
     img2H, img2W, temp = img2.shape
 
-    if position[1] > img1H or -position[1] > img2H:
+    if position[1]>img1H or -position[1]>img2H:
         return img1
-    if position[0] > img1W or -position[0] > img2W:
+    if position[0]>img1W or -position[0]>img2W:
         return img1
     
     startX = max(x, 0)
     startY = max(y, 0)
-    endX = min(x + img2W, img1W)
-    endY = min(y + img2H, img1H)
+    endX = min(x+img2W, img1W)
+    endY = min(y+img2H, img1H)
 
     img2startX = max(-x, 0)
     img2startY = max(-y, 0)
-    img2endX = img2startX + (endX - startX)
-    img2endY = img2startY + (endY - startY)
+    img2endX = img2startX+(endX-startX)
+    img2endY = img2startY+(endY-startY)
     img2 = img2[img2startY:img2endY, img2startX:img2endX]
 
     alpha_overlay = img2[:, :, 3] / 255.0
     overlayRGB = img2[:, :, :3]
     backgroundRGB = img1[startY:endY, startX:endX, :3]
 
-    blendedRGB = (overlayRGB * alpha_overlay[:, :, None] + backgroundRGB * (1 - alpha_overlay[:, :, None])).astype(numpy.uint8)    
+    blendedRGB = (overlayRGB*alpha_overlay[:, :, None]+backgroundRGB*(1-alpha_overlay[:, :, None])).astype(numpy.uint8)    
     result = img1.copy()
     result[startY:endY, startX:endX, :3] = blendedRGB
     return result
