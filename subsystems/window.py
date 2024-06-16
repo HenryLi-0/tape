@@ -10,7 +10,7 @@ class Window:
         self.window= tk.Tk()
         self.window.grid()
         self.window.title("Tape")
-        self.window.geometry("500x500")
+        self.window.geometry("1366x697")
         self.window.configure(background='grey')
 
         '''load test image'''

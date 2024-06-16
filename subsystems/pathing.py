@@ -50,7 +50,7 @@ def roundp(point: tuple|list):
     '''Returns the rounded (x,y) point with PATH_FLOAT_ACCURACY digits after the decimal point'''
     return (roundf(point[0],PATH_FLOAT_ACCURACY), roundf(point[1],PATH_FLOAT_ACCURACY))
 
-# Bezier
+# Bezier Maths
 
 def oneAxisCurve(c1: int|float,c2: int|float,c3: int|float):
     '''Returns a lambda that takes in a t for one axis of a curve'''
@@ -90,3 +90,6 @@ def straightPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
             totalPath.append(roundp(translation(t/steps)))
     totalPath.append(coords[-1])
     return totalPath
+
+# Rotation
+

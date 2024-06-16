@@ -18,10 +18,12 @@ TICK_MS = round((1/INTERFACE_FPS)*1000)
 
 '''Saving'''
 
-'''Constants - Please Do Not Change'''
-'''     Please do not change these constants. Some are probably important. You have been warned!'''
+'''Constants - Do Not Change'''
+'''     Do not change these constants. Some are probably important. Some are used for testing purposes. You have been warned!'''
 from PIL import Image
 import os, numpy
+LOADING_IMAGE = Image.open(os.path.join("resources", "loading.png")).convert("RGBA") # 1366x697, Solid, Loading Screen
+LOADING_IMAGE_ARRAY = numpy.array(LOADING_IMAGE)
 PLACEHOLDER_IMAGE = Image.open(os.path.join("resources", "placeholder.png")).convert("RGBA")    # 512x512, Solid, [black, white, grey]
 PLACEHOLDER_IMAGE_ARRAY = numpy.array(PLACEHOLDER_IMAGE)
 PLACEHOLDER_IMAGE_2 = Image.open(os.path.join("resources", "placeholder2.png")).convert("RGBA")  # 100x100, Transparent Background [black, white, grey]

@@ -1,4 +1,4 @@
-from settings import INTERFACE_FPS, PLACEHOLDER_IMAGE, PLACEHOLDER_IMAGE_2
+from settings import *
 from PIL import ImageTk, Image
 import time, numpy, random, os, subsystems.interface
 from subsystems.pathing import bezierPathCoords, straightPathCoords
@@ -13,7 +13,7 @@ class Interface:
         self.x += 1 #random.randrange(-3,3)
         self.y += 2 #random.randrange(-3,3)
     def getImage(self):
-        img = PLACEHOLDER_IMAGE_ARRAY.copy()
+        img = LOADING_IMAGE_ARRAY.copy()
         placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (self.x+206,self.y+206))
         placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (self.x+206,-self.y+206))
         placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (-self.x+206,self.y+206))
