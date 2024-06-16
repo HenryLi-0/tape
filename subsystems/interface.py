@@ -21,7 +21,7 @@ class Interface:
         placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (self.y+206,self.x+206))
         placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (self.y+206,-self.x+206))
         placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (-self.y+206,self.x+206))
-        img = placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (-self.y+206,-self.x+206))
+        placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (-self.y+206,-self.x+206))
         return arrayToImage(img)
     def saveState(self):
         pass
