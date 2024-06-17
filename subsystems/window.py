@@ -1,8 +1,10 @@
-from settings import TICK_MS, PLACEHOLDER_IMAGE
+from settings import *
 import tkinter as tk
+from tkinter import ttk
 from PIL import ImageTk, Image
 import time, numpy, os
 from subsystems.interface import Interface
+from settings import BACKGROUND_COLOR
 
 class Window:
     def __init__(self):
@@ -11,12 +13,17 @@ class Window:
         self.window.grid()
         self.window.title("Tape")
         self.window.geometry("1366x697")
-        self.window.configure(background='grey')
+        self.window.configure(background=BACKGROUND_COLOR)
 
         '''load test image'''
-        img = ImageTk.PhotoImage(PLACEHOLDER_IMAGE)
-        self.panel = tk.Label(self.window, image = img)
-        self.panel.pack(side = "bottom", fill = "both", expand = "yes")
+        self.animation = tk.Label(self.window, image = ImageTk.PhotoImage(PLACEHOLDER_IMAGE))
+        self.animation.grid(column=1,row=1)
+        self.timeline = tk.Label(self.window, image = ImageTk.PhotoImage(PLACEHOLDER_IMAGE))
+        self.timeline.grid(column=1,row=2)
+        self.editor = tk.Label(self.window, image = ImageTk.PhotoImage(PLACEHOLDER_IMAGE))
+        self.editor.grid(column=2,row=1)
+        self.options = tk.Label(self.window, image = ImageTk.PhotoImage(PLACEHOLDER_IMAGE))
+        self.options.grid(column=2,row=2)
 
         '''start interface'''
         self.interface = Interface()
@@ -25,8 +32,11 @@ class Window:
         '''window processes'''
         self.interface.tick()
         img = ImageTk.PhotoImage(self.interface.getImage())
-        self.panel.configure(image = img)
-        self.panel.image=img
+        self.animation.configure(image = img)
+        self.animation.image=img
+        img = ImageTk.PhotoImage(PLACEHOLDER_IMAGE)
+        self.timeline.configure(image = img)
+        self.timeline.image = img
         self.window.after(TICK_MS, self.windowProcesses)
     
     def start(self):

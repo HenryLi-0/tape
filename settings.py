@@ -16,10 +16,13 @@ PATH_FLOAT_ACCURACY = 3 #This is how many digits after the decimal point the int
 INTERFACE_FPS = 60 #The interface window will be called every 1/INTERFACE_FPS seconds
 TICK_MS = round((1/INTERFACE_FPS)*1000)
 
+BACKGROUND_COLOR = "#241530" #Background color
+
 '''Saving'''
 
 '''Constants - Do Not Change'''
-'''     Do not change these constants. Some are probably important. Some are used for testing purposes. You have been warned!'''
+'''Do not change these constants. Some are probably important. Some are used for testing purposes. 
+   Editing certain constants will break things! You have been warned!'''
 from PIL import Image
 import os, numpy
 LOADING_IMAGE = Image.open(os.path.join("resources", "loading.png")).convert("RGBA") # 1366x697, Solid, Loading Screen

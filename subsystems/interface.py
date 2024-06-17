@@ -13,16 +13,16 @@ class Interface:
         self.x += 1 #random.randrange(-3,3)
         self.y += 2 #random.randrange(-3,3)
     def getImage(self):
-        img = LOADING_IMAGE_ARRAY.copy()
-        placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (self.x+206,self.y+206))
-        placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (self.x+206,-self.y+206))
-        placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (-self.x+206,self.y+206))
-        placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (-self.x+206,-self.y+206))
-        placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (self.y+206,self.x+206))
-        placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (self.y+206,-self.x+206))
-        placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (-self.y+206,self.x+206))
-        placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (-self.y+206,-self.x+206))
-        return arrayToImage(img)
+        # img = LOADING_IMAGE_ARRAY.copy()
+        # placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (self.x+206,self.y+206))
+        # placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (self.x+206,-self.y+206))
+        # placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (-self.x+206,self.y+206))
+        # placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (-self.x+206,-self.y+206))
+        # placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (self.y+206,self.x+206))
+        # placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (self.y+206,-self.x+206))
+        # placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (-self.y+206,self.x+206))
+        # placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (-self.y+206,-self.x+206))
+        return arrayToImage(PLACEHOLDER_IMAGE_5_ARRAY)
     def saveState(self):
         pass
     def close(self):
