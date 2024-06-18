@@ -2,7 +2,7 @@ from settings import *
 import tkinter as tk
 from tkinter import ttk
 from PIL import ImageTk, Image
-import time, numpy, os
+import time, numpy, os, math
 from subsystems.interface import Interface
 from settings import BACKGROUND_COLOR
 
@@ -14,6 +14,9 @@ class Window:
         self.window.title("Tape")
         self.window.geometry("1366x697")
         self.window.configure(background=BACKGROUND_COLOR)
+        self.fps = 0
+        self.fpsCounter = 0
+        self.fpsGood = False
 
         '''load test image'''
         self.animation = tk.Label(self.window, image = ImageTk.PhotoImage(PLACEHOLDER_IMAGE))
@@ -38,6 +41,18 @@ class Window:
         self.timeline.configure(image = img)
         self.timeline.image = img
         self.window.after(TICK_MS, self.windowProcesses)
+
+        self.fpsCounter +=1
+        if math.floor(time.time()) == round(time.time()) and not(self.fpsGood):
+            self.fps = self.fpsCounter
+            self.fpsCounter = 0
+            self.fpsGood = True
+        if math.ceil(time.time()) == round(time.time()) and self.fpsGood:
+            self.fpsGood = False
+        # print(f"FPS: {self.fps}")
+        
+    def getFPS(self):
+        return self.fps
     
     def start(self):
         '''start window main loop'''

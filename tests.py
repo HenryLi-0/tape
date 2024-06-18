@@ -3,25 +3,15 @@ import time
 import random
 from subsystems.render import *
 from settings import *
+from subsystems.fonts import display
 
 tests = 0
 total = 0
 
 while tests<1000:
-    position = (round(random.randrange(-16,128)),round(random.randrange(-16,128)))
+    text = "".join([x for x in [("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+")[random.randrange(0,75)] for x in range(100)]])
     start = time.time()
-    img = PLACEHOLDER_IMAGE_3_ARRAY.copy()
-    placeOver(img,PLACEHOLDER_IMAGE_4_ARRAY,position)
-    placeOver(img,PLACEHOLDER_IMAGE_4_ARRAY,position)
-    placeOver(img,PLACEHOLDER_IMAGE_4_ARRAY,position)
-    placeOver(img,PLACEHOLDER_IMAGE_4_ARRAY,position)
-    placeOver(img,PLACEHOLDER_IMAGE_4_ARRAY,position)
-    placeOver(img,PLACEHOLDER_IMAGE_4_ARRAY,position)
-    placeOver(img,PLACEHOLDER_IMAGE_4_ARRAY,position)
-    placeOver(img,PLACEHOLDER_IMAGE_4_ARRAY,position)
-    placeOver(img,PLACEHOLDER_IMAGE_4_ARRAY,position)
-    placeOver(img,PLACEHOLDER_IMAGE_4_ARRAY,position)
-    arrayToImage(img)
+    img = display(text, "s")
     end = time.time()
     total+=end-start
     tests+=1
