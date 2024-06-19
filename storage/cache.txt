@@ -1,0 +1,7 @@
+{
+    "some uuid0": "some numpy array",
+    "some uuid1": "some numpy array",
+    "some uuid2": "some numpy array",
+    "some uuid3": "some numpy array",
+    "some uuid4": "some numpy array"
+}

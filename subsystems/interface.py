@@ -1,3 +1,5 @@
+'''This file is all about what the user sees'''
+
 from settings import *
 from PIL import ImageTk, Image
 import time, numpy, random, os, subsystems.interface
