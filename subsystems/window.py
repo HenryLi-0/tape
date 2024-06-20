@@ -12,8 +12,8 @@ class Window:
         self.window= tk.Tk()
         self.window.grid()
         self.window.title("Tape")
-        self.window.geometry("1366x697")
-        self.window.configure(background=BACKGROUND_COLOR)
+        self.window.geometry("1366x698")
+        self.window.configure(background="#555555")
         self.fps = 0
         self.fpsCounter = 0
         self.fpsGood = False
@@ -34,12 +34,18 @@ class Window:
     def windowProcesses(self):
         '''window processes'''
         self.interface.tick()
-        img = ImageTk.PhotoImage(self.interface.getImage())
+        img = ImageTk.PhotoImage(self.interface.getImageAnimation())
         self.animation.configure(image = img)
         self.animation.image=img
-        img = ImageTk.PhotoImage(PLACEHOLDER_IMAGE)
+        img = ImageTk.PhotoImage(self.interface.getImageTimeline())
         self.timeline.configure(image = img)
         self.timeline.image = img
+        img = ImageTk.PhotoImage(self.interface.getImageEditor())
+        self.editor.configure(image = img)
+        self.editor.image = img
+        img = ImageTk.PhotoImage(self.interface.getImageOptions())
+        self.options.configure(image = img)
+        self.options.image = img
         self.window.after(TICK_MS, self.windowProcesses)
 
         self.fpsCounter +=1
@@ -49,7 +55,7 @@ class Window:
             self.fpsGood = True
         if math.ceil(time.time()) == round(time.time()) and self.fpsGood:
             self.fpsGood = False
-        # print(f"FPS: {self.fps}")
+        print(f"FPS: {self.fps}")
         
     def getFPS(self):
         return self.fps

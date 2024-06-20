@@ -8,23 +8,28 @@ from subsystems.render import *
 
 class Interface:
     def __init__(self):
-        self.x = 0
-        self.y = 0
         pass
+
     def tick(self):
-        self.x += 1 #random.randrange(-3,3)
-        self.y += 2 #random.randrange(-3,3)
-    def getImage(self):
-        img = LOADING_IMAGE_ARRAY.copy()
-        placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (self.x+206,self.y+206))
-        placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (self.x+206,-self.y+206))
-        placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (-self.x+206,self.y+206))
-        placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (-self.x+206,-self.y+206))
-        placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (self.y+206,self.x+206))
-        placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (self.y+206,-self.x+206))
-        placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (-self.y+206,self.x+206))
-        placeOver(img, PLACEHOLDER_IMAGE_2_ARRAY, (-self.y+206,-self.x+206))
-        return arrayToImage(PLACEHOLDER_IMAGE_5_ARRAY)
+        '''Entire Screen: `(0,0) to (1365,697)`: size `(1366,698)`'''
+        pass
+
+    def getImageAnimation(self):
+        '''Animation Interface: `(23,36) to (925,542)`: size `(903,507)`'''
+        return arrayToImage(FRAME_ANIMATION_ARRAY)
+    
+    def getImageTimeline(self):
+        '''Timeline Interface: `(23,558) to (925,680)`: size `(903,123)`'''
+        return arrayToImage(FRAME_TIMELINE_ARRAY)
+    
+    def getImageEditor(self):
+        '''Editor Interface: `(953,36) to (1340,542)`: size `(388,507)`'''
+        return arrayToImage(FRAME_EDITOR_ARRAY)
+    
+    def getImageOptions(self):
+        '''Options Interface: `(953,558) to (1340,680)`: size `(388,123)`'''
+        return arrayToImage(FRAME_OPTIONS_ARRAY)
+    
     def saveState(self):
         pass
     def close(self):

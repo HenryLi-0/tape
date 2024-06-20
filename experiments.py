@@ -31,10 +31,10 @@ project = [
 ]
 
 
-cache = { # cache of image uuids and their numpy arrays!
-    "some uuid": "some numpy array",
-    "some uuid": "some numpy array",
-    "some uuid": "some numpy array",
-    "some uuid": "some numpy array",
-    "some uuid": "some numpy array"
-    }
+cache = [ # cache of image uuids!
+    "some uuid",
+    "some uuid",
+    "some uuid",
+    "some uuid",
+    "some uuid"
+    ]
