@@ -18,6 +18,7 @@ class Window:
         self.fpsCounter = 0
         self.fpsGood = False
 
+
         '''load test image'''
         testImage = ImageTk.PhotoImage(PLACEHOLDER_IMAGE)
         self.w_animation = tk.Label(self.window, image = testImage, highlightthickness=0, bd=0)
@@ -34,7 +35,11 @@ class Window:
 
     def windowProcesses(self):
         '''window processes'''
-        self.interface.tick()
+        mx = self.window.winfo_pointerx()-self.window.winfo_rootx()
+        my = self.window.winfo_pointery()-self.window.winfo_rooty()
+
+        '''update screens'''
+        self.interface.tick(mx,my, self.fps)
         img = ImageTk.PhotoImage(self.interface.getImageAnimation())
         self.w_animation.configure(image = img)
         self.w_animation.image=img
@@ -48,6 +53,7 @@ class Window:
         self.w_options.configure(image = img)
         self.w_options.image = img
         self.window.after(TICK_MS, self.windowProcesses)
+
 
         self.fpsCounter +=1
         if math.floor(time.time()) == round(time.time()) and not(self.fpsGood):
