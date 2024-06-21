@@ -15,6 +15,7 @@ PATH_FLOAT_ACCURACY = 3 #This is how many digits after the decimal point the int
 '''Visuals'''
 INTERFACE_FPS = 60 #The interface window will be called every 1/INTERFACE_FPS seconds
 TICK_MS = round((1/INTERFACE_FPS)*1000)
+OCCASIONAL_TICK_MS = 3000 # Highly recommended to keep above 1 second, as it runs processes that do not need updates every tick
 
 BACKGROUND_COLOR = "#241530" #Background color
 FRAME_COLOR = "#381f4d" #Borders and Frame color
@@ -61,10 +62,10 @@ FONT_SMALL = ImageFont.truetype(os.path.join("resources", "Comfortaa-Medium.ttf"
 - Entire Screen: `(0,0) to (1365,697)`: size `(1366,698)`
 '''
 
-D_FRAME_ANIMATION_PATH = os.path.join("resources", "frame_animation.png")
-D_FRAME_TIMELINE_PATH = os.path.join("resources", "frame_timeline.png")
-D_FRAME_EDITOR_PATH = os.path.join("resources", "frame_editor.png")
-D_FRAME_OPTIONS_PATH = os.path.join("resources", "frame_options.png")
+D_FRAME_ANIMATION_PATH = os.path.join("resources", "themed", "frame_animation.png")
+D_FRAME_TIMELINE_PATH = os.path.join("resources", "themed", "frame_timeline.png")
+D_FRAME_EDITOR_PATH = os.path.join("resources", "themed", "frame_editor.png")
+D_FRAME_OPTIONS_PATH = os.path.join("resources", "themed", "frame_options.png")
 
 FRAME_ANIMATION = Image.open(os.path.join("resources", "themed", "u_frame_animation.png")).convert("RGBA")
 FRAME_ANIMATION_ARRAY = numpy.array(FRAME_ANIMATION)
@@ -72,5 +73,10 @@ FRAME_TIMELINE = Image.open(os.path.join("resources", "themed", "u_frame_timelin
 FRAME_TIMELINE_ARRAY = numpy.array(FRAME_TIMELINE)
 FRAME_EDITOR = Image.open(os.path.join("resources", "themed", "u_frame_editor.png")).convert("RGBA")
 FRAME_EDITOR_ARRAY = numpy.array(FRAME_EDITOR)
-FRAME_OPTIONS = Image.open(os.path.join("resources", "themed", "u_frame_editor.png")).convert("RGBA")
+FRAME_OPTIONS = Image.open(os.path.join("resources", "themed", "u_frame_options.png")).convert("RGBA")
 FRAME_OPTIONS_ARRAY = numpy.array(FRAME_OPTIONS)    
+
+# Spacers Imagery
+SPACER00 = Image.open(os.path.join("resources", "spacers", "spacer 0 0.png")).convert("RGBA")
+SPACER02 = Image.open(os.path.join("resources", "spacers", "spacer 0 2.png")).convert("RGBA")
+SPACER20 = Image.open(os.path.join("resources", "spacers", "spacer 2 0.png")).convert("RGBA")
