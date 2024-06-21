@@ -13,7 +13,7 @@ class Window:
         self.window.grid()
         self.window.title("Tape")
         self.window.geometry("1366x698")
-        self.window.configure(background="#555555")
+        self.window.configure(background=BACKGROUND_COLOR)
         self.fps = 0
         self.fpsCounter = 0
         self.fpsGood = False
@@ -21,21 +21,13 @@ class Window:
         '''load test image'''
         testImage = ImageTk.PhotoImage(PLACEHOLDER_IMAGE)
         self.w_animation = tk.Label(self.window, image = testImage, highlightthickness=0, bd=0)
-        self.w_animation.grid(column=1,row=1)
+        self.w_animation.grid(column=0,row=1, padx=(23,27), pady=(36,15))
         self.w_timeline = tk.Label(self.window, image = testImage, highlightthickness=0, bd=0)
-        self.w_timeline.grid(column=1,row=3)
+        self.w_timeline.grid(column=0,row=2, padx=(23,27), pady=(0,0))
         self.w_editor = tk.Label(self.window, image = testImage, highlightthickness=0, bd=0)
-        self.w_editor.grid(column=3,row=1)
+        self.w_editor.grid(column=1,row=1, padx=(0,0), pady=(36,15))
         self.w_options = tk.Label(self.window, image = testImage, highlightthickness=0, bd=0)
-        self.w_options.grid(column=3,row=3)
-
-        '''load spacers'''
-        self.w_spacer00 = tk.Label(self.window, image = testImage, highlightthickness=0, bd=0)
-        self.w_spacer00.grid(column=0,row=0)
-        self.w_spacer20 = tk.Label(self.window, image = testImage, highlightthickness=0, bd=0)
-        self.w_spacer20.grid(column=2,row=0)
-        self.w_spacer02 = tk.Label(self.window, image = testImage, highlightthickness=0, bd=0)
-        self.w_spacer02.grid(column=0,row=2)
+        self.w_options.grid(column=1,row=2, padx=(0,0), pady=(0,0))
 
         '''start interface'''
         self.interface = Interface()
@@ -73,12 +65,7 @@ class Window:
 
     def windowStartupProcesses(self):
         '''window processes that occur once when startup'''
-        self.w_spacer00.configure(image = ImageTk.PhotoImage(SPACER00))
-        self.w_spacer00.image=ImageTk.PhotoImage(SPACER00)
-        self.w_spacer20.configure(image = ImageTk.PhotoImage(SPACER02))
-        self.w_spacer20.image=ImageTk.PhotoImage(SPACER02)
-        self.w_spacer02.configure(image = ImageTk.PhotoImage(SPACER20))
-        self.w_spacer02.image=ImageTk.PhotoImage(SPACER20)
+        pass
     
     def getFPS(self):
         return self.fps
