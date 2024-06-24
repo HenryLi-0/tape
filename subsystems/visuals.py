@@ -1,5 +1,5 @@
 import time, numpy, random, os
-# from subsystems.pathing import bezierPathCoords, straightPathCoords
+from subsystems.pathing import bezierPathCoords, straightPathCoords
 
 class VisualManager:
     def __init__(self, worker, pruneCount = 5, maxLength = 15):
@@ -11,14 +11,13 @@ class VisualManager:
         self.maxLength = maxLength
     def process(self, key):
         '''Process and caches an input's output if the input was not recently processed'''
-        key = str(key)
-        if not(key in self.cache):
-            self.cache[key] = self.worker.get()
+        if not(str(key) in self.cache):
+            self.cache[str(key)] = self.worker.get(key)
             self.memoryManage.append(time.time())
     def getRender(self, key):
         '''Returns an input's output if the input was recently processed, otherwise processes the input and returns the output'''
-        key = str(key)            
         self.process(key)
+        key = str(key)         
         self.memoryManage[list(self.cache.keys()).index(key)] = time.time()
         if len(self.memoryManage) > self.maxLength:
             prune = self.memoryManage.copy()
@@ -29,3 +28,11 @@ class VisualManager:
                 self.cache.pop(list(self.cache.keys())[i])
                 self.memoryManage.pop(i)
         return self.cache[key]
+    
+class PathWorker: 
+    '''Format inputs as a set-like of [bezier?, [coords], steps]'''
+    def get(pathData):
+        if pathData[0]:
+            return bezierPathCoords(pathData[0], pathData[1])
+        else:
+            return straightPathCoords(pathData[0], pathData[1])

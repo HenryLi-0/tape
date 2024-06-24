@@ -67,7 +67,7 @@ def bezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
         stepsI = range(0, steps)
         coordsI = range(1,len(coords)-1)
         totalPath = []
-        coords.insert(1,coords[0])
+        coords.insert(1,averagep(coords[0],coords[1]))
         bezier = bezierCurve(coords[0],coords[1],coords[2])
         for t in stepsI:
             totalPath.append(roundp(bezier(t/steps)))

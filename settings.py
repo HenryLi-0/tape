@@ -26,7 +26,10 @@ hexColorToRGB = lambda hexcolor: tuple(int(hexcolor[i:i+2], 16) for i in (1, 3, 
 
 '''Saving'''
 
-'''Constants - Do Not Change'''
+
+
+
+'''Constants - DO NOT CHANGE!!!'''
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 
    Editing certain constants will break things! You have been warned!'''
 from PIL import Image, ImageFont
@@ -76,5 +79,7 @@ FRAME_EDITOR_ARRAY = numpy.array(FRAME_EDITOR)
 FRAME_OPTIONS = Image.open(os.path.join("resources", "themed", "u_frame_options.png")).convert("RGBA")
 FRAME_OPTIONS_ARRAY = numpy.array(FRAME_OPTIONS)    
 
-CURSOR = Image.open(os.path.join("resources", "cursor.png")).convert("RGBA")
-CURSOR_ARRAY = numpy.array(CURSOR)
+CURSOR_ARROW = Image.open(os.path.join("resources", "cursor_arrow.png")).convert("RGBA")
+CURSOR_ARROW_ARRAY = numpy.array(CURSOR_ARROW)
+CURSOR_SELECT = Image.open(os.path.join("resources", "cursor_select.png")).convert("RGBA")
+CURSOR_SELECT_ARRAY = numpy.array(CURSOR_SELECT)

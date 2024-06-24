@@ -41,8 +41,10 @@ cache = [ # cache of image uuids!
     ]
 '''
 
-import sys
-thing = ["a","",""]
-a = thing.copy()
+from subsystems.render import dPlaceOver
+from settings import *
+from PIL import Image
 
-print(sys.getsizeof(a))
+thing = FRAME_ANIMATION_ARRAY.copy()
+dPlaceOver(thing, MISSING_IMAGE_ARRAY,(100,100))
+Image.fromarray(thing).show()

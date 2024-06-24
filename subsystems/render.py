@@ -34,9 +34,9 @@ def placeOver(img1:numpy.ndarray, img2:numpy.ndarray, position:list|tuple):
     img2W = img2.shape[1]
 
     if position[1]>img1H or -position[1]>img2H:
-        return img1
+        return False
     if position[0]>img1W or -position[0]>img2W:
-        return img1
+        return False
     
     startX = max(position[0], 0)
     startY = max(position[1], 0)
@@ -51,7 +51,19 @@ def placeOver(img1:numpy.ndarray, img2:numpy.ndarray, position:list|tuple):
 
     blendedRGB = (overlayRGB*alpha_overlay[:, :, None]+backgroundRGB*(1-alpha_overlay[:, :, None])).astype(numpy.uint8)    
     img1[startY:endY, startX:endX, :3] = blendedRGB
+    return True
 
 def dPlaceOver(img1:numpy.ndarray, img2: numpy.ndarray, position:list|tuple):
-    '''Dangerously modifies image 1 (background) as an array of image 2 (overlay) placed on top of image 1 (background), given as numpy arrays, by directly adding it'''
-    pass
+    '''Dangerously returns an overlayed version of image 1 (background) as an array of image 2 (overlay) placed on top of image 1 (background), given as numpy arrays, by directly adding it'''
+    if img1.shape == img2.shape:
+        img1 += img2
+    else:
+        try:
+            img2 = numpy.hstack([numpy.zeros((img2.shape[0],position[0],4),numpy.uint8),img2])
+            img2 = numpy.hstack([img2, numpy.zeros((img2.shape[0],img1.shape[1]-img2.shape[1],4),numpy.uint8)])
+            img2 = numpy.vstack([numpy.zeros((position[1],img2.shape[1],4),numpy.uint8),img2])
+            img2 = numpy.vstack([img2, numpy.zeros((img1.shape[0]-img2.shape[0],img2.shape[1],4),numpy.uint8)])
+            img1 += img2
+        except:
+            '''So, you really messed up... told you it was dangerous...'''
+            pass
