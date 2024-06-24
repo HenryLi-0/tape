@@ -1,3 +1,4 @@
+'''
 project = [
     { #project
         "project name": "example",
@@ -38,3 +39,10 @@ cache = [ # cache of image uuids!
     "some uuid",
     "some uuid"
     ]
+'''
+
+import sys
+thing = ["a","",""]
+a = thing.copy()
+
+print(sys.getsizeof(a))

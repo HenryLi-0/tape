@@ -1,4 +1,4 @@
-'''This file is all about what the user sees'''
+'''This file is all about managing what the user sees'''
 
 from settings import *
 from PIL import ImageTk, Image
@@ -16,8 +16,8 @@ class Interface:
 
     def tick(self,mx,my,fps):
         '''Entire Screen: `(0,0) to (1365,697)`: size `(1366,698)`'''
-        self.mx = mx if (0<=mx and mx<=1365) else self.mx 
-        self.my = my if (0<=my and my<=697) else self.my
+        self.mx = mx if (0<=mx and mx<=1365) and (0<=my and my<=697) else self.mx 
+        self.my = my if (0<=mx and mx<=1365) and (0<=my and my<=697) else self.my
         self.fps = fps
         pass
 
@@ -25,8 +25,11 @@ class Interface:
         '''Animation Interface: `(23,36) to (925,542)`: size `(903,507)`'''
         img = FRAME_ANIMATION_ARRAY.copy()
         placeOver(img, displayText(f"mouse is at ({self.mx}, {self.my})", "m"), (50,50))
-        placeOver(img, displayText("".join([x for x in [("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+")[random.randrange(0,75)] for x in range(50)]]), "m"),(50,100))
+        placeOver(img, displayText("".join([x for x in [("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+")[random.randrange(0,75)] for x in range(50)]]), "m", colorTXT=(0,255,0,255)),(50,100))
         placeOver(img, displayText(f"FPS: {self.fps}", "m"), (50,150))
+        placeOver(img, CURSOR_ARRAY, (self.mx-23-13,self.my-36-13))
+        for i in range(100):
+            placeOver(img, PLACEHOLDER_IMAGE_5_ARRAY, (random.randrange(0,902),random.randrange(0,506)))
         return arrayToImage(img)
     
     def getImageTimeline(self):

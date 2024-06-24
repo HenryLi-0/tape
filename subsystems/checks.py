@@ -20,7 +20,7 @@ class Check:
 
         print("Finished Checks")
 
-    def generateThemedOutline(path, name):
+    def generateThemedOutline(path, name, bgColor = BACKGROUND_COLOR):
         frame = Image.open(path).convert("RGBA")
         frameArray = numpy.array(frame)
         
@@ -29,14 +29,14 @@ class Check:
         
         result_array = numpy.copy(frameArray)
         result_array[blackMask] = hexColorToRGB(FRAME_COLOR)
-        result_array[transparentMask] = hexColorToRGB(BACKGROUND_COLOR)
+        result_array[transparentMask] = hexColorToRGB(bgColor)
         
         with open(os.path.join("resources", "themed", f"{name}.png"), "w") as f:
             f.write("")
         Image.fromarray(result_array).save(os.path.join("resources", "themed", f"{name}.png"))
 
     def fixGeneratedThemedOutline():
-        Check.generateThemedOutline(D_FRAME_ANIMATION_PATH, "u_frame_animation")
+        Check.generateThemedOutline(D_FRAME_ANIMATION_PATH, "u_frame_animation", "#000000")
         Check.generateThemedOutline(D_FRAME_TIMELINE_PATH, "u_frame_timeline")
         Check.generateThemedOutline(D_FRAME_EDITOR_PATH, "u_frame_editor")
         Check.generateThemedOutline(D_FRAME_OPTIONS_PATH, "u_frame_options")

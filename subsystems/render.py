@@ -51,3 +51,7 @@ def placeOver(img1:numpy.ndarray, img2:numpy.ndarray, position:list|tuple):
 
     blendedRGB = (overlayRGB*alpha_overlay[:, :, None]+backgroundRGB*(1-alpha_overlay[:, :, None])).astype(numpy.uint8)    
     img1[startY:endY, startX:endX, :3] = blendedRGB
+
+def dPlaceOver(img1:numpy.ndarray, img2: numpy.ndarray, position:list|tuple):
+    '''Dangerously modifies image 1 (background) as an array of image 2 (overlay) placed on top of image 1 (background), given as numpy arrays, by directly adding it'''
+    pass

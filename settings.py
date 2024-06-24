@@ -75,3 +75,6 @@ FRAME_EDITOR = Image.open(os.path.join("resources", "themed", "u_frame_editor.pn
 FRAME_EDITOR_ARRAY = numpy.array(FRAME_EDITOR)
 FRAME_OPTIONS = Image.open(os.path.join("resources", "themed", "u_frame_options.png")).convert("RGBA")
 FRAME_OPTIONS_ARRAY = numpy.array(FRAME_OPTIONS)    
+
+CURSOR = Image.open(os.path.join("resources", "cursor.png")).convert("RGBA")
+CURSOR_ARRAY = numpy.array(CURSOR)
