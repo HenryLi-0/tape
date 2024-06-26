@@ -17,7 +17,7 @@ class Window:
         self.fps = 0
         self.fpsCounter = 0
         self.fpsGood = False
-
+        self.mPressed = False
 
         '''load test image'''
         testImage = ImageTk.PhotoImage(PLACEHOLDER_IMAGE)
@@ -37,9 +37,13 @@ class Window:
         '''window processes'''
         mx = self.window.winfo_pointerx()-self.window.winfo_rootx()
         my = self.window.winfo_pointery()-self.window.winfo_rooty()
+        if self.mPressed > 0:
+            self.mPressed += 1
+        else:
+            self.mPressed = 0
 
         '''update screens'''
-        self.interface.tick(mx,my, self.fps)
+        self.interface.tick(mx,my,self.mPressed, self.fps)
         img = ImageTk.PhotoImage(self.interface.getImageAnimation())
         self.w_animation.configure(image = img)
         self.w_animation.image=img
@@ -54,7 +58,6 @@ class Window:
         self.w_options.image = img
         self.window.after(TICK_MS, self.windowProcesses)
 
-
         self.fpsCounter +=1
         if math.floor(time.time()) == round(time.time()) and not(self.fpsGood):
             self.fps = self.fpsCounter
@@ -62,22 +65,30 @@ class Window:
             self.fpsGood = True
         if math.ceil(time.time()) == round(time.time()) and self.fpsGood:
             self.fpsGood = False
-        print(f"FPS: {self.fps}")
+        # print(f"FPS: {self.fps}")
 
     def windowOccasionalProcesses(self):
         '''window processes that happen less frequently (once every 3 seconds)'''
-        print("test")
+        print("windowOccaionalProcess")
+        print(self.getFPS())
         self.window.after(OCCASIONAL_TICK_MS, self.windowOccasionalProcesses)
 
     def windowStartupProcesses(self):
         '''window processes that occur once when startup'''
+        print("windowStartupProcess")
         pass
     
-    def getFPS(self):
-        return self.fps
+    def getFPS(self): return self.fps
+    def mPress(self, side = 0): self.mPressed = 1
+    def mRelease(self, side = 0): self.mPressed = -999
     
     def start(self):
         '''start window main loop'''
+        print("windowStart")
+        
+        self.window.bind("<ButtonPress-1>", self.mPress)
+        self.window.bind("<ButtonRelease-1>", self.mRelease)
+
         self.window.after(TICK_MS, self.windowProcesses)
         self.window.after(TICK_MS, self.windowOccasionalProcesses)
         self.window.mainloop()

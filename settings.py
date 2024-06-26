@@ -13,7 +13,7 @@ Here are the parts:
 PATH_FLOAT_ACCURACY = 3 #This is how many digits after the decimal point the intersection calculator will save for
 
 '''Visuals'''
-INTERFACE_FPS = 60 #The interface window will be called every 1/INTERFACE_FPS seconds
+INTERFACE_FPS = 60 # The interface window will be called every 1/INTERFACE_FPS seconds
 TICK_MS = round((1/INTERFACE_FPS)*1000)
 OCCASIONAL_TICK_MS = 3000 # Highly recommended to keep above 1 second, as it runs processes that do not need updates every tick
 
@@ -83,3 +83,8 @@ CURSOR_ARROW = Image.open(os.path.join("resources", "cursor_arrow.png")).convert
 CURSOR_ARROW_ARRAY = numpy.array(CURSOR_ARROW)
 CURSOR_SELECT = Image.open(os.path.join("resources", "cursor_select.png")).convert("RGBA")
 CURSOR_SELECT_ARRAY = numpy.array(CURSOR_SELECT)
+
+ORB_IDLE = Image.open(os.path.join("resources", "orb_idle.png")).convert("RGBA")
+ORB_IDLE_ARRAY = numpy.array(ORB_IDLE)
+ORB_SELECTED = Image.open(os.path.join("resources", "orb_selected.png")).convert("RGBA")
+ORB_SELECTED_ARRAY = numpy.array(ORB_SELECTED)

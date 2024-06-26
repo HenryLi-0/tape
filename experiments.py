@@ -41,10 +41,5 @@ cache = [ # cache of image uuids!
     ]
 '''
 
-from subsystems.render import dPlaceOver
-from settings import *
-from PIL import Image
-
-thing = FRAME_ANIMATION_ARRAY.copy()
-dPlaceOver(thing, MISSING_IMAGE_ARRAY,(100,100))
-Image.fromarray(thing).show()
+def waitYouCouldDoThis(x): return x+1
+print(waitYouCouldDoThis(5))
