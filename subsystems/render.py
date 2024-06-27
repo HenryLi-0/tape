@@ -1,7 +1,7 @@
 '''This file contains functions for rendering related purposes'''
 
 from PIL import ImageTk, Image
-import time, numpy, os
+import time, numpy
 from settings import *
 
 #Convert

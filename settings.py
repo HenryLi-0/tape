@@ -5,7 +5,7 @@ Here are the parts:
 - Calculation
 - Visuals
 - Saving
-- Constants (Please do not change)
+- Constants (Please do not change!)
 '''
 
 

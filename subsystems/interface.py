@@ -2,8 +2,7 @@
 
 from settings import *
 from PIL import ImageTk, Image
-import time, numpy, random, os, subsystems.interface, math
-from subsystems.pathing import bezierPathCoords, straightPathCoords
+import time, numpy, random, os, math
 from subsystems.render import *
 from subsystems.fonts import displayText
 from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject

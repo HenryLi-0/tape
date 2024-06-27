@@ -1,6 +1,6 @@
 # Code Guide
 
-Hello! Looks like you're interested in this code! Whether you're a programmer or someone who stumbled across this repository, here's the way this code is stored: (so that you don't have to look through every file for something)
+Hello! Looks like you're interested in this code! Whether someone who stumbled across this repository or future me who forgot what this is all about, here's the way this code is stored: (so that you don't have to look through every file for something)
 
 **tape/** 
 
@@ -31,3 +31,7 @@ where useful code exists across different files
 - `tape/resources/` : resources and things used (ex. test images, fonts)
 - `tape/storage/` : planned to be used for storing images the user uploads
 - `tape/updatelogs/` : where my silly silly fingers type strange update logs about what i did today (programming and not programming sutff included)
+
+### Probably something important:
+
+I use a lot of words that probably don't mean what I think they mean. If there are any suggestions for better things to name stuff, I'll definitely be interested! 

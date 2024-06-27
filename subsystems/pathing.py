@@ -2,7 +2,7 @@
 
 from settings import PATH_FLOAT_ACCURACY
 
-#SMOOTH PATHING TIME YIPPEE
+#SMOOTH PATHING TIME YIPPEE (very satsifying)
 
 # Basic
 

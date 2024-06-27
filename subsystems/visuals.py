@@ -76,14 +76,17 @@ class PathWorker:
         return bezierPathCoords(pathData[0], pathData[1]) if pathData[0] else straightPathCoords(pathData[0], pathData[1])
     
 class PathVisualObject:
+    '''A path'''
     def __init__(self, name):
         self.name = name
     def tick(self, window, points):
+        '''Takes in a set of points and draws the path'''
         path = bezierPathCoords(points, 10)
         for coord in path:
             placeOver(window, CURSOR_SELECT_ARRAY, coord, True)
 
 class OrbVisualObject:
+    '''A movable point'''
     def __init__(self, name):
         self.name = name
         self.positionO = CircularPositionalBox(50)
@@ -97,6 +100,7 @@ class OrbVisualObject:
         return self.positionO.getInteract(rmx, rmy)
 
 class ButtonVisualObject:
+    '''A button'''
     def __init__(self, name, pos:tuple|list, img:numpy.ndarray, img2:numpy.ndarray):
         self.name = name
         self.img = img

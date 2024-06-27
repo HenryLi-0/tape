@@ -1,10 +1,11 @@
 '''This file contains functions related to text rendering'''
 
-from PIL import Image, ImageDraw, ImageFont
-import numpy, os
+from PIL import Image, ImageDraw
+import numpy
 from settings import *
 
-def displayText(text: str, size, colorBG = (0,0,0,0), colorTXT = (255,255,255,255)):
+def displayText(text: str, size, colorBG:tuple|list = (0,0,0,0), colorTXT:tuple|list = (255,255,255,255)):
+    '''Returns a numpy array for text, give the text (str), size (s, m, or l for small, medium, large, respectively), and optional background and text color given as (r,g,b,a)'''
     if size == "s":
         font = FONT_SMALL
     elif size == "m":

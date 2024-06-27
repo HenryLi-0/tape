@@ -21,6 +21,7 @@ class Check:
         print("Finished Checks")
 
     def generateThemedOutline(path, name, frameColor = FRAME_COLOR, bgColor = BACKGROUND_COLOR):
+        '''Generate a themed based on a black/transparent template'''
         frame = Image.open(path).convert("RGBA")
         frameArray = numpy.array(frame)
         
@@ -36,6 +37,7 @@ class Check:
         Image.fromarray(result_array).save(os.path.join("resources", "themed", f"{name}.png"))
 
     def fixGeneratedThemedOutline():
+        '''Regenerate all themed images'''
         Check.generateThemedOutline(D_FRAME_ANIMATION_PATH, "u_frame_animation", bgColor="#000000")
         Check.generateThemedOutline(D_FRAME_TIMELINE_PATH, "u_frame_timeline")
         Check.generateThemedOutline(D_FRAME_EDITOR_PATH, "u_frame_editor")

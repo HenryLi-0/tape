@@ -1,3 +1,5 @@
+'''strange tests'''
+
 from subsystems.pathing import bezierPathCoords, straightPathCoords
 import time
 import random
