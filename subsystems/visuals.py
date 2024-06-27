@@ -53,13 +53,13 @@ class CircularPositionalBox:
 class RectangularPositionalBox:
     '''Just remembers where the object is supposed to be on screen, given the mouse position and updates when the mouse is in a specific bounding box'''
     def __init__(self, bbox:tuple|list = (10,10), ix = 0, iy = 0):
-        '''Bounding box will be centered!'''
+        '''Bounding box will NOT be centered!'''
         self.bbox, self.ix, self.iy = bbox, ix, iy
     def process(self, interact, rmx, rmy):
         '''Should be called whenever the position wants to question its position'''
         if interact: self.ix, self.iy = rmx, rmy
     def getInteract(self, rmx, rmy):
-        return (abs(rmx-self.ix) < self.bbox[0]/2) and (abs(rmy-self.iy) < self.bbox[1]/2)
+        return (self.ix < rmx) and (rmx < (self.ix+self.bbox[0])) and (self.iy < rmy) and (rmy < (self.iy+self.bbox[1]))
     def getPosition(self): return (self.ix, self.iy)
     def getX(self): return self.ix
     def getY(self): return self.iy
@@ -77,7 +77,8 @@ class PathWorker:
     
 class PathVisualObject:
     '''A path'''
-    def __init__(self, name):
+    def __init__(self, id, name):
+        self.id = id
         self.name = name
     def tick(self, window, points):
         '''Takes in a set of points and draws the path'''
@@ -87,7 +88,8 @@ class PathVisualObject:
 
 class OrbVisualObject:
     '''A movable point'''
-    def __init__(self, name):
+    def __init__(self, id, name):
+        self.id = id
         self.name = name
         self.positionO = CircularPositionalBox(50)
         self.positionO.setPosition((random.randrange(0,903), random.randrange(0,507)))
@@ -101,13 +103,14 @@ class OrbVisualObject:
 
 class ButtonVisualObject:
     '''A button'''
-    def __init__(self, name, pos:tuple|list, img:numpy.ndarray, img2:numpy.ndarray):
+    def __init__(self, id, name, pos:tuple|list, img:numpy.ndarray, img2:numpy.ndarray):
+        self.id = id
         self.name = name
         self.img = img
         self.img2 = img2
         self.positionO = RectangularPositionalBox((img.shape[1],img.shape[0]), pos[0], pos[1])
     def tick(self, window, active):
-        placeOver(window, self.img2 if active else self.img, self.positionO.getPosition(), True)
+        placeOver(window, self.img2 if active else self.img, self.positionO.getPosition(), False)
     def updatePos(self, rmx, rmy):
         pass
     def getInteractable(self,rmx,rmy):
