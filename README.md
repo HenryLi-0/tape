@@ -32,6 +32,6 @@ Ok, time to get started!
 - Some silly logo
 - this is a really silly idea
 
-### Modules Used:
+### Modules Used (that dont come with python):
 - PIL
 - numpy
