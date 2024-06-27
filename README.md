@@ -31,3 +31,7 @@ Ok, time to get started!
 - Fancy GUI (graphs, lines, etc.)
 - Some silly logo
 - this is a really silly idea
+
+### Modules Used:
+- PIL
+- numpy

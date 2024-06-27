@@ -38,15 +38,15 @@ import os, numpy
 # Imagery
 LOADING_IMAGE = Image.open(os.path.join("resources", "loading.png")).convert("RGBA") # 1366x697, Solid, Loading Screen
 LOADING_IMAGE_ARRAY = numpy.array(LOADING_IMAGE)
-PLACEHOLDER_IMAGE = Image.open(os.path.join("resources", "placeholder.png")).convert("RGBA")    # 512x512, Solid, [black, white, grey]
+PLACEHOLDER_IMAGE = Image.open(os.path.join("resources", "placeholder", "placeholder.png")).convert("RGBA")    # 512x512, Solid, [black, white, grey]
 PLACEHOLDER_IMAGE_ARRAY = numpy.array(PLACEHOLDER_IMAGE)
-PLACEHOLDER_IMAGE_2 = Image.open(os.path.join("resources", "placeholder2.png")).convert("RGBA")  # 100x100, Transparent Background [black, white, grey]
+PLACEHOLDER_IMAGE_2 = Image.open(os.path.join("resources", "placeholder", "placeholder2.png")).convert("RGBA")  # 100x100, Transparent Background [black, white, grey]
 PLACEHOLDER_IMAGE_2_ARRAY = numpy.array(PLACEHOLDER_IMAGE_2)
-PLACEHOLDER_IMAGE_3 = Image.open(os.path.join("resources", "placeholder3.png")).convert("RGBA")  # 128x128, Solid Background [black, white, grey]
+PLACEHOLDER_IMAGE_3 = Image.open(os.path.join("resources", "placeholder", "placeholder3.png")).convert("RGBA")  # 128x128, Solid Background [black, white, grey]
 PLACEHOLDER_IMAGE_3_ARRAY = numpy.array(PLACEHOLDER_IMAGE_3)
-PLACEHOLDER_IMAGE_4 = Image.open(os.path.join("resources", "placeholder4.png")).convert("RGBA")  # 16x16, Transparent Background [black, white]
+PLACEHOLDER_IMAGE_4 = Image.open(os.path.join("resources", "placeholder", "placeholder4.png")).convert("RGBA")  # 16x16, Transparent Background [black, white]
 PLACEHOLDER_IMAGE_4_ARRAY = numpy.array(PLACEHOLDER_IMAGE_4)
-PLACEHOLDER_IMAGE_5 = Image.open(os.path.join("resources", "placeholder5.png")).convert("RGBA")  # 32x32, Solid Background [rainbow]
+PLACEHOLDER_IMAGE_5 = Image.open(os.path.join("resources", "placeholder", "placeholder5.png")).convert("RGBA")  # 32x32, Solid Background [rainbow]
 PLACEHOLDER_IMAGE_5_ARRAY = numpy.array(PLACEHOLDER_IMAGE_5)
 MISSING_IMAGE = Image.open(os.path.join("resources", "missing.png")).convert("RGBA")
 MISSING_IMAGE_ARRAY = numpy.array(MISSING_IMAGE)
