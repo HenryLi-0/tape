@@ -37,12 +37,12 @@ class CircularPositionalBox:
     def __init__(self, r:int = 10, ix = 0, iy = 0):
         '''Circular detection box will be centered!'''
         self.r, self.ix, self.iy = r, ix, iy
-    def process(self, interact, mx, my):
+    def process(self, interact, rmx, rmy):
         '''Should be called whenever the position wants to question its position'''
-        if interact: self.ix, self.iy = mx, my
-    def getInteract(self, mx, my): 
+        if interact: self.ix, self.iy = rmx, rmy
+    def getInteract(self, rmx, rmy): 
         '''Returns whether or not the mouse is in range of interaction'''
-        return math.sqrt((mx-self.ix)**2 + (my-self.iy)**2) <= self.r
+        return math.sqrt((rmx-self.ix)**2 + (rmy-self.iy)**2) <= self.r
     def getPosition(self): return (self.ix, self.iy)
     def getX(self): return self.ix
     def getY(self): return self.iy
@@ -55,11 +55,11 @@ class RectangularPositionalBox:
     def __init__(self, bbox:tuple|list = (10,10), ix = 0, iy = 0):
         '''Bounding box will be centered!'''
         self.bbox, self.ix, self.iy = bbox, ix, iy
-    def process(self, interact, mx, my):
+    def process(self, interact, rmx, rmy):
         '''Should be called whenever the position wants to question its position'''
-        if interact: self.ix, self.iy = mx, my
-    def getInteract(self, mx, my):
-        return (abs(self.mx-self.ix) < self.bbox[0]/2) and (abs(self.my-self.iy) < self.bbox[1]/2)
+        if interact: self.ix, self.iy = rmx, rmy
+    def getInteract(self, rmx, rmy):
+        return (abs(rmx-self.ix) < self.bbox[0]/2) and (abs(rmy-self.iy) < self.bbox[1]/2)
     def getPosition(self): return (self.ix, self.iy)
     def getX(self): return self.ix
     def getY(self): return self.iy
@@ -83,16 +83,28 @@ class PathVisualObject:
         for coord in path:
             placeOver(window, CURSOR_SELECT_ARRAY, coord, True)
 
-class TestVisualObject:
+class OrbVisualObject:
     def __init__(self, name):
         self.name = name
         self.positionO = CircularPositionalBox(50)
         self.positionO.setPosition((random.randrange(0,903), random.randrange(0,507)))
-        self.positionO.setPosition((random.randrange(0,903), random.randrange(0,507)))
-    def tick(self, window, temp):
-        placeOver(window, ORB_SELECTED_ARRAY if temp else ORB_IDLE_ARRAY, self.positionO.getPosition(), True)
+    def tick(self, window, active):
+        placeOver(window, ORB_SELECTED_ARRAY if active else ORB_IDLE_ARRAY, self.positionO.getPosition(), True)
         placeOver(window, displayText(self.name, "m"), self.positionO.getPosition(), True)
-    def updatePos(self, interact, mx, my):
-        self.positionO.setPosition((mx, my))
-    def getInteractable(self, mx, my):
-        return self.positionO.getInteract(mx, my)
+    def updatePos(self, rmx, rmy):
+        self.positionO.setPosition((rmx, rmy))
+    def getInteractable(self, rmx, rmy):
+        return self.positionO.getInteract(rmx, rmy)
+
+class ButtonVisualObject:
+    def __init__(self, name, pos:tuple|list, img:numpy.ndarray, img2:numpy.ndarray):
+        self.name = name
+        self.img = img
+        self.img2 = img2
+        self.positionO = RectangularPositionalBox((img.shape[1],img.shape[0]), pos[0], pos[1])
+    def tick(self, window, active):
+        placeOver(window, self.img2 if active else self.img, self.positionO.getPosition(), True)
+    def updatePos(self, rmx, rmy):
+        pass
+    def getInteractable(self,rmx,rmy):
+        return self.positionO.getInteract(rmx, rmy)

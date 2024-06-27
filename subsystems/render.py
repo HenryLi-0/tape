@@ -29,7 +29,7 @@ def merge(img1:Image.Image|numpy.ndarray, img2:Image.Image|numpy.ndarray):
 def placeOver(img1:numpy.ndarray, img2:numpy.ndarray, position:list|tuple, center = False):
     '''Modifies image 1 (background) as an array of image 2 (overlay) placed on top of image 1 (background), given as numpy arrays'''
     if center:
-        position = (round(position[0]-img2.shape[0]*0.75),round(position[1]-img2.shape[1]*0.75))
+        position = (round(position[0]-img2.shape[1]*0.5),round(position[1]-img2.shape[0]*0.5))
     img1H = img1.shape[0] 
     img1W = img1.shape[1]
     img2H = img2.shape[0] 

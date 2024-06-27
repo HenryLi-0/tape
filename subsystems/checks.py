@@ -20,7 +20,7 @@ class Check:
 
         print("Finished Checks")
 
-    def generateThemedOutline(path, name, bgColor = BACKGROUND_COLOR):
+    def generateThemedOutline(path, name, frameColor = FRAME_COLOR, bgColor = BACKGROUND_COLOR):
         frame = Image.open(path).convert("RGBA")
         frameArray = numpy.array(frame)
         
@@ -28,7 +28,7 @@ class Check:
         transparentMask = frameArray[:, :, 3] == 0
         
         result_array = numpy.copy(frameArray)
-        result_array[blackMask] = hexColorToRGB(FRAME_COLOR)
+        result_array[blackMask] = hexColorToRGB(frameColor)
         result_array[transparentMask] = hexColorToRGB(bgColor)
         
         with open(os.path.join("resources", "themed", f"{name}.png"), "w") as f:
@@ -36,7 +36,9 @@ class Check:
         Image.fromarray(result_array).save(os.path.join("resources", "themed", f"{name}.png"))
 
     def fixGeneratedThemedOutline():
-        Check.generateThemedOutline(D_FRAME_ANIMATION_PATH, "u_frame_animation", "#000000")
+        Check.generateThemedOutline(D_FRAME_ANIMATION_PATH, "u_frame_animation", bgColor="#000000")
         Check.generateThemedOutline(D_FRAME_TIMELINE_PATH, "u_frame_timeline")
         Check.generateThemedOutline(D_FRAME_EDITOR_PATH, "u_frame_editor")
         Check.generateThemedOutline(D_FRAME_OPTIONS_PATH, "u_frame_options")
+        Check.generateThemedOutline(D_FRAME_OPTIONS_BUTTON_PATH, "u_frame_options_button_on", frameColor=SELECTED_COLOR)
+        Check.generateThemedOutline(D_FRAME_OPTIONS_BUTTON_PATH, "u_frame_options_button_off")
