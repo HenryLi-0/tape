@@ -6,7 +6,7 @@ An Overly Unnecessary Editor To Animate An Image To Move Across Your Screen.
 
 Tape (yes, it stand for something silly) is still under development and is planned to have a (hopefully) test release before the end of July (if not july, hopefully by the end of august...)! Unfortunately, contributions are not being accepted until it has an actual ready release (i plan on changing a lot of code and do frequently get ideas at 1 AM) and is suitable for testing. However, don't hesitate to report any bugs! 
 
-(Note: As of June 2024, it will likely be broken half the time...)
+(Note: As of June 2024, it will likely be broken half the time and everything is currently a bit of a mess...)
 
 ## Goal:
 
