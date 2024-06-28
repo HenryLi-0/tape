@@ -1,5 +1,5 @@
 import time, numpy, random, os, math
-from subsystems.pathing import bezierPathCoords, straightPathCoords, addP
+from subsystems.pathing import bezierPathCoords, straightPathCoords, addP, mergeCoordRotationPath, pointNextCoordRotationPath
 from subsystems.render import placeOver
 from subsystems.fancy import displayText, generateColorBox, generateBorderBox
 from settings import FRAME_COLOR, SELECTED_COLOR, BACKGROUND_COLOR, hexColorToRGBA
@@ -85,11 +85,13 @@ class PathVisualObject:
     def __init__(self, id, name):
         self.id = id
         self.name = name
+        self.path = [(0,0,0)]
     def tick(self, window, points):
         '''Takes in a set of points and draws the path'''
-        path = bezierPathCoords(points, 10)
-        for coord in path:
-            placeOver(window, CURSOR_SELECT_ARRAY, coord, True)
+        self.path = bezierPathCoords(points, 10)
+        self.path = mergeCoordRotationPath(self.path, pointNextCoordRotationPath(self.path))
+        for coord in self.path:
+            placeOver(window, CURSOR_SELECT_ARRAY, (coord[0], coord[1]), True)
 
 class OrbVisualObject:
     '''A movable point.'''

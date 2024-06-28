@@ -21,6 +21,7 @@ def displayText(text: str, size, colorBG:tuple|list = (0,0,0,0), colorTXT:tuple|
 
 
 def generateColorBox(size:list|tuple = (25,25),color:list|tuple = (255,255,255,255)):
+    '''Generates a box of (size) size of (color) color'''
     array = numpy.empty((size[1], size[0], 4), dtype=numpy.uint8)
     array[:, :, 0] = color[0]
     array[:, :, 1] = color[1]
@@ -29,6 +30,7 @@ def generateColorBox(size:list|tuple = (25,25),color:list|tuple = (255,255,255,2
     return array
 
 def generateBorderBox(size:list|tuple = (25,25), outlineW:int = 1, color:list|tuple = (255,255,255,255)):
+    '''Generates a bordered box with a transparent inside, with transparent space of (size), and an (outlineW) px thick outline of (color) color surrounding it'''
     array = numpy.zeros((size[1]+2*outlineW, size[0]+2*outlineW, 4), dtype=numpy.uint8)
     array[:outlineW, :, :] = color
     array[-outlineW:, :, :] = color

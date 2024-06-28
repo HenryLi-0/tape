@@ -56,7 +56,7 @@ def pointAt(coord1: tuple|list, coord2: tuple|list):
     dx=coord2[0]-coord1[0]
     dx=0.0000001 if dx == 0 else dx
     dy=coord2[1]-coord1[1]
-    return roundf((math.atan(dy/dx)/math.pi)*180-90 if dx>0 else (math.atan(dy/dx)/math.pi)*180+90, PATH_FLOAT_ACCURACY)
+    return roundf(-(math.atan(dy/dx)/math.pi)*180-90 if dx>0 else -(math.atan(dy/dx)/math.pi)*180+90, PATH_FLOAT_ACCURACY)
 
 # Bezier Maths
 
@@ -71,6 +71,7 @@ def bezierCurve(coord1: tuple|list,coord2: tuple|list, coord3: tuple|list):
 # Paths
 
 def bezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
+    '''Generates a bezier path of coordinates based on a given list of coords, with steps number of points between each given coordinate'''
     if len(coords) >= 3:
         stepsI = range(0, steps)
         coordsI = range(1,len(coords)-1)
@@ -90,6 +91,7 @@ def bezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
         straightPathCoords(coords,steps)
 
 def straightPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
+    '''Generates a straight path of coordinates based on a given list of coords, with steps number of points between each given coordinate'''
     stepsI = range(0, steps)
     totalPath = []
     for i in range(len(coords)-1):
@@ -101,14 +103,16 @@ def straightPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
 
 # Rotation
 
-def pointNextPathCoords(coords: tuple[list|tuple]|list[list|tuple]):
+def pointNextCoordRotationPath(coords: tuple[list|tuple]|list[list|tuple]):
+    '''Generates a rotation path, given a list of coords, where it points at the next coordinate'''
     rotationPath = []
     for i in range(len(coords)-2):
         rotationPath.append(pointAt(coords[i], coords[i+1]))
     rotationPath.append(rotationPath[-1])
     return rotationPath
 
-def mergeCoordRotationPath(coords, rots):
+def mergeCoordRotationPath(coords: tuple|list, rots: tuple|list):
+    '''Merges a coordinate and rotation path and returns a merged path list of (x,y,dir)'''
     mergedPath = []
     for i in range(max(len(coords), len(rots))):
         mergedPath.append((coords[min(i,len(coords)-1)][0], coords[min(i,len(coords)-1)][1], rots[min(i,len(rots)-1)]))

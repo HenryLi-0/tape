@@ -98,3 +98,4 @@ ORB_SELECTED = Image.open(os.path.join("resources", "orb_selected.png")).convert
 ORB_SELECTED_ARRAY = numpy.array(ORB_SELECTED)
 RECTANGULAR_RED_BUTTON_ARRAY = numpy.array(Image.open(os.path.join("resources", "rectangular_red_button.png")).convert("RGBA"))
 RECTANGULAR_GREEN_BUTTON_ARRAY = numpy.array(Image.open(os.path.join("resources", "rectangular_green_button.png")).convert("RGBA"))
+UP_ARROW_ARRAY = numpy.array(Image.open(os.path.join("resources", "up_arrow.png")).convert("RGBA"))

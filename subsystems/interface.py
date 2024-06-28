@@ -7,6 +7,7 @@ from subsystems.render import *
 from subsystems.fancy import displayText, generateColorBox, generateBorderBox
 from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject, EditableTextBoxVisualObject, DummyVisualObject
 from subsystems.counter import Counter
+from subsystems.pathing import pointAt
 
 class Interface:
     def __init__(self):
@@ -26,10 +27,10 @@ class Interface:
             ["o",ButtonVisualObject(self.c.c(), "visuals",(134,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
             ["o",ButtonVisualObject(self.c.c(), "project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
             ["a",EditableTextBoxVisualObject(self.c.c(), "test text box", (50,50), "in my humble unbiased opinion 1155 is a good team")],
-            ["a",EditableTextBoxVisualObject(self.c.c(), "test text box", (250,250), "thanks for the star its really motivating")],
-            ["a",EditableTextBoxVisualObject(self.c.c(), "test text box", (450,450), "lorem ipsum")]
+            ["a",EditableTextBoxVisualObject(self.c.c(), "test text box", (150,150), "thanks for the star its really motivating")],
+            ["a",EditableTextBoxVisualObject(self.c.c(), "test text box", (250,250), "lorem ipsum")]
         ]
-        # [self.globalInteractableVisualObjects.append(["a", OrbVisualObject(self.c.c(), f"test{i}")]) for i in range(10)]
+        [self.globalInteractableVisualObjects.append(["a", OrbVisualObject(self.c.c(), f"test{i}")]) for i in range(10)]
         # self.interactableVisualObjects = [ButtonVisualObject(self.c.c(), "test", (0,0), RECTANGULAR_RED_BUTTON_ARRAY, RECTANGULAR_GREEN_BUTTON_ARRAY)]
         '''Noninteractable, Adaptive, Visual Objects'''
         self.pathVisualObject = PathVisualObject(self.c.c(), "path")
@@ -48,8 +49,7 @@ class Interface:
         self.fps = fps
         self.ticks += 1
         for key in keyQueue: 
-            print(key)
-            if key in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwyz0123456789":
+            if key in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789":
                 self.stringKeyQueue+=key
             else:
                 if key=="space":
@@ -104,15 +104,22 @@ class Interface:
         placeOver(img, generateColorBox((50,100),(255,255,0,255)), (50,50))
         placeOver(img, generateBorderBox((100,260),5,(0,255,0,255)), (100,10))
 
-        aSillyCat = rotateDeg(PLACEHOLDER_IMAGE_3_ARRAY, (self.ticks*5)%360)
-        placeOver(img, aSillyCat, (150+round((128-aSillyCat.shape[1])/2),150+round((128-aSillyCat.shape[0])/2)))
+        tempPoint = self.pathVisualObject.path[self.ticks%len(self.pathVisualObject.path)]
+        aSillyCat = rotateDeg(UP_ARROW_ARRAY, tempPoint[2]%360)
+        placeOver(img, aSillyCat, (round(tempPoint[0]+(128-aSillyCat.shape[1])/2),round(tempPoint[1]+(128-aSillyCat.shape[0])/2)), False)
 
+        # placeOver(img, displayText(f"Pointing At: {pointAt((350,350),(self.mx, self.my))}", "m"), (200,100))
+        # aSillyCat = rotateDeg(UP_ARROW_ARRAY,pointAt((350,350),(self.mx, self.my)))
+        # placeOver(img, aSillyCat, (round(350+(128-aSillyCat.shape[1])/2),round(350+(128-aSillyCat.shape[0])/2)))
 
         for item in self.globalInteractableVisualObjects:
             if item[0] == "a":
                 item[1].tick(img, self.interacting==item[1].id)
 
-        # self.pathVisualObject.tick(img, [item[1].positionO.getPosition() for item in self.globalInteractableVisualObjects])
+        tempPath = []
+        for item in self.globalInteractableVisualObjects: 
+            if item[1].type == "orb": tempPath.append(item[1].positionO.getPosition())
+        self.pathVisualObject.tick(img, tempPath)
 
         return arrayToImage(img)
     

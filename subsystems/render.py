@@ -45,7 +45,7 @@ def placeOver(img1:numpy.ndarray, img2:numpy.ndarray, position:list|tuple, cente
     endX = min(position[0]+img2W, img1W)
     endY = min(position[1]+img2H, img1H)
 
-    img2 = img2[max(-position[1], 0):(max(-position[1], 0)+(endY-startY)), max(-position[0], 0):(max(-position[0], 0)+(endX-startX))]
+    img2 = img2[round(max(-position[1], 0)):round((max(-position[1], 0)+(endY-startY))), round(max(-position[0], 0)):round((max(-position[0], 0)+(endX-startX)))]
 
     alpha_overlay = img2[:, :, 3] / 255.0
     overlayRGB = img2[:, :, :3]
@@ -71,4 +71,5 @@ def dPlaceOver(img1:numpy.ndarray, img2: numpy.ndarray, position:list|tuple):
             pass
 
 def rotateDeg(img1: numpy.ndarray, degrees:float):
+    '''Returns an array of a rotated version of the given image by (degrees) degrees, using the 0 up CCW rotation system'''
     return numpy.array(Image.fromarray(img1).rotate(degrees,expand=True))

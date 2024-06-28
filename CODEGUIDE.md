@@ -20,7 +20,8 @@ not really relevant stuff
 where useful code exists across different files
 - `bay.py` : used for loading images and poorly manages them
 - `checks.py` : checks that important resources exist to prevent random crashes
-- `fonts.py` : used for anything font related
+- `counter.py` : just a counter, but it shockingly important!
+- `fancy.py` : used for fancy rendering stuff (fonts, border boxes)
 - `interface.py` : parts of the tk window (animation, timeline, editor, options)
 - `pathing.py` : used to generate paths (idk what to call it) and things related to moving and coordinates
 - `render.py` : things related to rendering and image stuff
