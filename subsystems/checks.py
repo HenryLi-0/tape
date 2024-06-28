@@ -29,8 +29,8 @@ class Check:
         transparentMask = frameArray[:, :, 3] == 0
         
         result_array = numpy.copy(frameArray)
-        result_array[blackMask] = hexColorToRGB(frameColor)
-        result_array[transparentMask] = hexColorToRGB(bgColor)
+        result_array[blackMask] = hexColorToRGBA(frameColor)
+        result_array[transparentMask] = hexColorToRGBA(bgColor)
         
         with open(os.path.join("resources", "themed", f"{name}.png"), "w") as f:
             f.write("")

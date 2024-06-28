@@ -5,7 +5,7 @@ import time
 import random
 from subsystems.render import *
 from settings import *
-from subsystems.fonts import display
+from subsystems.fancy import display
 
 tests = 0
 total = 0

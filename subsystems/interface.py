@@ -4,8 +4,8 @@ from settings import *
 from PIL import ImageTk, Image
 import time, numpy, random, os, math
 from subsystems.render import *
-from subsystems.fonts import displayText
-from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject, EditableTextBoxVisualObject
+from subsystems.fancy import displayText, generateColorBox, generateBorderBox
+from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject, EditableTextBoxVisualObject, DummyVisualObject
 from subsystems.counter import Counter
 
 class Interface:
@@ -25,7 +25,9 @@ class Interface:
             ["o",ButtonVisualObject(self.c.c(), "sprites",(7,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
             ["o",ButtonVisualObject(self.c.c(), "visuals",(134,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
             ["o",ButtonVisualObject(self.c.c(), "project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            ["a",EditableTextBoxVisualObject(self.c.c(), "test text box", (50,50), "aaaaa")]
+            ["a",EditableTextBoxVisualObject(self.c.c(), "test text box", (50,50), "in my humble unbiased opinion 1155 is a good team")],
+            ["a",EditableTextBoxVisualObject(self.c.c(), "test text box", (250,250), "thanks for the star its really motivating")],
+            ["a",EditableTextBoxVisualObject(self.c.c(), "test text box", (450,450), "lorem ipsum")]
         ]
         # [self.globalInteractableVisualObjects.append(["a", OrbVisualObject(self.c.c(), f"test{i}")]) for i in range(10)]
         # self.interactableVisualObjects = [ButtonVisualObject(self.c.c(), "test", (0,0), RECTANGULAR_RED_BUTTON_ARRAY, RECTANGULAR_GREEN_BUTTON_ARRAY)]
@@ -57,7 +59,6 @@ class Interface:
                 if key=="Return":
                     self.interacting = -998
                     break
-        
         pass
 
         previousInteracting = self.interacting
@@ -93,7 +94,6 @@ class Interface:
         '''Animation Interface: `(23,36) to (925,542)`: size `(903,507)`'''
         rmx = self.mx - 23
         rmy = self.my - 36
-        rendered = 0
         img = FRAME_ANIMATION_ARRAY.copy()
         placeOver(img, displayText(f"FPS: {self.fps}", "m"), (50,350))
         placeOver(img, displayText(f"Mouse Position: ({rmx}, {rmy})", "m"), (50,200))
@@ -101,7 +101,9 @@ class Interface:
         placeOver(img, displayText(f"Rising Edge: {self.mRising}", "m", colorTXT = (0,255,0,255) if self.mRising else (255,0,0,255)), (50,300))
         placeOver(img, displayText(f"Interacting With Element: {self.interacting}", "m"), (50,400))
         placeOver(img, displayText(f"stringKeyQueue: {self.stringKeyQueue}", "m"), (50,450))
-        
+        placeOver(img, generateColorBox((50,100),(255,255,0,255)), (50,50))
+        placeOver(img, generateBorderBox((100,260),5,(0,255,0,255)), (100,10))
+
         for item in self.globalInteractableVisualObjects:
             if item[0] == "a":
                 item[1].tick(img, self.interacting==item[1].id)

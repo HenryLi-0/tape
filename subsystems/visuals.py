@@ -1,7 +1,8 @@
 import time, numpy, random, os, math
-from subsystems.pathing import bezierPathCoords, straightPathCoords
+from subsystems.pathing import bezierPathCoords, straightPathCoords, addP
 from subsystems.render import placeOver
-from subsystems.fonts import displayText
+from subsystems.fancy import displayText, generateBorderBox
+from settings import FRAME_COLOR, SELECTED_COLOR, hexColorToRGBA
 
 class VisualManager:
     def __init__(self, worker, pruneCount = 5, maxLength = 15):
@@ -130,15 +131,30 @@ class EditableTextBoxVisualObject:
         self.name = name
         self.txt = startTxt
         self.txtImg = displayText(self.txt, "m")
-        self.positionO = RectangularPositionalBox((self.txtImg.shape[1],self.txtImg.shape[0]), pos[0], pos[1])
+        self.positionO = RectangularPositionalBox((self.txtImg.shape[1]+3,self.txtImg.shape[0]+5), pos[0]-3, pos[1]-3)
     def tick(self, window, active):
-        placeOver(window, self.txtImg, self.positionO.getPosition(), False)
+        placeOver(window, generateBorderBox(self.positionO.getBBOX(), 3, hexColorToRGBA(SELECTED_COLOR) if active else hexColorToRGBA(FRAME_COLOR)), self.positionO.getPosition())
+        placeOver(window, self.txtImg, addP(self.positionO.getPosition(),(5,3)), False)
     def updateText(self, txt):
         if self.txt!=txt:
             self.txt = txt
             self.txtImg = displayText(self.txt, "m")
-            self.positionO.setBBOX((max(self.txtImg.shape[1],20),max(self.txtImg.shape[0],5)))
+            self.positionO.setBBOX((max(self.txtImg.shape[1]+3,10),max(self.txtImg.shape[0]+5,26)))
     def updatePos(self, rmx, rmy):
         pass
     def getInteractable(self,rmx,rmy):
         return self.positionO.getInteract(rmx, rmy)
+    
+class DummyVisualObject:
+    '''I sit around doing nothing. Like that one group member in randomly assigned class projects. That person didn't deserve that 100, did they now? (joke)'''
+    def __init__(self, id, name, pos:tuple|list):
+        self.type = "dummy"
+        self.id = id
+        self.name = name
+        self.positionO = RectangularPositionalBox((0,0), pos[0], pos[1])
+    def tick(self, window, active):
+        pass
+    def updatePos(self, rmx, rmy):
+        pass
+    def getInteractable(self,rmx,rmy):
+        return False

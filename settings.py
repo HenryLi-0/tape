@@ -22,7 +22,7 @@ FRAME_COLOR = "#381f4d" #Borders and Frame color
 SELECTED_COLOR = "#9e6cc9" #Selected Element color
 TIMELINE_COLOR = "#6d3999" #Timeline color
 
-hexColorToRGB = lambda hexcolor: tuple(int(hexcolor[i:i+2], 16) for i in (1, 3, 5)) + (255,)
+hexColorToRGBA = lambda hexcolor: tuple(int(hexcolor[i:i+2], 16) for i in (1, 3, 5)) + (255,)
 
 '''Saving'''
 
