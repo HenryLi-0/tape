@@ -104,6 +104,10 @@ class Interface:
         placeOver(img, generateColorBox((50,100),(255,255,0,255)), (50,50))
         placeOver(img, generateBorderBox((100,260),5,(0,255,0,255)), (100,10))
 
+        aSillyCat = rotateDeg(PLACEHOLDER_IMAGE_3_ARRAY, (self.ticks*5)%360)
+        placeOver(img, aSillyCat, (150+round((128-aSillyCat.shape[1])/2),150+round((128-aSillyCat.shape[0])/2)))
+
+
         for item in self.globalInteractableVisualObjects:
             if item[0] == "a":
                 item[1].tick(img, self.interacting==item[1].id)
@@ -156,7 +160,7 @@ class Interface:
         else:            
             placeOver(img, displayText(f" x: {self.mx}", "l", colorTXT=(155,155,155,255)), (20,83)) 
             placeOver(img, displayText(f" y: {self.my}", "l", colorTXT=(155,155,155,255)), (120,83))
-        placeOver(img, displayText("Sprites                  Visuals                  Project", "m"), (193, 38), True)
+        placeOver(img, displayText("Sprites                  Visuals                  Project", "m"), (193, 31), True)
         placeOver(img, GEAR_ARRAY, (338,80))
         return arrayToImage(img)
     

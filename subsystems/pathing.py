@@ -1,6 +1,7 @@
 '''This file contains functions for generating paths and other movements.'''
 
 from settings import PATH_FLOAT_ACCURACY
+import math
 
 #SMOOTH PATHING TIME YIPPEE (very satsifying)
 
@@ -50,6 +51,13 @@ def roundp(point: tuple|list):
     '''Returns the rounded (x,y) point with PATH_FLOAT_ACCURACY digits after the decimal point'''
     return (roundf(point[0],PATH_FLOAT_ACCURACY), roundf(point[1],PATH_FLOAT_ACCURACY))
 
+def pointAt(coord1: tuple|list, coord2: tuple|list):
+    '''Returns the degrees of point 1 looking at point 2, using the "0 up CCW" rotation'''
+    dx=coord2[0]-coord1[0]
+    dx=0.0000001 if dx == 0 else dx
+    dy=coord2[1]-coord1[1]
+    return roundf((math.atan(dy/dx)/math.pi)*180-90 if dx>0 else (math.atan(dy/dx)/math.pi)*180+90, PATH_FLOAT_ACCURACY)
+
 # Bezier Maths
 
 def oneAxisCurve(c1: int|float,c2: int|float,c3: int|float):
@@ -93,3 +101,15 @@ def straightPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
 
 # Rotation
 
+def pointNextPathCoords(coords: tuple[list|tuple]|list[list|tuple]):
+    rotationPath = []
+    for i in range(len(coords)-2):
+        rotationPath.append(pointAt(coords[i], coords[i+1]))
+    rotationPath.append(rotationPath[-1])
+    return rotationPath
+
+def mergeCoordRotationPath(coords, rots):
+    mergedPath = []
+    for i in range(max(len(coords), len(rots))):
+        mergedPath.append((coords[min(i,len(coords)-1)][0], coords[min(i,len(coords)-1)][1], rots[min(i,len(rots)-1)]))
+    return mergedPath

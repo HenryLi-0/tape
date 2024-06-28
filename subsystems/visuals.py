@@ -1,8 +1,8 @@
 import time, numpy, random, os, math
 from subsystems.pathing import bezierPathCoords, straightPathCoords, addP
 from subsystems.render import placeOver
-from subsystems.fancy import displayText, generateBorderBox
-from settings import FRAME_COLOR, SELECTED_COLOR, hexColorToRGBA
+from subsystems.fancy import displayText, generateColorBox, generateBorderBox
+from settings import FRAME_COLOR, SELECTED_COLOR, BACKGROUND_COLOR, hexColorToRGBA
 
 class VisualManager:
     def __init__(self, worker, pruneCount = 5, maxLength = 15):
@@ -131,15 +131,16 @@ class EditableTextBoxVisualObject:
         self.name = name
         self.txt = startTxt
         self.txtImg = displayText(self.txt, "m")
-        self.positionO = RectangularPositionalBox((self.txtImg.shape[1]+3,self.txtImg.shape[0]+5), pos[0]-3, pos[1]-3)
+        self.positionO = RectangularPositionalBox((max(self.txtImg.shape[1]+3,10),max(self.txtImg.shape[0],23)), pos[0]-3, pos[1]-3)
     def tick(self, window, active):
+        placeOver(window, generateColorBox(addP(self.positionO.getBBOX(), (5,3)), hexColorToRGBA(BACKGROUND_COLOR)), self.positionO.getPosition())
         placeOver(window, generateBorderBox(self.positionO.getBBOX(), 3, hexColorToRGBA(SELECTED_COLOR) if active else hexColorToRGBA(FRAME_COLOR)), self.positionO.getPosition())
         placeOver(window, self.txtImg, addP(self.positionO.getPosition(),(5,3)), False)
     def updateText(self, txt):
         if self.txt!=txt:
             self.txt = txt
             self.txtImg = displayText(self.txt, "m")
-            self.positionO.setBBOX((max(self.txtImg.shape[1]+3,10),max(self.txtImg.shape[0]+5,26)))
+            self.positionO.setBBOX((max(self.txtImg.shape[1]+3,10),max(self.txtImg.shape[0],23)))
     def updatePos(self, rmx, rmy):
         pass
     def getInteractable(self,rmx,rmy):

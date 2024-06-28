@@ -69,3 +69,6 @@ def dPlaceOver(img1:numpy.ndarray, img2: numpy.ndarray, position:list|tuple):
         except:
             '''So, you really messed up... told you it was dangerous...'''
             pass
+
+def rotateDeg(img1: numpy.ndarray, degrees:float):
+    return numpy.array(Image.fromarray(img1).rotate(degrees,expand=True))
