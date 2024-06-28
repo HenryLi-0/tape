@@ -52,9 +52,10 @@ MISSING_IMAGE = Image.open(os.path.join("resources", "missing.png")).convert("RG
 MISSING_IMAGE_ARRAY = numpy.array(MISSING_IMAGE)
 
 # Fonts
-FONT_LARGE = ImageFont.truetype(os.path.join("resources", "Comfortaa-Medium.ttf"), 32)
+FONT_LARGE = ImageFont.truetype(os.path.join("resources", "Comfortaa-Medium.ttf"), 24)
 FONT_MEDIUM = ImageFont.truetype(os.path.join("resources", "Comfortaa-Medium.ttf"), 15)
 FONT_SMALL = ImageFont.truetype(os.path.join("resources", "Comfortaa-Medium.ttf"), 10)
+EDITOR_SPACING = lambda x: x*20+15
 
 # Blank Interface Sections
 '''
@@ -83,6 +84,8 @@ FRAME_OPTIONS_BUTTON_ON = Image.open(os.path.join("resources", "themed", "u_fram
 FRAME_OPTIONS_BUTTON_ON_ARRAY = numpy.array(FRAME_OPTIONS_BUTTON_ON)
 FRAME_OPTIONS_BUTTON_OFF = Image.open(os.path.join("resources", "themed", "u_frame_options_button_off.png")).convert("RGBA")
 FRAME_OPTIONS_BUTTON_OFF_ARRAY = numpy.array(FRAME_OPTIONS_BUTTON_OFF)
+GEAR = Image.open(os.path.join("resources", "gear.png")).convert("RGBA")
+GEAR_ARRAY = numpy.array(GEAR)
 
 CURSOR_ARROW = Image.open(os.path.join("resources", "cursor_arrow.png")).convert("RGBA")
 CURSOR_ARROW_ARRAY = numpy.array(CURSOR_ARROW)
