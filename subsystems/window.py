@@ -18,6 +18,7 @@ class Window:
         self.fpsCounter = 0
         self.fpsGood = False
         self.mPressed = False
+        self.keyQueue = []
 
         '''load test image'''
         testImage = ImageTk.PhotoImage(PLACEHOLDER_IMAGE)
@@ -43,7 +44,8 @@ class Window:
             self.mPressed = 0
 
         '''update screens'''
-        self.interface.tick(mx,my,self.mPressed, self.fps)
+        self.interface.tick(mx,my,self.mPressed, self.fps, self.keyQueue)
+        self.keyQueue = []
         img = ImageTk.PhotoImage(self.interface.getImageAnimation())
         self.w_animation.configure(image = img)
         self.w_animation.image=img
@@ -81,6 +83,7 @@ class Window:
     def getFPS(self): return self.fps
     def mPress(self, side = 0): self.mPressed = 1
     def mRelease(self, side = 0): self.mPressed = -999
+    def keyPressed(self, key): self.keyQueue.append(str(key.keysym))
     
     def start(self):
         '''start window main loop'''
@@ -88,6 +91,7 @@ class Window:
         
         self.window.bind("<ButtonPress-1>", self.mPress)
         self.window.bind("<ButtonRelease-1>", self.mRelease)
+        self.window.bind("<Key>", self.keyPressed)
 
         self.window.after(TICK_MS, self.windowProcesses)
         self.window.after(TICK_MS, self.windowOccasionalProcesses)

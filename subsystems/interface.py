@@ -34,9 +34,10 @@ class Interface:
         '''Options - Interactable, Stationary, Visual Objects'''
         self.interacting = -999
         self.editorTab = "p"
+        self.stringKeyQueue = ""
         pass
 
-    def tick(self,mx,my,mPressed,fps):
+    def tick(self,mx,my,mPressed,fps,keyQueue):
         '''Entire Screen: `(0,0) to (1365,697)`: size `(1366,698)`'''
         self.mx = mx if (0<=mx and mx<=1365) and (0<=my and my<=697) else self.mx 
         self.my = my if (0<=mx and mx<=1365) and (0<=my and my<=697) else self.my
@@ -44,6 +45,14 @@ class Interface:
         self.mRising = mPressed==2
         self.fps = fps
         self.ticks += 1
+        for key in keyQueue: 
+            if key in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwyz0123456789" or key in ["Space"]:
+                self.stringKeyQueue+=key
+            else:
+                if key=="BackSpace":
+                    self.stringKeyQueue=self.stringKeyQueue[0:-1]
+
+        
         pass
 
         if not(self.mPressed):
@@ -76,6 +85,7 @@ class Interface:
         placeOver(img, displayText(f"Mouse Pressed: {self.mPressed}", "m", colorTXT = (0,255,0,255) if self.mPressed else (255,0,0,255)), (50,250))
         placeOver(img, displayText(f"Rising Edge: {self.mRising}", "m", colorTXT = (0,255,0,255) if self.mRising else (255,0,0,255)), (50,300))
         placeOver(img, displayText(f"Interacting With Element: {self.interacting}", "m"), (50,400))
+        placeOver(img, displayText(f"stringKeyQueue: {self.stringKeyQueue}", "m"), (50,450))
         
         for item in self.globalInteractableVisualObjects:
             if item[0] == "a":
