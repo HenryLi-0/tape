@@ -46,9 +46,11 @@ class CircularPositionalBox:
     def getPosition(self): return (self.ix, self.iy)
     def getX(self): return self.ix
     def getY(self): return self.iy
+    def getR(self): return self.r
     def setPosition(self, position: tuple|list): self.ix, self.iy = position
     def setX(self, nx): self.ix = nx
     def setY(self, ny): self.iy = ny
+    def setR(self, nr): self.r = nr
 
 class RectangularPositionalBox:
     '''Just remembers where the object is supposed to be on screen, given the mouse position and updates when the mouse is in a specific bounding box'''
@@ -63,9 +65,11 @@ class RectangularPositionalBox:
     def getPosition(self): return (self.ix, self.iy)
     def getX(self): return self.ix
     def getY(self): return self.iy
+    def getBBOX(self): return self.bbox
     def setPosition(self, position: tuple|list): self.ix, self.iy = position
     def setX(self, nx): self.ix = nx
     def setY(self, ny): self.iy = ny
+    def setBBOX(self, nbbox): self.bbox = nbbox
 
 
 from settings import ORB_IDLE_ARRAY, ORB_SELECTED_ARRAY, CURSOR_SELECT_ARRAY
@@ -87,8 +91,9 @@ class PathVisualObject:
             placeOver(window, CURSOR_SELECT_ARRAY, coord, True)
 
 class OrbVisualObject:
-    '''A movable point'''
+    '''A movable point.'''
     def __init__(self, id, name):
+        self.type = "orb"
         self.id = id
         self.name = name
         self.positionO = CircularPositionalBox(50)
@@ -102,8 +107,9 @@ class OrbVisualObject:
         return self.positionO.getInteract(rmx, rmy)
 
 class ButtonVisualObject:
-    '''A button'''
+    '''A button.'''
     def __init__(self, id, name, pos:tuple|list, img:numpy.ndarray, img2:numpy.ndarray):
+        self.type = "button"
         self.id = id
         self.name = name
         self.img = img
@@ -111,6 +117,27 @@ class ButtonVisualObject:
         self.positionO = RectangularPositionalBox((img.shape[1],img.shape[0]), pos[0], pos[1])
     def tick(self, window, active):
         placeOver(window, self.img2 if active else self.img, self.positionO.getPosition(), False)
+    def updatePos(self, rmx, rmy):
+        pass
+    def getInteractable(self,rmx,rmy):
+        return self.positionO.getInteract(rmx, rmy)
+    
+class EditableTextBoxVisualObject:
+    '''An editable text box.'''
+    def __init__(self, id, name, pos:tuple|list, startTxt= ""):
+        self.type = "textbox"
+        self.id = id
+        self.name = name
+        self.txt = startTxt
+        self.txtImg = displayText(self.txt, "m")
+        self.positionO = RectangularPositionalBox((self.txtImg.shape[1],self.txtImg.shape[0]), pos[0], pos[1])
+    def tick(self, window, active):
+        placeOver(window, self.txtImg, self.positionO.getPosition(), False)
+    def updateText(self, txt):
+        if self.txt!=txt:
+            self.txt = txt
+            self.txtImg = displayText(self.txt, "m")
+            self.positionO.setBBOX((max(self.txtImg.shape[1],20),max(self.txtImg.shape[0],5)))
     def updatePos(self, rmx, rmy):
         pass
     def getInteractable(self,rmx,rmy):

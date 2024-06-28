@@ -5,7 +5,7 @@ from PIL import ImageTk, Image
 import time, numpy, random, os, math
 from subsystems.render import *
 from subsystems.fonts import displayText
-from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject
+from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject, EditableTextBoxVisualObject
 from subsystems.counter import Counter
 
 class Interface:
@@ -20,14 +20,14 @@ class Interface:
         self.c = Counter()
         '''Interactable Visual Objects'''
         self.globalInteractableVisualObjects = [
-            ["a",ButtonVisualObject(self.c.c(), "test", (0,0), RECTANGULAR_RED_BUTTON_ARRAY, RECTANGULAR_GREEN_BUTTON_ARRAY)],
+            #["a",ButtonVisualObject(self.c.c(), "test", (0,0), RECTANGULAR_RED_BUTTON_ARRAY, RECTANGULAR_GREEN_BUTTON_ARRAY)],
 
             ["o",ButtonVisualObject(self.c.c(), "sprites",(7,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
             ["o",ButtonVisualObject(self.c.c(), "visuals",(134,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            ["o",ButtonVisualObject(self.c.c(), "project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)]
-        
+            ["o",ButtonVisualObject(self.c.c(), "project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
+            ["a",EditableTextBoxVisualObject(self.c.c(), "test text box", (50,50), "aaaaa")]
         ]
-        [self.globalInteractableVisualObjects.append(["a", OrbVisualObject(self.c.c(), f"test{i}")]) for i in range(10)]
+        # [self.globalInteractableVisualObjects.append(["a", OrbVisualObject(self.c.c(), f"test{i}")]) for i in range(10)]
         # self.interactableVisualObjects = [ButtonVisualObject(self.c.c(), "test", (0,0), RECTANGULAR_RED_BUTTON_ARRAY, RECTANGULAR_GREEN_BUTTON_ARRAY)]
         '''Noninteractable, Adaptive, Visual Objects'''
         self.pathVisualObject = PathVisualObject(self.c.c(), "path")
@@ -46,15 +46,21 @@ class Interface:
         self.fps = fps
         self.ticks += 1
         for key in keyQueue: 
-            if key in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwyz0123456789" or key in ["Space"]:
+            print(key)
+            if key in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwyz0123456789":
                 self.stringKeyQueue+=key
             else:
+                if key=="space":
+                    self.stringKeyQueue+=" "
                 if key=="BackSpace":
                     self.stringKeyQueue=self.stringKeyQueue[0:-1]
-
+                if key=="Return":
+                    self.interacting = -998
+                    break
         
         pass
 
+        previousInteracting = self.interacting
         if not(self.mPressed):
             self.interacting = -999
         if self.interacting == -999 and self.mPressed:
@@ -71,7 +77,16 @@ class Interface:
             section = self.globalInteractableVisualObjects[self.interacting][0]
             if section == "a": self.globalInteractableVisualObjects[self.interacting][1].updatePos(self.mx - 23, self.my - 36)
             if section == "o": self.globalInteractableVisualObjects[self.interacting][1].updatePos(self.mx - 953, self.my - 558)
-
+        if ((self.mPressed)) and (previousInteracting == -999) and (self.interacting != -999) and (self.globalInteractableVisualObjects[self.interacting][1].type  == "textbox"): 
+            self.stringKeyQueue = self.globalInteractableVisualObjects[self.interacting][1].txt
+        if (self.interacting != -999) and (self.globalInteractableVisualObjects[self.interacting][1].type  == "textbox"):
+            self.globalInteractableVisualObjects[self.interacting][1].updateText(self.stringKeyQueue)
+        if (previousInteracting != -999) and (previousInteracting != -998) and (self.globalInteractableVisualObjects[previousInteracting][1].type  == "textbox"):
+            if not(self.interacting == -998):
+                self.interacting = previousInteracting
+                self.globalInteractableVisualObjects[self.interacting][1].updateText(self.stringKeyQueue)
+            else:
+                self.globalInteractableVisualObjects[previousInteracting][1].updateText(self.stringKeyQueue)
         
 
     def getImageAnimation(self):
