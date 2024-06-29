@@ -1,8 +1,9 @@
+'''This file is just the window that pops up and refreshes itself!'''
+
 from settings import *
 import tkinter as tk
-from tkinter import ttk
 from PIL import ImageTk, Image
-import time, numpy, os, math
+import time, math
 from subsystems.interface import Interface
 from settings import *
 

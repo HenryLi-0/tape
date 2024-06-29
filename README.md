@@ -33,5 +33,4 @@ Ok, time to get started!
 - this is a really silly idea
 
 ### Modules Used (that dont come with python):
-- PIL
 - numpy

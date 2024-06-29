@@ -1,24 +1,39 @@
 '''This file makes sure that everything the program needs is set and ready to run!'''
 
-from PIL import Image
-import os, numpy
+'''Test import all major modules'''
+from PIL import Image, ImageTk, ImageDraw
+import tkinter as tk
+import os, numpy, uuid, ast, time, math
 from settings import *
+
+'''Test import all subsystems'''
+
 
 class Check:
     def check():
         # Program/Subsystem Files
-        
+        import subsystems.bay
+        import subsystems.counter
+        import subsystems.fancy
+        import subsystems.interface
+        import subsystems.pathing
+        import subsystems.render
+        import subsystems.visuals
+        import subsystems.window
         # Resource Files
         
         # Cache
         
         # Themes
-        Check.fixGeneratedThemedOutline()
+        Check.regenerateAllThemedOutline()
 
         # Tests?
 
 
         print("Finished Checks")
+
+    def error(message):
+        print(f"The check has detected an issue: {message}")
 
     def generateThemedOutline(path, name, frameColor = FRAME_COLOR, bgColor = BACKGROUND_COLOR):
         '''Generate a themed based on a black/transparent template'''
@@ -36,7 +51,7 @@ class Check:
             f.write("")
         Image.fromarray(result_array).save(os.path.join("resources", "themed", f"{name}.png"))
 
-    def fixGeneratedThemedOutline():
+    def regenerateAllThemedOutline():
         '''Regenerate all themed images'''
         Check.generateThemedOutline(D_FRAME_ANIMATION_PATH, "u_frame_animation", bgColor="#000000")
         Check.generateThemedOutline(D_FRAME_TIMELINE_PATH, "u_frame_timeline")

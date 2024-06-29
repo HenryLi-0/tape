@@ -2,7 +2,7 @@
 
 from settings import *
 from PIL import ImageTk, Image
-import time, numpy, random, os, math
+import time
 from subsystems.render import *
 from subsystems.fancy import displayText, generateColorBox, generateBorderBox
 from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject, EditableTextBoxVisualObject, DummyVisualObject
@@ -20,17 +20,18 @@ class Interface:
         self.activity = ""
         self.c = Counter()
         '''Interactable Visual Objects'''
-        self.globalInteractableVisualObjects = [
+        self.interactableVisualObjects = {
             #["a",ButtonVisualObject(self.c.c(), "test", (0,0), RECTANGULAR_RED_BUTTON_ARRAY, RECTANGULAR_GREEN_BUTTON_ARRAY)],
+            -999 : [" ", DummyVisualObject("dummy", (0,0))],
 
-            ["o",ButtonVisualObject(self.c.c(), "sprites",(7,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            ["o",ButtonVisualObject(self.c.c(), "visuals",(134,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            ["o",ButtonVisualObject(self.c.c(), "project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            ["a",EditableTextBoxVisualObject(self.c.c(), "test text box", (50,50), "in my humble unbiased opinion 1155 is a good team")],
-            ["a",EditableTextBoxVisualObject(self.c.c(), "test text box", (150,150), "thanks for the star its really motivating")],
-            ["a",EditableTextBoxVisualObject(self.c.c(), "test text box", (250,250), "lorem ipsum")]
-        ]
-        [self.globalInteractableVisualObjects.append(["a", OrbVisualObject(self.c.c(), f"test{i}")]) for i in range(10)]
+            self.c.c(): ["o",ButtonVisualObject("sprites",(7,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
+            self.c.c(): ["o",ButtonVisualObject("visuals",(134,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
+            self.c.c(): ["o",ButtonVisualObject("project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
+            self.c.c(): ["a",EditableTextBoxVisualObject("test text box", (50,50), "in my humble unbiased opinion 1155 is a good team")],
+            self.c.c(): ["a",EditableTextBoxVisualObject("test text box", (50,100), "thanks for the star its really motivating")],
+            self.c.c(): ["a",EditableTextBoxVisualObject("test text box", (50,150), "lorem ipsum")]
+        }
+        for i in range(10): self.interactableVisualObjects[self.c.c()] = ["a", OrbVisualObject(f"test{i}")]
         # self.interactableVisualObjects = [ButtonVisualObject(self.c.c(), "test", (0,0), RECTANGULAR_RED_BUTTON_ARRAY, RECTANGULAR_GREEN_BUTTON_ARRAY)]
         '''Noninteractable, Adaptive, Visual Objects'''
         self.pathVisualObject = PathVisualObject(self.c.c(), "path")
@@ -65,30 +66,33 @@ class Interface:
         if not(self.mPressed):
             self.interacting = -999
         if self.interacting == -999 and self.mPressed:
-            for i in range(len(self.globalInteractableVisualObjects)):
-                if self.globalInteractableVisualObjects[i][0] == "a":
-                    if self.globalInteractableVisualObjects[i][1].getInteractable(self.mx - 23, self.my - 36):
-                        self.interacting = self.globalInteractableVisualObjects[i][1].id
+            for id in self.interactableVisualObjects:
+                if self.interactableVisualObjects[id][0] == "a":
+                    if self.interactableVisualObjects[id][1].getInteractable(self.mx - 23, self.my - 36):
+                        self.interacting = id
                         break
-                if self.globalInteractableVisualObjects[i][0] == "o":
-                    if self.globalInteractableVisualObjects[i][1].getInteractable(self.mx - 953, self.my - 558):
-                        self.interacting = self.globalInteractableVisualObjects[i][1].id
+                if self.interactableVisualObjects[id][0] == "o":
+                    if self.interactableVisualObjects[id][1].getInteractable(self.mx - 953, self.my - 558):
+                        self.interacting = id
                         break
         if self.interacting != -999:
-            section = self.globalInteractableVisualObjects[self.interacting][0]
-            if section == "a": self.globalInteractableVisualObjects[self.interacting][1].updatePos(self.mx - 23, self.my - 36)
-            if section == "o": self.globalInteractableVisualObjects[self.interacting][1].updatePos(self.mx - 953, self.my - 558)
-        if ((self.mPressed)) and (previousInteracting == -999) and (self.interacting != -999) and (self.globalInteractableVisualObjects[self.interacting][1].type  == "textbox"): 
-            self.stringKeyQueue = self.globalInteractableVisualObjects[self.interacting][1].txt
-        if (self.interacting != -999) and (self.globalInteractableVisualObjects[self.interacting][1].type  == "textbox"):
-            self.globalInteractableVisualObjects[self.interacting][1].updateText(self.stringKeyQueue)
-        if (previousInteracting != -999) and (previousInteracting != -998) and (self.globalInteractableVisualObjects[previousInteracting][1].type  == "textbox"):
+            section = self.interactableVisualObjects[self.interacting][0]
+            if section == "a": 
+                self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 23, self.my - 36)
+                self.interactableVisualObjects[self.interacting][1].keepInFrame(903,507)
+            if section == "o": 
+                self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 953, self.my - 558)
+                self.interactableVisualObjects[self.interacting][1].keepInFrame(388,123)
+        if ((self.mPressed)) and (previousInteracting == -999) and (self.interacting != -999) and (self.interactableVisualObjects[self.interacting][1].type  == "textbox"): 
+            self.stringKeyQueue = self.interactableVisualObjects[self.interacting][1].txt
+        if (self.interacting != -999) and (self.interactableVisualObjects[self.interacting][1].type  == "textbox"):
+            self.interactableVisualObjects[self.interacting][1].updateText(self.stringKeyQueue)
+        if (previousInteracting != -999) and (previousInteracting != -998) and (self.interactableVisualObjects[previousInteracting][1].type  == "textbox"):
             if not(self.interacting == -998):
                 self.interacting = previousInteracting
-                self.globalInteractableVisualObjects[self.interacting][1].updateText(self.stringKeyQueue)
+                self.interactableVisualObjects[self.interacting][1].updateText(self.stringKeyQueue)
             else:
-                self.globalInteractableVisualObjects[previousInteracting][1].updateText(self.stringKeyQueue)
-        
+                self.interactableVisualObjects[previousInteracting][1].updateText(self.stringKeyQueue)
 
     def getImageAnimation(self):
         '''Animation Interface: `(23,36) to (925,542)`: size `(903,507)`'''
@@ -101,8 +105,6 @@ class Interface:
         placeOver(img, displayText(f"Rising Edge: {self.mRising}", "m", colorTXT = (0,255,0,255) if self.mRising else (255,0,0,255)), (50,300))
         placeOver(img, displayText(f"Interacting With Element: {self.interacting}", "m"), (50,400))
         placeOver(img, displayText(f"stringKeyQueue: {self.stringKeyQueue}", "m"), (50,450))
-        placeOver(img, generateColorBox((50,100),(255,255,0,255)), (50,50))
-        placeOver(img, generateBorderBox((100,260),5,(0,255,0,255)), (100,10))
 
         tempPoint = self.pathVisualObject.path[self.ticks%len(self.pathVisualObject.path)]
         aSillyCat = rotateDeg(UP_ARROW_ARRAY, tempPoint[2]%360)
@@ -112,13 +114,14 @@ class Interface:
         # aSillyCat = rotateDeg(UP_ARROW_ARRAY,pointAt((350,350),(self.mx, self.my)))
         # placeOver(img, aSillyCat, (round(350+(128-aSillyCat.shape[1])/2),round(350+(128-aSillyCat.shape[0])/2)))
 
-        for item in self.globalInteractableVisualObjects:
-            if item[0] == "a":
-                item[1].tick(img, self.interacting==item[1].id)
+        for id in self.interactableVisualObjects:
+            if self.interactableVisualObjects[id][0] == "a":
+                self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
 
         tempPath = []
-        for item in self.globalInteractableVisualObjects: 
-            if item[1].type == "orb": tempPath.append(item[1].positionO.getPosition())
+        for id in self.interactableVisualObjects: 
+            if self.interactableVisualObjects[id][1].type == "orb": 
+                tempPath.append(self.interactableVisualObjects[id][1].positionO.getPosition())
         self.pathVisualObject.tick(img, tempPath)
 
         return arrayToImage(img)
@@ -132,23 +135,24 @@ class Interface:
         img = FRAME_EDITOR_ARRAY.copy()
         if self.editorTab == "p":
             '''About Project Tab!'''
-            placeOver(img, displayText("Project:", "m"),                                    (15,EDITOR_SPACING(1))) 
-            placeOver(img, displayText("Name: please implement this", "m"),                 (20,EDITOR_SPACING(2)))
-            placeOver(img, displayText("Size: 1155 MB (please implement this)", "m"),       (20,EDITOR_SPACING(3)))
+            placeOver(img, displayText("Project:", "m"),                                                            (15,EDITOR_SPACING(1))) 
+            placeOver(img, displayText("Name: please implement this", "m"),                                         (20,EDITOR_SPACING(2)))
+            placeOver(img, displayText("Size: 1155 MB (please implement this)", "m"),                               (20,EDITOR_SPACING(3)))
 
-            placeOver(img, displayText("Elements:", "m"),                                   (15,EDITOR_SPACING(5)))
-            placeOver(img, displayText("Sprites: please implement this", "m"),              (20,EDITOR_SPACING(6))) 
-            placeOver(img, displayText("Folders: please implement this", "m"),              (20,EDITOR_SPACING(7))) 
-            placeOver(img, displayText("Paths: please implement this", "m"),                (20,EDITOR_SPACING(8))) 
-            placeOver(img, displayText("Total Path Elements: please implement this", "m"),  (20,EDITOR_SPACING(9))) 
-            placeOver(img, displayText("Total Path Waypoints: please implement this", "m"), (20,EDITOR_SPACING(10))) 
+            placeOver(img, displayText("Elements:", "m"),                                                           (15,EDITOR_SPACING(5)))
+            placeOver(img, displayText("Sprites: please implement this", "m"),                                      (20,EDITOR_SPACING(6))) 
+            placeOver(img, displayText("Folders: please implement this", "m"),                                      (20,EDITOR_SPACING(7))) 
+            placeOver(img, displayText("Paths: please implement this", "m"),                                        (20,EDITOR_SPACING(8))) 
+            placeOver(img, displayText("Total Path Elements: please implement this", "m"),                          (20,EDITOR_SPACING(9))) 
+            placeOver(img, displayText("Total Path Waypoints: please implement this", "m"),                         (20,EDITOR_SPACING(10))) 
+            placeOver(img, displayText(f"Interactable Visual Objects: {len(self.interactableVisualObjects)}", "m"), (20,EDITOR_SPACING(11))) 
 
-            placeOver(img, displayText("Dates:", "m"),                                      (15,EDITOR_SPACING(12)))
-            placeOver(img, displayText("Created On: ", "m"),                                (20,EDITOR_SPACING(13)))  
-            placeOver(img, displayText("Last Saved: ", "m"),                                (20,EDITOR_SPACING(14)))  
-            placeOver(img, displayText("Version Created: ", "m"),                           (20,EDITOR_SPACING(15)))  
-            placeOver(img, displayText("Current Version: ", "m"),                           (20,EDITOR_SPACING(16)))  
-            placeOver(img, displayText("Time Spent: ", "m"),                                (20,EDITOR_SPACING(17))) 
+            placeOver(img, displayText("Dates:", "m"),                                                              (15,EDITOR_SPACING(13)))
+            placeOver(img, displayText("Created On: ", "m"),                                                        (20,EDITOR_SPACING(14)))  
+            placeOver(img, displayText("Last Saved: ", "m"),                                                        (20,EDITOR_SPACING(15)))  
+            placeOver(img, displayText("Version Created: ", "m"),                                                   (20,EDITOR_SPACING(16)))  
+            placeOver(img, displayText("Current Version: ", "m"),                                                   (20,EDITOR_SPACING(17)))  
+            placeOver(img, displayText("Time Spent: ", "m"),                                                        (20,EDITOR_SPACING(18))) 
 
         return arrayToImage(img)
     
@@ -156,10 +160,10 @@ class Interface:
         '''Options Interface: `(953,558) to (1340,680)`: size `(388,123)`'''
         img = FRAME_OPTIONS_ARRAY.copy()
 
-        for item in self.globalInteractableVisualObjects:
-            if item[0] == "o":
-                if self.interacting==item[1].id: self.editorTab = item[1].name[0]
-                item[1].tick(img, self.interacting==item[1].id or self.editorTab==item[1].name[0])
+        for id in self.interactableVisualObjects:
+            if self.interactableVisualObjects[id][0] == "o":
+                if self.interacting==id: self.editorTab = self.interactableVisualObjects[id][1].name[0]
+                self.interactableVisualObjects[id][1].tick(img, self.interacting==id or self.editorTab==self.interactableVisualObjects[id][1].name[0])
 
         if 23 <= self.mx and self.mx <= 925 and 36 <= self.my and self.my <= 542:
             placeOver(img, displayText(f"rx: {self.mx-23}", "l"), (20,83)) 

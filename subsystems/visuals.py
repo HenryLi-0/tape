@@ -1,4 +1,6 @@
-import time, numpy, random, os, math
+'''This file contains classes all about the visual objects the user sees'''
+
+import time, numpy, random, math
 from subsystems.pathing import bezierPathCoords, straightPathCoords, addP, mergeCoordRotationPath, pointNextCoordRotationPath
 from subsystems.render import placeOver
 from subsystems.fancy import displayText, generateColorBox, generateBorderBox
@@ -95,9 +97,8 @@ class PathVisualObject:
 
 class OrbVisualObject:
     '''A movable point.'''
-    def __init__(self, id, name):
+    def __init__(self, name):
         self.type = "orb"
-        self.id = id
         self.name = name
         self.positionO = CircularPositionalBox(50)
         self.positionO.setPosition((random.randrange(0,903), random.randrange(0,507)))
@@ -106,14 +107,17 @@ class OrbVisualObject:
         placeOver(window, displayText(self.name, "m"), self.positionO.getPosition(), True)
     def updatePos(self, rmx, rmy):
         self.positionO.setPosition((rmx, rmy))
+    def keepInFrame(self, maxX, maxY):
+        pos = self.positionO.getPosition()
+        if pos[0] < 0 or maxX < pos[0] or pos[1] < 0 or maxY < pos[1]:
+            self.positionO.setPosition((max(0,min(pos[0],maxX)), max(0,min(pos[1],maxY))))
     def getInteractable(self, rmx, rmy):
         return self.positionO.getInteract(rmx, rmy)
 
 class ButtonVisualObject:
     '''A button.'''
-    def __init__(self, id, name, pos:tuple|list, img:numpy.ndarray, img2:numpy.ndarray):
+    def __init__(self, name, pos:tuple|list, img:numpy.ndarray, img2:numpy.ndarray):
         self.type = "button"
-        self.id = id
         self.name = name
         self.img = img
         self.img2 = img2
@@ -122,14 +126,17 @@ class ButtonVisualObject:
         placeOver(window, self.img2 if active else self.img, self.positionO.getPosition(), False)
     def updatePos(self, rmx, rmy):
         pass
+    def keepInFrame(self, maxX, maxY):
+        pos = self.positionO.getPosition()
+        if pos[0] < 0 or maxX < pos[0] or pos[1] < 0 or maxY < pos[1]:
+            self.positionO.setPosition((max(0,min(pos[0],maxX)), max(0,min(pos[1],maxY))))
     def getInteractable(self,rmx,rmy):
         return self.positionO.getInteract(rmx, rmy)
     
 class EditableTextBoxVisualObject:
     '''An editable text box.'''
-    def __init__(self, id, name, pos:tuple|list, startTxt= ""):
+    def __init__(self, name, pos:tuple|list, startTxt= ""):
         self.type = "textbox"
-        self.id = id
         self.name = name
         self.txt = startTxt
         self.txtImg = displayText(self.txt, "m")
@@ -145,19 +152,24 @@ class EditableTextBoxVisualObject:
             self.positionO.setBBOX((max(self.txtImg.shape[1]+3,10),max(self.txtImg.shape[0],23)))
     def updatePos(self, rmx, rmy):
         pass
+    def keepInFrame(self, maxX, maxY):
+        pos = self.positionO.getPosition()
+        if pos[0] < 0 or maxX < pos[0] or pos[1] < 0 or maxY < pos[1]:
+            self.positionO.setPosition((max(0,min(pos[0],maxX)), max(0,min(pos[1],maxY))))
     def getInteractable(self,rmx,rmy):
         return self.positionO.getInteract(rmx, rmy)
     
 class DummyVisualObject:
     '''I sit around doing nothing. Like that one group member in randomly assigned class projects. That person didn't deserve that 100, did they now? (joke)'''
-    def __init__(self, id, name, pos:tuple|list):
+    def __init__(self, name, pos:tuple|list):
         self.type = "dummy"
-        self.id = id
         self.name = name
         self.positionO = RectangularPositionalBox((0,0), pos[0], pos[1])
     def tick(self, window, active):
         pass
     def updatePos(self, rmx, rmy):
+        pass
+    def keepInFrame(self, maxX, maxY):
         pass
     def getInteractable(self,rmx,rmy):
         return False

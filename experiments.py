@@ -43,5 +43,12 @@ cache = [ # cache of image uuids!
     ]
 '''
 
-from subsystems.pathing import pointAt
-print(pointAt((0,0),(0,-1000)))
+dictionary = {
+    0:"programming",
+    1:"is",
+    2:"very",
+    3:"fun"
+}
+
+for thing in dictionary:
+    print(thing)
