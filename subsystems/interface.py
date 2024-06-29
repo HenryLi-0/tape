@@ -21,18 +21,15 @@ class Interface:
         self.c = Counter()
         '''Interactable Visual Objects'''
         self.interactableVisualObjects = {
-            #["a",ButtonVisualObject(self.c.c(), "test", (0,0), RECTANGULAR_RED_BUTTON_ARRAY, RECTANGULAR_GREEN_BUTTON_ARRAY)],
+
             -999 : [" ", DummyVisualObject("dummy", (0,0))],
 
-            self.c.c(): ["o",ButtonVisualObject("sprites",(7,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            self.c.c(): ["o",ButtonVisualObject("visuals",(134,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            self.c.c(): ["o",ButtonVisualObject("project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            self.c.c(): ["a",EditableTextBoxVisualObject("test text box", (50,50), "in my humble unbiased opinion 1155 is a good team")],
-            self.c.c(): ["a",EditableTextBoxVisualObject("test text box", (50,100), "thanks for the star its really motivating")],
-            self.c.c(): ["a",EditableTextBoxVisualObject("test text box", (50,150), "lorem ipsum")]
+            self.c.c():["o",ButtonVisualObject("sprites",(7,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
+            self.c.c():["o",ButtonVisualObject("visuals",(134,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
+            self.c.c():["o",ButtonVisualObject("project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)]
+            
         }
-        for i in range(10): self.interactableVisualObjects[self.c.c()] = ["a", OrbVisualObject(f"test{i}")]
-        # self.interactableVisualObjects = [ButtonVisualObject(self.c.c(), "test", (0,0), RECTANGULAR_RED_BUTTON_ARRAY, RECTANGULAR_GREEN_BUTTON_ARRAY)]
+        #for i in range(10): self.interactableVisualObjects[self.c.c()] = ["a", OrbVisualObject(f"test{i}")]
         '''Noninteractable, Adaptive, Visual Objects'''
         self.pathVisualObject = PathVisualObject(self.c.c(), "path")
         '''Options - Interactable, Stationary, Visual Objects'''
@@ -99,16 +96,10 @@ class Interface:
         rmx = self.mx - 23
         rmy = self.my - 36
         img = FRAME_ANIMATION_ARRAY.copy()
-        placeOver(img, displayText(f"FPS: {self.fps}", "m"), (50,350))
-        placeOver(img, displayText(f"Mouse Position: ({rmx}, {rmy})", "m"), (50,200))
-        placeOver(img, displayText(f"Mouse Pressed: {self.mPressed}", "m", colorTXT = (0,255,0,255) if self.mPressed else (255,0,0,255)), (50,250))
-        placeOver(img, displayText(f"Rising Edge: {self.mRising}", "m", colorTXT = (0,255,0,255) if self.mRising else (255,0,0,255)), (50,300))
-        placeOver(img, displayText(f"Interacting With Element: {self.interacting}", "m"), (50,400))
-        placeOver(img, displayText(f"stringKeyQueue: {self.stringKeyQueue}", "m"), (50,450))
 
-        tempPoint = self.pathVisualObject.path[self.ticks%len(self.pathVisualObject.path)]
-        aSillyCat = rotateDeg(UP_ARROW_ARRAY, tempPoint[2]%360)
-        placeOver(img, aSillyCat, (round(tempPoint[0]+(128-aSillyCat.shape[1])/2),round(tempPoint[1]+(128-aSillyCat.shape[0])/2)), False)
+        # tempPoint = self.pathVisualObject.path[self.ticks%len(self.pathVisualObject.path)]
+        # aSillyCat = rotateDeg(UP_ARROW_ARRAY, tempPoint[2]%360)
+        # placeOver(img, aSillyCat, (round(tempPoint[0]+(128-aSillyCat.shape[1])/2),round(tempPoint[1]+(128-aSillyCat.shape[0])/2)), False)
 
         # placeOver(img, displayText(f"Pointing At: {pointAt((350,350),(self.mx, self.my))}", "m"), (200,100))
         # aSillyCat = rotateDeg(UP_ARROW_ARRAY,pointAt((350,350),(self.mx, self.my)))
@@ -128,7 +119,15 @@ class Interface:
     
     def getImageTimeline(self):
         '''Timeline Interface: `(23,558) to (925,680)`: size `(903,123)`'''
-        return arrayToImage(FRAME_TIMELINE_ARRAY)
+        img = FRAME_TIMELINE_ARRAY.copy()
+        placeOver(img, displayText(f"FPS: {self.fps}", "m"), (55,15))
+        placeOver(img, displayText(f"Relative (animation) Mouse Position: ({self.mx-23}, {self.my-36})", "m"), (455,55))
+        placeOver(img, displayText(f"Mouse Pressed: {self.mPressed}", "m", colorTXT = (0,255,0,255) if self.mPressed else (255,0,0,255)), (55,55))
+        placeOver(img, displayText(f"Rising Edge: {self.mRising}", "m", colorTXT = (0,255,0,255) if self.mRising else (255,0,0,255)), (55,95))
+        placeOver(img, displayText(f"Interacting With Element: {self.interacting}", "m"), (455,15))
+        placeOver(img, displayText(f"stringKeyQueue: {self.stringKeyQueue}", "m"), (455,95))
+
+        return arrayToImage(img)
     
     def getImageEditor(self):
         '''Editor Interface: `(953,36) to (1340,542)`: size `(388,507)`'''

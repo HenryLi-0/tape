@@ -42,13 +42,3 @@ cache = [ # cache of image uuids!
     "some uuid"
     ]
 '''
-
-dictionary = {
-    0:"programming",
-    1:"is",
-    2:"very",
-    3:"fun"
-}
-
-for thing in dictionary:
-    print(thing)

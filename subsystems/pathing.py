@@ -72,6 +72,7 @@ def bezierCurve(coord1: tuple|list,coord2: tuple|list, coord3: tuple|list):
 
 def bezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
     '''Generates a bezier path of coordinates based on a given list of coords, with steps number of points between each given coordinate'''
+    if len(coords) == 0: return []
     if len(coords) >= 3:
         stepsI = range(0, steps)
         coordsI = range(1,len(coords)-1)
@@ -92,6 +93,7 @@ def bezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
 
 def straightPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
     '''Generates a straight path of coordinates based on a given list of coords, with steps number of points between each given coordinate'''
+    if len(coords) == 0: return []
     stepsI = range(0, steps)
     totalPath = []
     for i in range(len(coords)-1):
@@ -105,6 +107,7 @@ def straightPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
 
 def pointNextCoordRotationPath(coords: tuple[list|tuple]|list[list|tuple]):
     '''Generates a rotation path, given a list of coords, where it points at the next coordinate'''
+    if len(coords) == 0: return []
     rotationPath = []
     for i in range(len(coords)-2):
         rotationPath.append(pointAt(coords[i], coords[i+1]))
@@ -113,6 +116,7 @@ def pointNextCoordRotationPath(coords: tuple[list|tuple]|list[list|tuple]):
 
 def mergeCoordRotationPath(coords: tuple|list, rots: tuple|list):
     '''Merges a coordinate and rotation path and returns a merged path list of (x,y,dir)'''
+    if len(coords) == 0: return []
     mergedPath = []
     for i in range(max(len(coords), len(rots))):
         mergedPath.append((coords[min(i,len(coords)-1)][0], coords[min(i,len(coords)-1)][1], rots[min(i,len(rots)-1)]))
