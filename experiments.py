@@ -42,3 +42,5 @@ cache = [ # cache of image uuids!
     "some uuid"
     ]
 '''
+from subsystems.pathing import smoothChangeAt
+print(smoothChangeAt(25,50,10))

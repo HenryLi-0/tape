@@ -131,7 +131,7 @@ class Interface:
     
     def getImageEditor(self):
         '''Editor Interface: `(953,36) to (1340,542)`: size `(388,507)`'''
-        img = FRAME_EDITOR_ARRAY.copy()
+        img = FRAME_EDITOR_VISUALS_ARRAY.copy() if self.editorTab=="v" else FRAME_EDITOR_ARRAY.copy()
         if self.editorTab == "p":
             '''About Project Tab!'''
             placeOver(img, displayText("Project:", "m"),                                                            (15,EDITOR_SPACING(1))) 

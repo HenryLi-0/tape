@@ -56,6 +56,7 @@ class Check:
         Check.generateThemedOutline(D_FRAME_ANIMATION_PATH, "u_frame_animation", bgColor="#000000")
         Check.generateThemedOutline(D_FRAME_TIMELINE_PATH, "u_frame_timeline")
         Check.generateThemedOutline(D_FRAME_EDITOR_PATH, "u_frame_editor")
+        Check.generateThemedOutline(D_FRAME_EDITOR_VISUALS_PATH, "u_frame_editor_visuals")
         Check.generateThemedOutline(D_FRAME_OPTIONS_PATH, "u_frame_options")
         Check.generateThemedOutline(D_FRAME_OPTIONS_BUTTON_PATH, "u_frame_options_button_on", frameColor=SELECTED_COLOR)
         Check.generateThemedOutline(D_FRAME_OPTIONS_BUTTON_PATH, "u_frame_options_button_off")
