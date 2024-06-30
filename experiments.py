@@ -42,5 +42,18 @@ cache = [ # cache of image uuids!
     "some uuid"
     ]
 '''
-from subsystems.pathing import smoothChangeAt
-print(smoothChangeAt(25,50,10))
+
+from subsystems.sprite import findStateThroughSingle, iterateThoughSingle
+states = [
+    0, 2, "L",
+    1, 1, "L",
+    3, 3, "S",
+    8, 0, "S",
+    9, 5, "L",
+    15, 10, None
+]
+
+# print(findStateThroughSingle(states, 0.9))
+
+# print([(i/10, findStateThroughSingle(states, i/10)) for i in range(100)])
+print(iterateThoughSingle(states))

@@ -11,6 +11,7 @@ Here are the parts:
 
 '''Calculation'''
 PATH_FLOAT_ACCURACY = 3 #This is how many digits after the decimal point the intersection calculator will save for
+RENDER_FPS = 30 #This is the rendering FPS, also used for steps per second in path calculations
 
 '''Visuals'''
 INTERFACE_FPS = 60 # The interface window will be called every 1/INTERFACE_FPS seconds
