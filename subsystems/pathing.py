@@ -79,17 +79,31 @@ def bezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
         totalPath = []
         coords.insert(1,averagep(coords[0],coords[1]))
         bezier = bezierCurve(coords[0],coords[1],coords[2])
-        for t in stepsI:
-            totalPath.append(roundp(bezier(t/steps)))
+        for t in stepsI: totalPath.append(roundp(bezier(t/steps)))
         for i in coordsI:
             coords.insert(i*2+1, subtractP(multiplyP(coords[i*2],2),coords[i*2-1]))
             bezier = bezierCurve(coords[i*2],coords[i*2+1],coords[i*2+2])
-            for t in stepsI:
-                totalPath.append(roundp(bezier(t/steps)))
+            for t in stepsI: totalPath.append(roundp(bezier(t/steps)))
         totalPath.append(coords[-1])
         return totalPath
-    else:
-        return straightPathCoords(coords,steps)
+    else: return straightPathCoords(coords,steps)
+
+def timelyBezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: tuple|list):
+    '''Generates a bezier path of coordinates based on a given list of coords and time, with a changing number of steps number of points between each given coordinate based on the given steps list'''
+    if len(coords) == 0: return []
+    if len(coords) >= 3:
+        coordsI = range(1,len(coords)-1)
+        totalPath = []
+        coords.insert(1,averagep(coords[0],coords[1]))
+        bezier = bezierCurve(coords[0],coords[1],coords[2])
+        for t in range(0, steps[0]): totalPath.append(roundp(bezier(t/steps[0])))
+        for i in coordsI:
+            coords.insert(i*2+1, subtractP(multiplyP(coords[i*2],2),coords[i*2-1]))
+            bezier = bezierCurve(coords[i*2],coords[i*2+1],coords[i*2+2])
+            for t in range(0, steps[i]): totalPath.append(roundp(bezier(t/steps[i])))
+        totalPath.append(coords[-1])
+        return totalPath
+    else: return straightPathCoords(coords,steps)
 
 def straightPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
     '''Generates a straight path of coordinates based on a given list of coords, with steps number of points between each given coordinate'''

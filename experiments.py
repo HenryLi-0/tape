@@ -43,6 +43,7 @@ cache = [ # cache of image uuids!
     ]
 '''
 
+
 from subsystems.sprite import iterateThroughPath
 states = [
     0, (0,0), "L",
