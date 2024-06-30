@@ -17,6 +17,9 @@ class SingleSprite:
     b (->)      - brightness
     w (weird)   - pixelation
 
+    Full State Data:
+    [(x,y,dir), s, h, t, b, w]
+
     compact storage example:
     [
         1, [state], connection to next,
@@ -50,21 +53,17 @@ class SingleSprite:
     def generateSequence(self, key):
         if key == "c":
             pass # CODE
-        if key == "r":
-            pass # requires smooth glide function
         if key == "p":
             pass # requires c and r to be complete
-        if key in "shtbw":
-            pass # requires smooth glide function
+        if key in "rshtbw" and len(key) == 1:
+            iterateThoughSingle(self.data[key])
     def getStateAt(self, key, time):
         if key == "c":
             pass # CODE
-        if key == "r":
-            pass # CODE
         if key == "p":
             pass # CODE
-        if key in "shtbw":
-            pass # CODE
+        if key in "rshtbw" and len(key) == 1: #
+            findStateThroughSingle(self.data[key], time)
 
 def iterateThoughSingle(compact):
     '''Returns a path of single sequences with straight or smooth connections given the compact path'''
@@ -89,3 +88,4 @@ def findStateThroughSingle(compact, time):
     if compact[low*3+2] == "L": return straightChangeAt(compact[low*3+1], compact[(low+1)*3+1], (compact[(low+1)*3]-compact[low*3])*RENDER_FPS)[index]
     elif compact[low*3+2] == "S": return smoothChangeAt(compact[low*3+1], compact[(low+1)*3+1], (compact[(low+1)*3]-compact[low*3])*RENDER_FPS)[index]
     else: return compact[low*3+1]
+
