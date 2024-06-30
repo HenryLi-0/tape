@@ -2,7 +2,7 @@
 
 from settings import *
 import numpy, math
-from subsystems.pathing import smoothChangeAt, straightChangeAt, roundf
+from subsystems.pathing import smoothChangeAt, straightChangeAt, roundf, bezierPathCoords, straightPathCoords
 from settings import PATH_FLOAT_ACCURACY, RENDER_FPS
 
 class SingleSprite:
@@ -62,7 +62,7 @@ class SingleSprite:
             pass # CODE
         if key == "p":
             pass # CODE
-        if key in "rshtbw" and len(key) == 1: #
+        if key in "rshtbw" and len(key) == 1:
             findStateThroughSingle(self.data[key], time)
 
 def iterateThoughSingle(compact):
@@ -88,4 +88,29 @@ def findStateThroughSingle(compact, time):
     if compact[low*3+2] == "L": return straightChangeAt(compact[low*3+1], compact[(low+1)*3+1], (compact[(low+1)*3]-compact[low*3])*RENDER_FPS)[index]
     elif compact[low*3+2] == "S": return smoothChangeAt(compact[low*3+1], compact[(low+1)*3+1], (compact[(low+1)*3]-compact[low*3])*RENDER_FPS)[index]
     else: return compact[low*3+1]
+
+def iterateThroughPath(compact):
+    path = []
+    timeStamps = [compact[i*3] for i in range(math.floor(len(compact)/3))]
+    connections = [compact[i*3+2] for i in range(math.floor(len(compact)/3))]
+    i = 0
+    while i < len(timeStamps)-1:
+        if connections[i] == "L": 
+            add = straightPathCoords([compact[i*3+1], compact[(i+1)*3+1]], (compact[(i+1)*3]-compact[i*3])*RENDER_FPS)
+        if connections[i] == "S":
+            temp = [i]
+            while connections[i+1] == "S":
+                temp.append(i+1)
+                i+=1
+            temp.append(i+1)
+            add = bezierPathCoords([compact[ie*3+1] for ie in temp], (timeStamps[temp[-1]]-timeStamps[temp[0]])*RENDER_FPS)
+        for coord in add: path.append((len(path)/RENDER_FPS, coord[0], coord[1]))
+        i+=1
+    return path
+
+        
+
+
+def findStateThroughPath(compact, time):
+    timeStamps = [compact[i*3] for i in range(math.floor(len(compact)/3))]
 

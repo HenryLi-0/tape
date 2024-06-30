@@ -89,7 +89,7 @@ def bezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
         totalPath.append(coords[-1])
         return totalPath
     else:
-        straightPathCoords(coords,steps)
+        return straightPathCoords(coords,steps)
 
 def straightPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
     '''Generates a straight path of coordinates based on a given list of coords, with steps number of points between each given coordinate'''

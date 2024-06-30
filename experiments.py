@@ -43,17 +43,16 @@ cache = [ # cache of image uuids!
     ]
 '''
 
-from subsystems.sprite import findStateThroughSingle, iterateThoughSingle
+from subsystems.sprite import iterateThroughPath
 states = [
-    0, 2, "L",
-    1, 1, "L",
-    3, 3, "S",
-    8, 0, "S",
-    9, 5, "L",
-    15, 10, None
+    0, (0,0), "L",
+    1, (3,3), "S",
+    3, (5,8), "S",
+    8, (10,5), "S",
+    9, (11,11), None
 ]
 
 # print(findStateThroughSingle(states, 0.9))
 
 # print([(i/10, findStateThroughSingle(states, i/10)) for i in range(100)])
-print(iterateThoughSingle(states))
+print(iterateThroughPath(states))
