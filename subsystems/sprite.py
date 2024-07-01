@@ -3,6 +3,7 @@
 from settings import *
 import numpy, math
 from subsystems.pathing import smoothChangeAt, straightChangeAt, roundf, timelyBezierPathCoords, selectiveBezierPathCoords, straightPathCoords, mergeCoordRotationPath, betweenP
+from subsystems.render import setSize, setColorEffect, setTransparency, setBrightness, setPixelation
 from settings import PATH_FLOAT_ACCURACY, RENDER_FPS
 
 class SingleSprite:
@@ -171,3 +172,14 @@ def findStateThroughPath(compact, time):
 def protectedBoundary(sequence, i):
     if len(sequence) == 0: return 0
     return sequence[max(0, min(i, len(sequence)-1))]
+
+def readImgSingleFullState(state, images):
+    '''Returns an array of the image of the sprite at a given full state in [(x,y,dir), a, s, h, t, b, w] form, given the full state and the set of images'''
+    try: img = images[state[1]].copy()
+    except: img = images[0].copy()
+    img = setSize(img, state[2])
+    img = setColorEffect(img, state[3])
+    img = setTransparency(img, state[4])
+    img = setBrightness(img, state[5])
+    img = setPixelation(img, state[6])
+    return img

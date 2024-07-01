@@ -1,7 +1,7 @@
 '''This file contains functions for rendering related purposes'''
 
-from PIL import ImageTk, Image
-import numpy
+from PIL import ImageTk, Image, ImageEnhance
+import numpy, math
 from settings import *
 
 #Convert
@@ -37,10 +37,10 @@ def placeOver(img1:numpy.ndarray, img2:numpy.ndarray, position:list|tuple, cente
     if position[1]>img1H or -position[1]>img2H: return False
     if position[0]>img1W or -position[0]>img2W: return False
     
-    startX = max(position[0], 0)
-    startY = max(position[1], 0)
-    endX = min(position[0]+img2W, img1W)
-    endY = min(position[1]+img2H, img1H)
+    startX = math.floor(max(position[0], 0))
+    startY = math.floor(max(position[1], 0))
+    endX = math.floor(min(position[0]+img2W, img1W))
+    endY = math.floor(min(position[1]+img2H, img1H))
 
     img2 = img2[round(max(-position[1], 0)):round((max(-position[1], 0)+(endY-startY))), round(max(-position[0], 0)):round((max(-position[0], 0)+(endX-startX)))]
 
@@ -71,10 +71,15 @@ def rotateDeg(img: numpy.ndarray, degrees:float):
     return numpy.array(Image.fromarray(img).rotate(degrees,expand=True))
 
 def setSize(img: numpy.ndarray, size):
-    pass
+    '''Returns a copy of the given image scaled by size, given the size change (given with 100 as normal, >100 scale up, <100 scale down)'''
+    x, y, temp = img.shape
+    return numpy.array(Image.fromarray(img).resize((round(x*size/100),round(y*size/100))))
 
 def setColorEffect(img: numpy.ndarray, colorEffect):
-    pass
+    '''Returns a copy of the given image with a color shift, given the shift value (given 0-100)'''
+    imgc = img.copy()
+    imgc[:, :, 0:2] += numpy.uint8(colorEffect/100*255)
+    return imgc
 
 def setTransparency(img: numpy.ndarray, transparency):
     '''Returns a copy of the given image with transparency multiplied, given the transparency value (given 0-100, 0 = clear, 100 = normal)'''
@@ -84,7 +89,14 @@ def setTransparency(img: numpy.ndarray, transparency):
     return imgc
 
 def setBrightness(img: numpy.ndarray, brightness):
-    pass
+    '''Returns a copy of the given image with brightness changed, given the brightness value (>0 = brighter, <0 = darker)'''
+    imgc = ImageEnhance.Brightness(Image.fromarray(img))
+    imgc = imgc.enhance((brightness+100)/100)
+    return numpy.array(imgc)
 
 def setPixelation(img: numpy.ndarray, pixelation):
-    pass
+    '''Returns a copy of the given image pixelated, given the pixelation value (given 0-100, 0 = normal, 100 = very pixelated)'''
+    if pixelation <= 1: return img
+    x, y, temp = img.shape
+    imgc = numpy.array(Image.fromarray(img).resize((round(x/pixelation*(x/100)),round(y/pixelation*(x/100)))))
+    return numpy.array(Image.fromarray(imgc).resize((round(x),round(y))))
