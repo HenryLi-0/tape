@@ -146,7 +146,7 @@ def iterateThroughPath(compact):
                 i+=1
             temp.append(i+1)
             add = timelyBezierPathCoords([compact[ie*3+1] for ie in temp], [round((timeStamps[temp[ie]]-timeStamps[temp[ie-1]])*RENDER_FPS) for ie in range(1,len(temp))])
-        for coord in add: path.append((roundf(len(path)/RENDER_FPS, PATH_FLOAT_ACCURACY), coord[0], coord[1]))
+        for coord in add: path.append((coord[0], coord[1]))
         i+=1
     return path
 
