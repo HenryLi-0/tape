@@ -53,21 +53,20 @@ class SingleSprite:
         }
     def setData(self, key, data):
         self.data[key] = data
-    def getData(self):
-        return self.data
+    def getData(self, key):
+        return self.data[key]
     def generateSequence(self, key):
-        if key == "c": iterateThroughPath(self.data["c"])
-        if key == "p":
-            return mergeCoordRotationPath(iterateThroughPath(self.data["c"]), iterateThoughSingle(self.data["r"]))
-        if key == "a": [max(0, min(len(self.images)-1, round(item))) for item in iterateThoughSingle(self.data["a"])]
-        if key in "arshtbw" and len(key) == 1: iterateThoughSingle(self.data[key])
+        if key == "c": return iterateThroughPath(self.data["c"])
+        if key == "p": return mergeCoordRotationPath(iterateThroughPath(self.data["c"]), iterateThoughSingle(self.data["r"]))
+        if key == "a": return [max(0, min(len(self.images)-1, round(item))) for item in iterateThoughSingle(self.data["a"])]
+        if key in "rshtbw" and len(key) == 1: return iterateThoughSingle(self.data[key])
     def getStateAt(self, key, time):
-        if key == "c": findStateThroughPath(self.data["c"], time)
+        if key == "c": return findStateThroughPath(self.data["c"], time)
         if key == "p":
-            cx, cy = findStateThroughPath(self.data["c"], time)
+            cx, cy = findStateThroughPath(self.data["c"], time) 
             return (cx, cy, findStateThroughSingle(self.data["r"], time))
-        if key == "a": max(0, min(len(self.images)-1, round(findStateThroughSingle(self.data["a"],time))))
-        if key in "rshtbw" and len(key) == 1: findStateThroughSingle(self.data[key], time)
+        if key == "a": return max(0, min(len(self.images)-1, round(findStateThroughSingle(self.data["a"],time))))
+        if key in "rshtbw" and len(key) == 1: return findStateThroughSingle(self.data[key], time)
     def generateFullSequence(self):
         p = self.generateSequence("p")
         a = self.generateSequence("a")
@@ -170,4 +169,5 @@ def findStateThroughPath(compact, time):
         return segment[round((time-compact[(low)*3])*RENDER_FPS)]
 
 def protectedBoundary(sequence, i):
+    if len(sequence) == 0: return 0
     return sequence[max(0, min(i, len(sequence)-1))]

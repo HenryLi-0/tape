@@ -80,3 +80,24 @@ for i in range(81):
     thing.append(findStateThroughPath(states, i/10))
 print(thing)
 '''
+
+'''
+from subsystems.sprite import SingleSprite
+thing = SingleSprite("Test Sprite")
+
+thing.setData("c", [0,(0,0),"L",5,(1,1),"S",7,(10,10),"S",10,(10,0),None])
+thing.setData("r", [0, 0, "S", 5, 90, "L", 10, 0, None])
+thing.setData("a", [0, 0, "L", 5, 1, None])
+thing.setData("s", [0, 100, "L", 15, 50, None])
+thing.setData("h", [0, 0, None])
+thing.setData("t", [0, 0, None])
+thing.setData("b", [0, 0, None])
+thing.setData("w", [0, 0, None])
+
+print(thing.generateFullSequence())
+'''
+
+from subsystems.render import setTransparency
+from settings import PLACEHOLDER_IMAGE_2_ARRAY
+from PIL import Image
+Image.fromarray(setTransparency(PLACEHOLDER_IMAGE_2_ARRAY, 92)).show()

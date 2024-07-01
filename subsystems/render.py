@@ -28,17 +28,14 @@ def merge(img1:Image.Image|numpy.ndarray, img2:Image.Image|numpy.ndarray):
 
 def placeOver(img1:numpy.ndarray, img2:numpy.ndarray, position:list|tuple, center = False):
     '''Modifies image 1 (background) as an array of image 2 (overlay) placed on top of image 1 (background), given as numpy arrays'''
-    if center:
-        position = (round(position[0]-img2.shape[1]*0.5),round(position[1]-img2.shape[0]*0.5))
+    if center: position = (round(position[0]-img2.shape[1]*0.5),round(position[1]-img2.shape[0]*0.5))
     img1H = img1.shape[0] 
     img1W = img1.shape[1]
     img2H = img2.shape[0] 
     img2W = img2.shape[1]
 
-    if position[1]>img1H or -position[1]>img2H:
-        return False
-    if position[0]>img1W or -position[0]>img2W:
-        return False
+    if position[1]>img1H or -position[1]>img2H: return False
+    if position[0]>img1W or -position[0]>img2W: return False
     
     startX = max(position[0], 0)
     startY = max(position[1], 0)
@@ -57,8 +54,7 @@ def placeOver(img1:numpy.ndarray, img2:numpy.ndarray, position:list|tuple, cente
 
 def dPlaceOver(img1:numpy.ndarray, img2: numpy.ndarray, position:list|tuple):
     '''Dangerously returns an overlayed version of image 1 (background) as an array of image 2 (overlay) placed on top of image 1 (background), given as numpy arrays, by directly adding it'''
-    if img1.shape == img2.shape:
-        img1 += img2
+    if img1.shape == img2.shape: img1 += img2
     else:
         try:
             img2 = numpy.hstack([numpy.zeros((img2.shape[0],position[0],4),numpy.uint8),img2])
@@ -70,6 +66,25 @@ def dPlaceOver(img1:numpy.ndarray, img2: numpy.ndarray, position:list|tuple):
             '''So, you really messed up... told you it was dangerous...'''
             pass
 
-def rotateDeg(img1: numpy.ndarray, degrees:float):
+def rotateDeg(img: numpy.ndarray, degrees:float):
     '''Returns an array of a rotated version of the given image by (degrees) degrees, using the 0 up CCW rotation system'''
-    return numpy.array(Image.fromarray(img1).rotate(degrees,expand=True))
+    return numpy.array(Image.fromarray(img).rotate(degrees,expand=True))
+
+def setSize(img: numpy.ndarray, size):
+    pass
+
+def setColorEffect(img: numpy.ndarray, colorEffect):
+    pass
+
+def setTransparency(img: numpy.ndarray, transparency):
+    '''Returns a copy of the given image with transparency multiplied, given the transparency value (given 0-100, 0 = clear, 100 = normal)'''
+    imgc = img.copy()
+    imgMask = imgc[:, :, 3] * (transparency/100)
+    imgc[:, :, 3] = imgMask
+    return imgc
+
+def setBrightness(img: numpy.ndarray, brightness):
+    pass
+
+def setPixelation(img: numpy.ndarray, pixelation):
+    pass
