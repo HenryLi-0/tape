@@ -2,7 +2,7 @@
 
 from settings import *
 import numpy, math
-from subsystems.pathing import smoothChangeAt, straightChangeAt, roundf, timelyBezierPathCoords, straightPathCoords, betweenP
+from subsystems.pathing import smoothChangeAt, straightChangeAt, roundf, timelyBezierPathCoords, selectiveBezierPathCoords, straightPathCoords, betweenP
 from settings import PATH_FLOAT_ACCURACY, RENDER_FPS
 
 class SingleSprite:
@@ -111,5 +111,14 @@ def findStateThroughPath(compact, time):
     for i in range(len(timeStamps)-1):
         if timeStamps[i]<=time: low = i
         else: break
-    if connections[low] == "L": return betweenP(compact[low*3+1], compact[(low+1)*3+1])(0)
-    '''FINSIH THIS'''
+    if connections[low] == "L":
+        cx, cy = betweenP(compact[low*3+1], compact[(low+1)*3+1])(time-compact[(low)*3])
+        return (roundf(cx, PATH_FLOAT_ACCURACY), roundf(cy, PATH_FLOAT_ACCURACY))
+    if connections[low] == "S":
+        bottom, top = low, low
+        while connections[bottom-1] == "S":
+            bottom += -1
+        while connections[top+1] == "S":
+            top += 1
+        segment = selectiveBezierPathCoords([compact[point*3+1] for point in range(bottom, top+2)], (compact[(low+1)*3]-compact[low*3])*RENDER_FPS, low)
+        return segment[round((time-compact[(low)*3])*RENDER_FPS)]

@@ -44,6 +44,7 @@ cache = [ # cache of image uuids!
 '''
 
 
+'''
 from subsystems.sprite import iterateThroughPath
 states = [
     0, (0,0), "L",
@@ -57,3 +58,25 @@ states = [
 
 # print([(i/10, findStateThroughSingle(states, i/10)) for i in range(100)])
 print(iterateThroughPath(states))
+'''
+
+from subsystems.pathing import bezierPathCoords, selectiveBezierPathCoords
+steps = 10
+print(bezierPathCoords([(0,0),(5,5),(9,2),(5,6),(7,8)], steps))
+
+from subsystems.sprite import findStateThroughPath
+
+states = [
+    0, (0,0), "S",
+    1, (5,5), "S",
+    2, (9,2), "L",
+    3, (5,6), "L",
+    8, (7,8), None
+]
+
+thing = []
+for i in range(81):
+    thing.append(findStateThroughPath(states, i/10))
+print(thing)
+# print(bezierPathCoords(path, steps))
+# print(selectiveBezierPathCoords(path, steps, 5))

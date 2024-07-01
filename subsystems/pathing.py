@@ -105,6 +105,26 @@ def timelyBezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: tu
         return totalPath
     else: return straightPathCoords(coords,steps)
 
+def selectiveBezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int, lower: tuple|list):
+    '''Generates a bezier path of coordinates between a given low point and the next point, based on a given list of coords and the index of the lower point, with steps number of points between the given coordinates'''
+    if len(coords) == 0: return []
+    if len(coords) >= 3:
+        stepsI = range(0, steps)
+        coordsI = range(1,len(coords)-1)
+        totalPath = []
+        coords.insert(1,averagep(coords[0],coords[1]))
+        bezier = bezierCurve(coords[0],coords[1],coords[2])
+        if lower == 0:
+            for t in stepsI: totalPath.append(roundp(bezier(t/steps)))
+        for i in coordsI:
+            coords.insert(i*2+1, subtractP(multiplyP(coords[i*2],2),coords[i*2-1]))
+            if lower == i:
+                bezier = bezierCurve(coords[i*2],coords[i*2+1],coords[i*2+2])
+                for t in stepsI: totalPath.append(roundp(bezier(t/steps)))
+        totalPath.append(coords[-1])
+        return totalPath
+    else: return straightPathCoords(coords,steps)
+
 def straightPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
     '''Generates a straight path of coordinates based on a given list of coords, with steps number of points between each given coordinate'''
     if len(coords) == 0: return []
@@ -112,8 +132,7 @@ def straightPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
     totalPath = []
     for i in range(len(coords)-1):
         translation = betweenP(coords[i], coords[i+1])
-        for t in stepsI:
-            totalPath.append(roundp(translation(t/steps)))
+        for t in stepsI: totalPath.append(roundp(translation(t/steps)))
     totalPath.append(coords[-1])
     return totalPath
 
@@ -123,8 +142,7 @@ def pointNextCoordRotationPath(coords: tuple[list|tuple]|list[list|tuple]):
     '''Generates a rotation path, given a list of coords, where it points at the next coordinate'''
     if len(coords) == 0: return []
     rotationPath = []
-    for i in range(len(coords)-2):
-        rotationPath.append(pointAt(coords[i], coords[i+1]))
+    for i in range(len(coords)-2): rotationPath.append(pointAt(coords[i], coords[i+1]))
     rotationPath.append(rotationPath[-1])
     return rotationPath
 
@@ -132,16 +150,14 @@ def mergeCoordRotationPath(coords: tuple|list, rots: tuple|list):
     '''Merges a coordinate and rotation path and returns a merged path list of (x,y,dir)'''
     if len(coords) == 0: return []
     mergedPath = []
-    for i in range(max(len(coords), len(rots))):
-        mergedPath.append((coords[min(i,len(coords)-1)][0], coords[min(i,len(coords)-1)][1], rots[min(i,len(rots)-1)]))
+    for i in range(max(len(coords), len(rots))): mergedPath.append((coords[min(i,len(coords)-1)][0], coords[min(i,len(coords)-1)][1], rots[min(i,len(rots)-1)]))
     return mergedPath
 
 # Changes Sequences
 
 def smoothChangeAt(a, b, steps):
     path = []
-    for step in range(steps):
-        path.append(a+(b-a)*math.log(step+1, steps+1))
+    for step in range(steps): path.append(a+(b-a)*math.log(step+1, steps+1))
     return path
 
 def straightChangeAt(a, b, steps):
