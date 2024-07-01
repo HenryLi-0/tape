@@ -60,6 +60,7 @@ states = [
 print(iterateThroughPath(states))
 '''
 
+'''
 from subsystems.pathing import bezierPathCoords, selectiveBezierPathCoords
 steps = 10
 print(bezierPathCoords([(0,0),(5,5),(9,2),(5,6),(7,8)], steps))
@@ -78,5 +79,4 @@ thing = []
 for i in range(81):
     thing.append(findStateThroughPath(states, i/10))
 print(thing)
-# print(bezierPathCoords(path, steps))
-# print(selectiveBezierPathCoords(path, steps, 5))
+'''

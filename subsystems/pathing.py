@@ -74,17 +74,18 @@ def bezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
     '''Generates a bezier path of coordinates based on a given list of coords, with steps number of points between each given coordinate'''
     if len(coords) == 0: return []
     if len(coords) >= 3:
+        coordsc = coords.copy()
         stepsI = range(0, steps)
-        coordsI = range(1,len(coords)-1)
+        coordsI = range(1,len(coordsc)-1)
         totalPath = []
-        coords.insert(1,averagep(coords[0],coords[1]))
-        bezier = bezierCurve(coords[0],coords[1],coords[2])
+        coordsc.insert(1,averagep(coordsc[0],coordsc[1]))
+        bezier = bezierCurve(coordsc[0],coordsc[1],coordsc[2])
         for t in stepsI: totalPath.append(roundp(bezier(t/steps)))
         for i in coordsI:
-            coords.insert(i*2+1, subtractP(multiplyP(coords[i*2],2),coords[i*2-1]))
-            bezier = bezierCurve(coords[i*2],coords[i*2+1],coords[i*2+2])
+            coordsc.insert(i*2+1, subtractP(multiplyP(coordsc[i*2],2),coordsc[i*2-1]))
+            bezier = bezierCurve(coordsc[i*2],coordsc[i*2+1],coordsc[i*2+2])
             for t in stepsI: totalPath.append(roundp(bezier(t/steps)))
-        totalPath.append(coords[-1])
+        totalPath.append(coordsc[-1])
         return totalPath
     else: return straightPathCoords(coords,steps)
 
@@ -92,16 +93,17 @@ def timelyBezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: tu
     '''Generates a bezier path of coordinates based on a given list of coords and time, with a changing number of steps number of points between each given coordinate based on the given steps list'''
     if len(coords) == 0: return []
     if len(coords) >= 3:
-        coordsI = range(1,len(coords)-1)
+        coordsc = coords.copy()
+        coordsI = range(1,len(coordsc)-1)
         totalPath = []
-        coords.insert(1,averagep(coords[0],coords[1]))
-        bezier = bezierCurve(coords[0],coords[1],coords[2])
+        coordsc.insert(1,averagep(coordsc[0],coordsc[1]))
+        bezier = bezierCurve(coordsc[0],coordsc[1],coordsc[2])
         for t in range(0, steps[0]): totalPath.append(roundp(bezier(t/steps[0])))
         for i in coordsI:
-            coords.insert(i*2+1, subtractP(multiplyP(coords[i*2],2),coords[i*2-1]))
-            bezier = bezierCurve(coords[i*2],coords[i*2+1],coords[i*2+2])
+            coordsc.insert(i*2+1, subtractP(multiplyP(coordsc[i*2],2),coordsc[i*2-1]))
+            bezier = bezierCurve(coordsc[i*2],coordsc[i*2+1],coordsc[i*2+2])
             for t in range(0, steps[i]): totalPath.append(roundp(bezier(t/steps[i])))
-        totalPath.append(coords[-1])
+        totalPath.append(coordsc[-1])
         return totalPath
     else: return straightPathCoords(coords,steps)
 
@@ -109,19 +111,20 @@ def selectiveBezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps:
     '''Generates a bezier path of coordinates between a given low point and the next point, based on a given list of coords and the index of the lower point, with steps number of points between the given coordinates'''
     if len(coords) == 0: return []
     if len(coords) >= 3:
+        coordsc = coords.copy()
         stepsI = range(0, steps)
-        coordsI = range(1,len(coords)-1)
+        coordsI = range(1,len(coordsc)-1)
         totalPath = []
-        coords.insert(1,averagep(coords[0],coords[1]))
-        bezier = bezierCurve(coords[0],coords[1],coords[2])
+        coordsc.insert(1,averagep(coordsc[0],coordsc[1]))
+        bezier = bezierCurve(coordsc[0],coordsc[1],coordsc[2])
         if lower == 0:
             for t in stepsI: totalPath.append(roundp(bezier(t/steps)))
         for i in coordsI:
-            coords.insert(i*2+1, subtractP(multiplyP(coords[i*2],2),coords[i*2-1]))
+            coordsc.insert(i*2+1, subtractP(multiplyP(coordsc[i*2],2),coordsc[i*2-1]))
             if lower == i:
-                bezier = bezierCurve(coords[i*2],coords[i*2+1],coords[i*2+2])
+                bezier = bezierCurve(coordsc[i*2],coordsc[i*2+1],coordsc[i*2+2])
                 for t in stepsI: totalPath.append(roundp(bezier(t/steps)))
-        totalPath.append(coords[-1])
+        totalPath.append(coordsc[-1])
         return totalPath
     else: return straightPathCoords(coords,steps)
 

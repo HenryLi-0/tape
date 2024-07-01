@@ -2,7 +2,7 @@
 
 from settings import *
 import numpy, math
-from subsystems.pathing import smoothChangeAt, straightChangeAt, roundf, timelyBezierPathCoords, selectiveBezierPathCoords, straightPathCoords, betweenP
+from subsystems.pathing import smoothChangeAt, straightChangeAt, roundf, timelyBezierPathCoords, selectiveBezierPathCoords, straightPathCoords, mergeCoordRotationPath, betweenP
 from settings import PATH_FLOAT_ACCURACY, RENDER_FPS
 
 class SingleSprite:
@@ -10,15 +10,18 @@ class SingleSprite:
     Sprite Data Storage (all are type list):
     c (coord)   - coords compact path         (x,y)
     r (rots)    - rotations compact path      (dir)
-    p (path)    - full path compact path      (x,y,dir)
+    a (->)      - apperance (image)
     s (->)      - size path
     h (hue)     - color effect
     t (->)      - transparency
     b (->)      - brightness
     w (weird)   - pixelation
 
+    not stored:
+    p (path)    - full path compact path      (x,y,dir)
+
     Full State Data:
-    [(x,y,dir), s, h, t, b, w]
+    [(x,y,dir), a, s, h, t, b, w]
 
     compact storage example:
     [
@@ -33,13 +36,15 @@ class SingleSprite:
     '''
     def __init__(self,name, img = PLACEHOLDER_IMAGE_2_ARRAY):
         self.name = name
-        self.img = numpy.array(img)
+        self.images = [
+            numpy.array(img)
+        ]
         self.data = {
             "name":name, 
-            "img":self.img, 
+            "images":self.images, 
             "c":[], 
-            "r":[], 
-            "p":[], 
+            "r":[],
+            "a":[], 
             "s":[], 
             "h":[],
             "t":[],
@@ -53,13 +58,54 @@ class SingleSprite:
     def generateSequence(self, key):
         if key == "c": iterateThroughPath(self.data["c"])
         if key == "p":
-            pass # requires c and r to be complete
-        if key in "rshtbw" and len(key) == 1: iterateThoughSingle(self.data[key])
+            return mergeCoordRotationPath(iterateThroughPath(self.data["c"]), iterateThoughSingle(self.data["r"]))
+        if key == "a": [max(0, min(len(self.images)-1, round(item))) for item in iterateThoughSingle(self.data["a"])]
+        if key in "arshtbw" and len(key) == 1: iterateThoughSingle(self.data[key])
     def getStateAt(self, key, time):
         if key == "c": findStateThroughPath(self.data["c"], time)
         if key == "p":
-            pass # CODE
+            cx, cy = findStateThroughPath(self.data["c"], time)
+            return (cx, cy, findStateThroughSingle(self.data["r"], time))
+        if key == "a": max(0, min(len(self.images)-1, round(findStateThroughSingle(self.data["a"],time))))
         if key in "rshtbw" and len(key) == 1: findStateThroughSingle(self.data[key], time)
+    def generateFullSequence(self):
+        p = self.generateSequence("p")
+        a = self.generateSequence("a")
+        s = self.generateSequence("s")
+        h = self.generateSequence("h")
+        t = self.generateSequence("t")
+        b = self.generateSequence("b")
+        w = self.generateSequence("w")
+        return [
+            (
+                protectedBoundary(p,i),
+                protectedBoundary(a,i),
+                protectedBoundary(s,i),
+                protectedBoundary(h,i),
+                protectedBoundary(t,i),
+                protectedBoundary(b,i),
+                protectedBoundary(w,i)
+            ) for i in range(max(len(p), len(a), len(s), len(h), len(t), len(b), len(w))-1)
+        ]
+    def getFullStateAt(self, time):
+        return [
+            self.getStateAt("p", time),
+            self.getStateAt("a", time),
+            self.getStateAt("s", time),
+            self.getStateAt("h", time),
+            self.getStateAt("t", time),
+            self.getStateAt("b", time),
+            self.getStateAt("w", time)
+        ]
+    def addImage(self, img):
+        self.images.append(numpy.array(img))
+        self.data["images"] = self.images
+    def removeImage(self, img):
+        self.images.pop(self.images.index(numpy.array(img)))
+        self.data["images"] = self.images
+
+
+# Compact Storage Reading
 
 def iterateThoughSingle(compact):
     '''Returns a path of single sequences with straight or smooth connections given the compact path'''
@@ -122,3 +168,6 @@ def findStateThroughPath(compact, time):
             top += 1
         segment = selectiveBezierPathCoords([compact[point*3+1] for point in range(bottom, top+2)], (compact[(low+1)*3]-compact[low*3])*RENDER_FPS, low)
         return segment[round((time-compact[(low)*3])*RENDER_FPS)]
+
+def protectedBoundary(sequence, i):
+    return sequence[max(0, min(i, len(sequence)-1))]
