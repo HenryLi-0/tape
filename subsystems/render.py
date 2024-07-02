@@ -73,7 +73,7 @@ def rotateDeg(img: numpy.ndarray, degrees:float):
 def setSize(img: numpy.ndarray, size):
     '''Returns a copy of the given image scaled by size, given the size change (given with 100 as normal, >100 scale up, <100 scale down)'''
     x, y, temp = img.shape
-    return numpy.array(Image.fromarray(img).resize((round(x*size/100),round(y*size/100))))
+    return numpy.array(Image.fromarray(img).resize((max(1, (round(x*size/100))),max(1, round(y*size/100)))))
 
 def setColorEffect(img: numpy.ndarray, colorEffect):
     '''Returns a copy of the given image with a color shift, given the shift value (given 0-100)'''
@@ -98,5 +98,5 @@ def setPixelation(img: numpy.ndarray, pixelation):
     '''Returns a copy of the given image pixelated, given the pixelation value (given 0-100, 0 = normal, 100 = very pixelated)'''
     if pixelation <= 1: return img
     x, y, temp = img.shape
-    imgc = numpy.array(Image.fromarray(img).resize((round(x/pixelation*(x/100)),round(y/pixelation*(x/100)))))
+    imgc = numpy.array(Image.fromarray(img).resize((max(1, (round(x/pixelation*(x/100)))),max(1, round(y/pixelation*(x/100))))))
     return numpy.array(Image.fromarray(imgc).resize((round(x),round(y))))

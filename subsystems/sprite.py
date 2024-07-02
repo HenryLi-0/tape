@@ -138,7 +138,7 @@ def iterateThroughPath(compact):
     connections = [compact[i*3+2] for i in range(math.floor(len(compact)/3))]
     i = 0
     while i < len(timeStamps)-1:
-        if connections[i] == "L": add = straightPathCoords([compact[i*3+1], compact[(i+1)*3+1]], (compact[(i+1)*3]-compact[i*3])*RENDER_FPS)
+        if connections[i] == "L": add = straightPathCoords([compact[i*3+1], compact[(i+1)*3+1]], round((compact[(i+1)*3]-compact[i*3])*RENDER_FPS))
         if connections[i] == "S":
             temp = [i]
             while connections[i+1] == "S":

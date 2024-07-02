@@ -160,8 +160,8 @@ def mergeCoordRotationPath(coords: tuple|list, rots: tuple|list):
 
 def smoothChangeAt(a, b, steps):
     path = []
-    for step in range(steps): path.append(a+(b-a)*math.log(step+1, steps+1))
+    for step in range(round(steps)): path.append(a+(b-a)*math.log(step+1, steps+1))
     return path
 
 def straightChangeAt(a, b, steps):
-    return [a + (b-a)*(i/steps) for i in range(steps)]
+    return [a + (b-a)*(i/steps) for i in range(round(steps))]
