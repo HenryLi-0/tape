@@ -71,6 +71,8 @@ D_FRAME_ANIMATION_PATH = os.path.join("resources", "themed", "frame_animation.pn
 D_FRAME_TIMELINE_PATH = os.path.join("resources", "themed", "frame_timeline.png")
 D_FRAME_EDITOR_PATH = os.path.join("resources", "themed", "frame_editor.png")
 D_FRAME_EDITOR_VISUALS_PATH = os.path.join("resources", "themed", "frame_editor_visuals.png")
+D_FRAME_EDITOR_VISUALS_GRAPH_PATH = os.path.join("resources", "themed", "frame_editor_visuals_graph.png")
+D_FRAME_EDITOR_VISUALS_GRAPH_BAR_PATH = os.path.join("resources", "themed", "frame_editor_visuals_graph_bar.png")
 D_FRAME_OPTIONS_PATH = os.path.join("resources", "themed", "frame_options.png")
 D_FRAME_OPTIONS_BUTTON_PATH = os.path.join("resources", "themed", "frame_options_button.png")
 
@@ -82,6 +84,10 @@ FRAME_EDITOR = Image.open(os.path.join("resources", "themed", "u_frame_editor.pn
 FRAME_EDITOR_ARRAY = numpy.array(FRAME_EDITOR)
 FRAME_EDITOR_VISUALS = Image.open(os.path.join("resources", "themed", "u_frame_editor_visuals.png")).convert("RGBA")
 FRAME_EDITOR_VISUALS_ARRAY = numpy.array(FRAME_EDITOR_VISUALS)    
+FRAME_EDITOR_VISUALS_GRAPH = Image.open(os.path.join("resources", "themed", "u_frame_editor_visuals_graph.png")).convert("RGBA")
+FRAME_EDITOR_VISUALS_GRAPH_ARRAY = numpy.array(FRAME_EDITOR_VISUALS_GRAPH)
+FRAME_EDITOR_VISUALS_GRAPH_BAR = Image.open(os.path.join("resources", "themed", "u_frame_editor_visuals_graph_bar.png")).convert("RGBA")
+FRAME_EDITOR_VISUALS_GRAPH_BAR_ARRAY = numpy.array(FRAME_EDITOR_VISUALS_GRAPH_BAR)
 FRAME_OPTIONS = Image.open(os.path.join("resources", "themed", "u_frame_options.png")).convert("RGBA")
 FRAME_OPTIONS_ARRAY = numpy.array(FRAME_OPTIONS) 
 FRAME_OPTIONS_BUTTON_ON = Image.open(os.path.join("resources", "themed", "u_frame_options_button_on.png")).convert("RGBA")
@@ -90,6 +96,8 @@ FRAME_OPTIONS_BUTTON_OFF = Image.open(os.path.join("resources", "themed", "u_fra
 FRAME_OPTIONS_BUTTON_OFF_ARRAY = numpy.array(FRAME_OPTIONS_BUTTON_OFF)
 GEAR = Image.open(os.path.join("resources", "gear.png")).convert("RGBA")
 GEAR_ARRAY = numpy.array(GEAR)
+
+
 
 CURSOR_ARROW = Image.open(os.path.join("resources", "cursor_arrow.png")).convert("RGBA")
 CURSOR_ARROW_ARRAY = numpy.array(CURSOR_ARROW)

@@ -45,7 +45,7 @@ class Check:
         
         result_array = numpy.copy(frameArray)
         result_array[blackMask] = hexColorToRGBA(frameColor)
-        result_array[transparentMask] = hexColorToRGBA(bgColor)
+        result_array[transparentMask] = (0,0,0,0) if bgColor=="transparent" else hexColorToRGBA(bgColor)
         
         with open(os.path.join("resources", "themed", f"{name}.png"), "w") as f:
             f.write("")
@@ -57,6 +57,8 @@ class Check:
         Check.generateThemedOutline(D_FRAME_TIMELINE_PATH, "u_frame_timeline")
         Check.generateThemedOutline(D_FRAME_EDITOR_PATH, "u_frame_editor")
         Check.generateThemedOutline(D_FRAME_EDITOR_VISUALS_PATH, "u_frame_editor_visuals")
+        Check.generateThemedOutline(D_FRAME_EDITOR_VISUALS_GRAPH_PATH, "u_frame_editor_visuals_graph", frameColor=SELECTED_COLOR, bgColor="transparent")
+        Check.generateThemedOutline(D_FRAME_EDITOR_VISUALS_GRAPH_BAR_PATH, "u_frame_editor_visuals_graph_bar")
         Check.generateThemedOutline(D_FRAME_OPTIONS_PATH, "u_frame_options")
         Check.generateThemedOutline(D_FRAME_OPTIONS_BUTTON_PATH, "u_frame_options_button_on", frameColor=SELECTED_COLOR)
         Check.generateThemedOutline(D_FRAME_OPTIONS_BUTTON_PATH, "u_frame_options_button_off")
