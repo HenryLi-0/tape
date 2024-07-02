@@ -8,7 +8,7 @@ from subsystems.fancy import displayText, generateColorBox, generateBorderBox
 from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject, EditableTextBoxVisualObject, DummyVisualObject
 from subsystems.counter import Counter
 from subsystems.pathing import pointAt
-from subsystems.sprite import readImgSingleFullState
+from subsystems.sprite import SingleSprite, readImgSingleFullState
 
 class Interface:
     def __init__(self):
@@ -33,10 +33,15 @@ class Interface:
         #for i in range(10): self.interactableVisualObjects[self.c.c()] = ["a", OrbVisualObject(f"test{i}")]
         '''Noninteractable, Adaptive, Visual Objects'''
         self.pathVisualObject = PathVisualObject(self.c.c(), "path")
-        '''Options - Interactable, Stationary, Visual Objects'''
+        '''Sprites'''
+        self.sprites = [
+            SingleSprite("test")
+        ]
+        self.selectedSprite = 0
         self.interacting = -999
         self.editorTab = "p"
         self.stringKeyQueue = ""
+        self.animationTime = 0
         pass
 
     def tick(self,mx,my,mPressed,fps,keyQueue):
@@ -119,8 +124,15 @@ class Interface:
         bigPath = TEST_PATH_VERY_COOL 
 
         frame = bigPath[self.ticks%(len(bigPath)-1)]
-        placeOver(img, readImgSingleFullState(frame, [PLACEHOLDER_IMAGE_5_ARRAY]), (frame[0][0],frame[0][1]))
-        print(f"at frame {self.ticks%(len(bigPath)-1)} of {len(bigPath)-1}")
+        placeOver(img, readImgSingleFullState(frame, [PLACEHOLDER_IMAGE_5_ARRAY]), (frame[0][0],frame[0][1]), True)
+
+        placeOver(img, displayText(f"at frame {self.ticks%(len(bigPath)-1)} of {len(bigPath)-1}","m"), (50,450))
+
+        placeOver(img, CURSOR_SELECT_ARRAY, (0,0))
+        placeOver(img, CURSOR_SELECT_ARRAY, (200,200))
+        placeOver(img, CURSOR_SELECT_ARRAY, (300,100))
+        placeOver(img, CURSOR_SELECT_ARRAY, (200,0))
+        placeOver(img, CURSOR_SELECT_ARRAY, (0,200))
 
         return arrayToImage(img)
     
@@ -139,6 +151,14 @@ class Interface:
     def getImageEditor(self):
         '''Editor Interface: `(953,36) to (1340,542)`: size `(388,507)`'''
         img = FRAME_EDITOR_VISUALS_ARRAY.copy() if self.editorTab=="v" else FRAME_EDITOR_ARRAY.copy()
+        if self.editorTab == "s":
+            '''Sprites Tab!'''
+            pass
+        if self.editorTab == "v":
+            '''Visuals Tab!'''
+            if self.selectedSprite != -999:
+                placeOver(img, setLimitedSize(self.sprites[self.selectedSprite].getImageAt(self.animationTime), 78), (11,11))
+                placeOver(img, displayText(self.sprites[self.selectedSprite].getName(), "l"), (110,37))
         if self.editorTab == "p":
             '''About Project Tab!'''
             placeOver(img, displayText("Project:", "m"),                                                            (15,EDITOR_SPACING(1))) 

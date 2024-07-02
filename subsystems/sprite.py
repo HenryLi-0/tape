@@ -3,7 +3,7 @@
 from settings import *
 import numpy, math
 from subsystems.pathing import smoothChangeAt, straightChangeAt, roundf, timelyBezierPathCoords, selectiveBezierPathCoords, straightPathCoords, mergeCoordRotationPath, betweenP
-from subsystems.render import setSize, setColorEffect, setTransparency, setBrightness, setPixelation
+from subsystems.render import rotateDeg, setSize, setColorEffect, setTransparency, setBrightness, setBlur
 from settings import PATH_FLOAT_ACCURACY, RENDER_FPS
 
 class SingleSprite:
@@ -16,7 +16,7 @@ class SingleSprite:
     h (hue)     - color effect
     t (->)      - transparency
     b (->)      - brightness
-    w (weird)   - pixelation
+    w (weird)   - blur
 
     not stored:
     p (path)    - full path compact path      (x,y,dir)
@@ -35,7 +35,7 @@ class SingleSprite:
     L - linear, straight line
     S - smooth, curved approach, also represents beizer for coordinates
     '''
-    def __init__(self,name, img = PLACEHOLDER_IMAGE_2_ARRAY):
+    def __init__(self,name, img = PLACEHOLDER_IMAGE_5_ARRAY):
         self.name = name
         self.images = [
             numpy.array(img)
@@ -53,15 +53,19 @@ class SingleSprite:
             "w":[]
         }
     def setData(self, key, data):
+        '''Sets a properity's set of data, given the key and data'''
         self.data[key] = data
     def getData(self, key):
+        '''Gets a properity's set of data, given the key'''
         return self.data[key]
     def generateSequence(self, key):
+        '''Generates a state sequence for a given property, given the key'''
         if key == "c": return iterateThroughPath(self.data["c"])
         if key == "p": return mergeCoordRotationPath(iterateThroughPath(self.data["c"]), iterateThoughSingle(self.data["r"]))
         if key == "a": return [max(0, min(len(self.images)-1, round(item))) for item in iterateThoughSingle(self.data["a"])]
         if key in "rshtbw" and len(key) == 1: return iterateThoughSingle(self.data[key])
     def getStateAt(self, key, time):
+        '''Returns a state of a given property for a given time, given the key and time'''
         if key == "c": return findStateThroughPath(self.data["c"], time)
         if key == "p":
             cx, cy = findStateThroughPath(self.data["c"], time) 
@@ -69,6 +73,7 @@ class SingleSprite:
         if key == "a": return max(0, min(len(self.images)-1, round(findStateThroughSingle(self.data["a"],time))))
         if key in "rshtbw" and len(key) == 1: return findStateThroughSingle(self.data[key], time)
     def generateFullSequence(self):
+        '''Generates a full state sequence for all properties for the entire duration of importance'''
         p = self.generateSequence("p")
         a = self.generateSequence("a")
         s = self.generateSequence("s")
@@ -88,6 +93,7 @@ class SingleSprite:
             ) for i in range(max(len(p), len(a), len(s), len(h), len(t), len(b), len(w))-1)
         ]
     def getFullStateAt(self, time):
+        '''Returns a full state of all properties for a given time'''
         return [
             self.getStateAt("p", time),
             self.getStateAt("a", time),
@@ -98,11 +104,23 @@ class SingleSprite:
             self.getStateAt("w", time)
         ]
     def addImage(self, img):
+        '''Adds an image to the sprite's appearances'''
         self.images.append(numpy.array(img))
         self.data["images"] = self.images
     def removeImage(self, img):
+        '''Removes an image from the sprite's apperances, given the image'''
         self.images.pop(self.images.index(numpy.array(img)))
         self.data["images"] = self.images
+    def getImageAt(self, time):
+        '''Returns the array of an image of the sprite at a given time'''
+        try: return self.images[self.getStateAt("a", time)]
+        except: return self.images[0]
+    def getName(self):
+        '''Gets the name of the sprite'''
+        return self.name
+    def setName(self, name):
+        '''Sets the name of the sprite'''
+        self.name = name
 
 
 # Compact Storage Reading
@@ -181,5 +199,6 @@ def readImgSingleFullState(state, images):
     img = setColorEffect(img, state[3])
     img = setTransparency(img, state[4])
     img = setBrightness(img, state[5])
-    img = setPixelation(img, state[6])
+    img = setBlur(img, state[6])
+    img = rotateDeg(img, state[0][2])
     return img

@@ -94,9 +94,15 @@ def setBrightness(img: numpy.ndarray, brightness):
     imgc = imgc.enhance((brightness+100)/100)
     return numpy.array(imgc)
 
-def setPixelation(img: numpy.ndarray, pixelation):
-    '''Returns a copy of the given image pixelated, given the pixelation value (given 0-100, 0 = normal, 100 = very pixelated)'''
+def setBlur(img: numpy.ndarray, pixelation):
+    '''Returns a copy of the given image blured, given the blur value (given 0-100, 0 = normal, 100 = very pixelated)'''
     if pixelation <= 1: return img
     x, y, temp = img.shape
     imgc = numpy.array(Image.fromarray(img).resize((max(1, (round(x/pixelation*(x/100)))),max(1, round(y/pixelation*(x/100))))))
     return numpy.array(Image.fromarray(imgc).resize((round(x),round(y))))
+
+def setLimitedSize(img: numpy.ndarray, size):
+    '''Returns the a copy of the image scaled to fix inside a (size x size) shape'''
+    x, y, temp = img.shape
+    scaleFactor = size/x if x>y else size/y
+    return numpy.array(Image.fromarray(img).resize((max(1, (round(x*scaleFactor))),max(1, round(y*scaleFactor)))))

@@ -85,14 +85,14 @@ print(thing)
 from subsystems.sprite import SingleSprite
 thing = SingleSprite("Test Sprite")
 
-thing.setData("c", [0,(0,0),"L",5.5,(100,100),"S",7,(100,400),"S",10,(400,400), "L", 20, (200,200), None])
-thing.setData("r", [0, 0, "S", 5, 90, "L", 10, 0, None])
-thing.setData("a", [0, 0, "L", 5, 1, None])
-thing.setData("s", [0, 100, "L", 15, 50, None])
-thing.setData("h", [0, 0, "S", 10, 100, None])
-thing.setData("t", [0, 100, "L", 2.5, 75, "S", 5, 100, None])
-thing.setData("b", [0, 0, "S", 2.5, 100, "S", 7.5, -100, "S", 15, 0, None])
-thing.setData("w", [0, 0, "S", 3, 100, "S", 6, 0, None])
+thing.setData("c", [0,(0,0),"L",5,(200,200),"S",7.5,(300,100),"S",10,(200,0), "L", 15, (0,200), None])
+thing.setData("r", [0, 0, "S", 2.5, 90, "S", 5, 180, "S", 7.5, 270, "S", 10, 360, "L", 15, 0, None])
+thing.setData("a", [0, 0, "L", 15, 0, None])
+thing.setData("s", [0, 100, "S", 7.5, 200, "S", 15, 100, None])
+thing.setData("h", [0, 0, "S", 15, 100, None])
+thing.setData("t", [0, 100, "L", 15, 100, None])
+thing.setData("b", [0, 0, "S", 2.5, 100, "S", 7.5, 100, "S", 10, 0, None])
+thing.setData("w", [0, 0, "L", 5, 100, "L", 6, 0, None])
 
 print(thing.generateFullSequence())
 # '''
