@@ -5,9 +5,9 @@ from PIL import ImageTk, Image
 import time
 from subsystems.render import *
 from subsystems.fancy import displayText, generateColorBox, generateBorderBox
-from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject, EditableTextBoxVisualObject, DummyVisualObject
+from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject, EditableTextBoxVisualObject, DummyVisualObject, PointVisualObject
 from subsystems.counter import Counter
-from subsystems.pathing import pointAt
+from subsystems.pathing import pointAt, roundf
 from subsystems.sprite import SingleSprite, readImgSingleFullState
 
 class Interface:
@@ -21,14 +21,21 @@ class Interface:
         self.activity = ""
         self.c = Counter()
         '''Interactable Visual Objects'''
+        '''
+        Code:
+        a - animation
+        evg - editor > visuals > graph
+        o - options
+        '''
         self.interactableVisualObjects = {
 
             -999 : [" ", DummyVisualObject("dummy", (0,0))],
 
             self.c.c():["o",ButtonVisualObject("sprites",(7,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
             self.c.c():["o",ButtonVisualObject("visuals",(134,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            self.c.c():["o",ButtonVisualObject("project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)]
+            self.c.c():["o",ButtonVisualObject("project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
             
+            self.c.c():["evg",PointVisualObject("point",(50,50))]
         }
         #for i in range(10): self.interactableVisualObjects[self.c.c()] = ["a", OrbVisualObject(f"test{i}")]
         '''Noninteractable, Adaptive, Visual Objects'''
@@ -69,8 +76,9 @@ class Interface:
                     break
         self.mouseScroll = mouseScroll
         if self.editorTab == "v" and 955<self.mx and 257<self.my and self.mx<1336 and self.my<537:
-            self.graphScale += self.mouseScroll/1000
-        self.graphScale = 0 if self.graphScale < 0 else self.graphScale
+            self.graphScale = 10**(math.log(self.graphScale+0.000001,10) + self.mouseScroll/2500)-0.000001
+        self.graphScale = 0.001 if self.graphScale < 0.001 else self.graphScale
+        self.graphScale = 2000 if 2000 < self.graphScale else self.graphScale
         pass
 
         previousInteracting = self.interacting
@@ -82,6 +90,10 @@ class Interface:
                     if self.interactableVisualObjects[id][1].getInteractable(self.mx - 23, self.my - 36):
                         self.interacting = id
                         break
+                if self.interactableVisualObjects[id][0] == "evg":
+                    if self.interactableVisualObjects[id][1].getInteractable(self.mx - 982, self.my - 278):
+                        self.interacting = id
+                        break
                 if self.interactableVisualObjects[id][0] == "o":
                     if self.interactableVisualObjects[id][1].getInteractable(self.mx - 953, self.my - 558):
                         self.interacting = id
@@ -91,6 +103,9 @@ class Interface:
             if section == "a": 
                 self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 23, self.my - 36)
                 self.interactableVisualObjects[self.interacting][1].keepInFrame(903,507)
+            if section == "evg": 
+                self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 982, self.my - 278)
+                self.interactableVisualObjects[self.interacting][1].keepInFrame(337,233)
             if section == "o": 
                 self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 953, self.my - 558)
                 self.interactableVisualObjects[self.interacting][1].keepInFrame(388,123)
@@ -167,13 +182,38 @@ class Interface:
             if self.selectedSprite != -999:
                 placeOver(img, setLimitedSize(self.sprites[self.selectedSprite].getImageAt(self.animationTime), 50), (25,25))
                 placeOver(img, displayText(self.sprites[self.selectedSprite].getName(), "l"), (110,37))
-                data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
-                for i in range(27):
-                    pos = 29 + ((i*(10**math.floor(math.log(self.graphScale+0.000001,10)+1)))+self.graphOffset)*(1/(self.graphScale+0.000001))*25
+                self.graphOffset = self.my
+                startI = round(self.graphOffset/(10**math.floor(math.log(self.graphScale+0.000001,10)+1)))
+                for i in range(startI - 3, startI + 33):
+                    pos = 29 + ((i*(10**math.floor(math.log(self.graphScale+0.000001,10)+1)))-self.graphOffset)*(1/(self.graphScale+0.000001))*25
                     if pos > 362: break
-                    placeOver(img, FRAME_EDITOR_VISUALS_GRAPH_BAR_ARRAY, (pos, 242))
-                    placeOver(img, displayText(str(round((i*(10**math.floor(math.log(self.graphScale+0.000001,10)+1)+self.graphOffset)),2)), "m"), (pos,492), True)
+                    if pos > 29: 
+                        placeOver(img, FRAME_EDITOR_VISUALS_GRAPH_BAR_ARRAY, (pos, 242))
+                        time = roundf((i*(10**math.floor(math.log(self.graphScale+0.000001,10)+1))),2)
+                        if time >= 1:
+                            if time < 3600:
+                                time = "{:02}:{:02}".format(math.floor(time/60), roundf(time%60,2))
+                            else:
+                                time = "{:02}:{:02}:{:02}".format(math.floor(time/3600), math.floor((time-3600*math.floor(time/3600))/60), roundf(time%60,2))
+                        else:
+                            time = str(time)
+                        placeOver(img, displayText(time, "s"), (pos,492), True)
+                
+                data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
+
+                for id in self.interactableVisualObjects:
+                    if self.interactableVisualObjects[id][0][0] == "e":
+                        self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
+
+                # tempPath = []
+                # for id in self.interactableVisualObjects: 
+                #     if self.interactableVisualObjects[id][1].type == "orb": 
+                #         tempPath.append(self.interactableVisualObjects[id][1].positionO.getPosition())
+                # self.pathVisualObject.tick(img, tempPath)
+
+
                 placeOver(img, FRAME_EDITOR_VISUALS_GRAPH_ARRAY, (0,219))
+                placeOver(img, PLACEHOLDER_IMAGE_5_ARRAY, ((100-self.graphOffset)*25/(self.graphScale+0.000001)+29,219), True)
         if self.editorTab == "p":
             '''About Project Tab!'''
             placeOver(img, displayText("Project:", "m"),                                                            (15,EDITOR_SPACING(1))) 

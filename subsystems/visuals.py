@@ -4,7 +4,7 @@ import time, numpy, random, math
 from subsystems.pathing import bezierPathCoords, straightPathCoords, addP, mergeCoordRotationPath, pointNextCoordRotationPath
 from subsystems.render import placeOver
 from subsystems.fancy import displayText, generateColorBox, generateBorderBox
-from settings import FRAME_COLOR, SELECTED_COLOR, BACKGROUND_COLOR, hexColorToRGBA
+from settings import *
 
 class VisualManager:
     def __init__(self, worker, pruneCount = 5, maxLength = 15):
@@ -173,3 +173,28 @@ class DummyVisualObject:
         pass
     def getInteractable(self,rmx,rmy):
         return False
+
+class GraphVisuals:
+    def render(img, data):
+        pass
+
+
+
+class PointVisualObject:
+    '''A smaller movable point OFFSET BY X29,Y242 FOR GRAPH. MEANT FOR THE GRAPH AND THE GRAPH ONLY.'''
+    def __init__(self, name, pos:tuple|list=(random.randrange(0,20), random.randrange(0,20))):
+        self.type = "point"
+        self.name = name
+        self.positionO = CircularPositionalBox(15)
+        self.positionO.setPosition(pos)
+    def tick(self, window, active):
+        placeOver(window, POINT_SELECTED_ARRAY if active else POINT_IDLE_ARRAY, addP(self.positionO.getPosition(), (29,242)), True)
+        if active: placeOver(window, displayText(self.name, "m"), addP(self.positionO.getPosition(), (29,242)), True)
+    def updatePos(self, rmx, rmy):
+        self.positionO.setPosition((rmx, rmy))
+    def keepInFrame(self, maxX, maxY):
+        pos = self.positionO.getPosition()
+        if pos[0] < 0 or maxX < pos[0] or pos[1] < 0 or maxY < pos[1]:
+            self.positionO.setPosition((max(0,min(pos[0],maxX)), max(0,min(pos[1],maxY))))
+    def getInteractable(self, rmx, rmy):
+        return self.positionO.getInteract(rmx, rmy)
