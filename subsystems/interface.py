@@ -45,9 +45,10 @@ class Interface:
         self.editorTab = "p"
         self.stringKeyQueue = ""
         self.animationTime = 0
+        self.mouseScroll = 0 
         pass
 
-    def tick(self,mx,my,mPressed,fps,keyQueue):
+    def tick(self,mx,my,mPressed,fps,keyQueue,mouseScroll):
         '''Entire Screen: `(0,0) to (1365,697)`: size `(1366,698)`'''
         self.mx = mx if (0<=mx and mx<=1365) and (0<=my and my<=697) else self.mx 
         self.my = my if (0<=mx and mx<=1365) and (0<=my and my<=697) else self.my
@@ -66,6 +67,10 @@ class Interface:
                 if key=="Return":
                     self.interacting = -998
                     break
+        self.mouseScroll = mouseScroll
+        if self.editorTab == "v" and 955<self.mx and 257<self.my and self.mx<1336 and self.my<537:
+            self.graphScale += self.mouseScroll/1000
+        self.graphScale = 0 if self.graphScale < 0 else self.graphScale
         pass
 
         previousInteracting = self.interacting
@@ -160,10 +165,9 @@ class Interface:
         if self.editorTab == "v":
             '''Visuals Tab!'''
             if self.selectedSprite != -999:
-                placeOver(img, setLimitedSize(self.sprites[self.selectedSprite].getImageAt(self.animationTime), 78), (10,10))
+                placeOver(img, setLimitedSize(self.sprites[self.selectedSprite].getImageAt(self.animationTime), 50), (25,25))
                 placeOver(img, displayText(self.sprites[self.selectedSprite].getName(), "l"), (110,37))
                 data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
-                self.graphScale = self.mx/100
                 for i in range(27):
                     pos = 29 + ((i*(10**math.floor(math.log(self.graphScale+0.000001,10)+1)))+self.graphOffset)*(1/(self.graphScale+0.000001))*25
                     if pos > 362: break

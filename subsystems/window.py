@@ -20,6 +20,7 @@ class Window:
         self.fpsGood = False
         self.mPressed = False
         self.keyQueue = []
+        self.mouseScroll = 0
 
         '''load test image'''
         testImage = ImageTk.PhotoImage(PLACEHOLDER_IMAGE)
@@ -45,8 +46,9 @@ class Window:
             self.mPressed = 0
 
         '''update screens'''
-        self.interface.tick(mx,my,self.mPressed, self.fps, self.keyQueue)
+        self.interface.tick(mx,my,self.mPressed, self.fps, self.keyQueue, self.mouseScroll)
         self.keyQueue = []
+        self.mouseScroll = 0
         img = ImageTk.PhotoImage(self.interface.getImageAnimation())
         self.w_animation.configure(image = img)
         self.w_animation.image=img
@@ -85,6 +87,7 @@ class Window:
     def mPress(self, side = 0): self.mPressed = 1
     def mRelease(self, side = 0): self.mPressed = -999
     def keyPressed(self, key): self.keyQueue.append(str(key.keysym))
+    def mouseWheel(self, event): self.mouseScroll += event.delta
     
     def start(self):
         '''start window main loop'''
@@ -93,6 +96,7 @@ class Window:
         self.window.bind("<ButtonPress-1>", self.mPress)
         self.window.bind("<ButtonRelease-1>", self.mRelease)
         self.window.bind("<Key>", self.keyPressed)
+        self.window.bind_all("<MouseWheel>", self.mouseWheel)
 
         self.window.after(TICK_MS, self.windowProcesses)
         self.window.after(TICK_MS, self.windowOccasionalProcesses)
