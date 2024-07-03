@@ -202,3 +202,11 @@ def readImgSingleFullState(state, images):
     img = setBlur(img, state[6])
     img = rotateDeg(img, state[0][2])
     return img
+
+def listEVG(interactableVisualObjects):
+    '''Returns a list of all EVG Point Visual Object IDs in the given `interactableVisualObjects` list'''
+    ids = []
+    allIDs= list(interactableVisualObjects.keys())
+    for id in allIDs:
+        if interactableVisualObjects[id][0]=="evg" and interactableVisualObjects[id][1].type=="point": ids.append(id)
+    return ids

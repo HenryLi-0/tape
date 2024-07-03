@@ -8,7 +8,7 @@ from subsystems.fancy import displayText, generateColorBox, generateBorderBox
 from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject, EditableTextBoxVisualObject, DummyVisualObject, PointVisualObject
 from subsystems.counter import Counter
 from subsystems.pathing import pointAt, roundf
-from subsystems.sprite import SingleSprite, readImgSingleFullState
+from subsystems.sprite import SingleSprite, readImgSingleFullState, listEVG
 
 class Interface:
     def __init__(self):
@@ -33,9 +33,8 @@ class Interface:
 
             self.c.c():["o",ButtonVisualObject("sprites",(7,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
             self.c.c():["o",ButtonVisualObject("visuals",(134,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            self.c.c():["o",ButtonVisualObject("project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            
-            self.c.c():["evg",PointVisualObject("point",(50,50))]
+            self.c.c():["o",ButtonVisualObject("project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)]
+    
         }
         #for i in range(10): self.interactableVisualObjects[self.c.c()] = ["a", OrbVisualObject(f"test{i}")]
         '''Noninteractable, Adaptive, Visual Objects'''
@@ -44,8 +43,9 @@ class Interface:
         self.sprites = [
             SingleSprite("test")
         ]
+        self.sprites[0].setData("r", [1,2,"S",5,6,"S",10, 100,"S", 25, 0, "S", 30, 50, None])
         self.selectedSprite = 0
-        self.selectedProperty = 1
+        self.selectedProperty = 2
         self.graphScale = 1.0
         self.graphOffset = 0
         self.interacting = -999
@@ -182,7 +182,6 @@ class Interface:
             if self.selectedSprite != -999:
                 placeOver(img, setLimitedSize(self.sprites[self.selectedSprite].getImageAt(self.animationTime), 50), (25,25))
                 placeOver(img, displayText(self.sprites[self.selectedSprite].getName(), "l"), (110,37))
-                self.graphOffset = self.my
                 startI = round(self.graphOffset/(10**math.floor(math.log(self.graphScale+0.000001,10)+1)))
                 for i in range(startI - 3, startI + 33):
                     pos = 29 + ((i*(10**math.floor(math.log(self.graphScale+0.000001,10)+1)))-self.graphOffset)*(1/(self.graphScale+0.000001))*25
@@ -200,7 +199,35 @@ class Interface:
                         placeOver(img, displayText(time, "s"), (pos,492), True)
                 
                 data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
+                lenData = round(len(data)/3)
 
+                if self.selectedProperty > 1: # Not coordinate data!
+                    evgs = listEVG(self.interactableVisualObjects)
+                    print(f"evgs: {len(evgs)} data: {lenData}")
+                    if len(evgs) != lenData:
+                        if len(evgs) > lenData:
+                            for i in range(len(evgs)-lenData-1):
+                                self.interactableVisualObjects.pop(i)
+                            print("pruned")
+                        else:
+                            i = 0
+                            while len(evgs) + i < lenData:
+                                self.interactableVisualObjects[self.c.c()] = ["evg",PointVisualObject("point",(50,50))]
+                                i+=1
+                        for i in range(len(evgs)):
+                            self.interactableVisualObjects[evgs[i]][1].setPointData(data[i*3+1])
+                            self.interactableVisualObjects[evgs[i]][1].updatePos((data[i*3]-self.graphOffset)*25/(self.graphScale+0.000001),round((100-data[i*3+1])/100*223))
+                    else:
+                        if self.interacting == -999:
+                            for i in range(len(evgs)):
+                                self.interactableVisualObjects[evgs[i]][1].setPointData(data[i*3+1])
+                                self.interactableVisualObjects[evgs[i]][1].updatePos((data[i*3]-self.graphOffset)*25/(self.graphScale+0.000001),round((100-data[i*3+1])/100*223))
+                        for i in range(len(evgs)):
+                            x, y = self.interactableVisualObjects[evgs[i]][1].positionO.getPosition()
+                            data[i*3] = x*(self.graphScale+0.000001)/25+self.graphOffset
+                            y = round(100-((y/233)*100))
+                            data[i*3+1] = y if abs(data[i*3+1]-y) > 5 else data[i*3+1]
+                            
                 for id in self.interactableVisualObjects:
                     if self.interactableVisualObjects[id][0][0] == "e":
                         self.interactableVisualObjects[id][1].tick(img, self.interacting==id)

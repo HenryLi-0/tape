@@ -187,11 +187,15 @@ class PointVisualObject:
         self.name = name
         self.positionO = CircularPositionalBox(15)
         self.positionO.setPosition(pos)
+        self.pointData = ""
     def tick(self, window, active):
         placeOver(window, POINT_SELECTED_ARRAY if active else POINT_IDLE_ARRAY, addP(self.positionO.getPosition(), (29,242)), True)
-        if active: placeOver(window, displayText(self.name, "m"), addP(self.positionO.getPosition(), (29,242)), True)
+        if active: placeOver(window, displayText(str(self.pointData), "m"), addP(self.positionO.getPosition(), (29,222)), True)
+        if active: return self.pointData
     def updatePos(self, rmx, rmy):
         self.positionO.setPosition((rmx, rmy))
+    def setPointData(self, data):
+        self.pointData = data
     def keepInFrame(self, maxX, maxY):
         pos = self.positionO.getPosition()
         if pos[0] < 0 or maxX < pos[0] or pos[1] < 0 or maxY < pos[1]:
