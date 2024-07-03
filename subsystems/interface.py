@@ -131,11 +131,11 @@ class Interface:
 
         placeOver(img, displayText(f"at frame {self.ticks%(len(bigPath)-1)} of {len(bigPath)-1}","m"), (50,450))
 
-        placeOver(img, CURSOR_SELECT_ARRAY, (0,0))
-        placeOver(img, CURSOR_SELECT_ARRAY, (200,200))
-        placeOver(img, CURSOR_SELECT_ARRAY, (300,100))
-        placeOver(img, CURSOR_SELECT_ARRAY, (200,0))
-        placeOver(img, CURSOR_SELECT_ARRAY, (0,200))
+        placeOver(img, CURSOR_SELECT_ARRAY, (0,0), True)
+        placeOver(img, CURSOR_SELECT_ARRAY, (200,200), True)
+        placeOver(img, CURSOR_SELECT_ARRAY, (300,100), True)
+        placeOver(img, CURSOR_SELECT_ARRAY, (200,0), True)
+        placeOver(img, CURSOR_SELECT_ARRAY, (0,200), True)
 
         return arrayToImage(img)
     
@@ -163,11 +163,12 @@ class Interface:
                 placeOver(img, setLimitedSize(self.sprites[self.selectedSprite].getImageAt(self.animationTime), 78), (10,10))
                 placeOver(img, displayText(self.sprites[self.selectedSprite].getName(), "l"), (110,37))
                 data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
-                self.graphScale = self.mx
+                self.graphScale = self.mx/100
                 for i in range(27):
-                    pos = 29 + ((i*(5**math.floor(math.log(self.graphScale+0.000001,5)+1)))+self.graphOffset)*(1/(self.graphScale+0.000001))*25
+                    pos = 29 + ((i*(10**math.floor(math.log(self.graphScale+0.000001,10)+1)))+self.graphOffset)*(1/(self.graphScale+0.000001))*25
                     if pos > 362: break
                     placeOver(img, FRAME_EDITOR_VISUALS_GRAPH_BAR_ARRAY, (pos, 242))
+                    placeOver(img, displayText(str(round((i*(10**math.floor(math.log(self.graphScale+0.000001,10)+1)+self.graphOffset)),2)), "m"), (pos,492), True)
                 placeOver(img, FRAME_EDITOR_VISUALS_GRAPH_ARRAY, (0,219))
         if self.editorTab == "p":
             '''About Project Tab!'''
