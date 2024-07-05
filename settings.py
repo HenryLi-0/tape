@@ -5,6 +5,7 @@ Here are the parts:
 - Calculation
 - Visuals
 - Saving
+- Keybinds
 - Constants (Please do not change!)
 '''
 
@@ -28,7 +29,17 @@ hexColorToRGBA = lambda hexcolor: tuple(int(hexcolor[i:i+2], 16) for i in (1, 3,
 '''Saving'''
 
 
-
+'''Keybinds'''
+EDITOR_VISUAL_KEYBINDS = {
+    1 : "C",
+    2 : "R",
+    3 : "A",
+    4 : "S",
+    5 : "H",
+    6 : "T",
+    7 : "B",
+    8 : "W"
+}
 
 '''Constants - DO NOT CHANGE!!!'''
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 
@@ -117,3 +128,5 @@ RECTANGULAR_GREEN_BUTTON_ARRAY = numpy.array(Image.open(os.path.join("resources"
 UP_ARROW_ARRAY = numpy.array(Image.open(os.path.join("resources", "up_arrow.png")).convert("RGBA"))
 
 TEST_PATH_VERY_COOL = [((0.0, 0.0, 0.0), 0, 100.0, 0.0, 100.0, 0.0, 0.0), ((1.333, 1.333, 14.405), 0, 112.787, 11.342, 100.0, 16.005, 0.667)]
+
+PROPERTY_DISPLAY_NAMES = ["Coordinates","Rotational","Apperance","Size","Hue","Transparency","Brightness","Blur"]

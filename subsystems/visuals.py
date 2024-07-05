@@ -199,6 +199,6 @@ class PointVisualObject:
     def keepInFrame(self, maxX, maxY):
         pos = self.positionO.getPosition()
         if pos[0] < 0 or maxX < pos[0] or pos[1] < 0 or maxY < pos[1]:
-            self.positionO.setPosition((max(0,min(pos[0],maxX)), max(0,min(pos[1],maxY))))
+            self.positionO.setPosition((round(max(0,min(pos[0],maxX))), round(max(0,min(pos[1],maxY)))))
     def getInteractable(self, rmx, rmy):
         return self.positionO.getInteract(rmx, rmy)

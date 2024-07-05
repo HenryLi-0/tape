@@ -46,10 +46,12 @@ class Interface:
         self.sprites[0].setData("r", [1,2,"S",5,6,"S",10, 100,"S", 25, 0, "S", 30, 50, None])
         self.selectedSprite = 0
         self.selectedProperty = 2
+        self.previousSelectedProperty = self.selectedProperty
         self.graphScale = 1.0
         self.graphOffset = 0
         self.interacting = -999
         self.editorTab = "p"
+        self.previousEditorTab = self.editorTab
         self.stringKeyQueue = ""
         self.animationTime = 0
         self.mouseScroll = 0 
@@ -182,6 +184,7 @@ class Interface:
             if self.selectedSprite != -999:
                 placeOver(img, setLimitedSize(self.sprites[self.selectedSprite].getImageAt(self.animationTime), 50), (25,25))
                 placeOver(img, displayText(self.sprites[self.selectedSprite].getName(), "l"), (110,37))
+
                 startI = round(self.graphOffset/(10**math.floor(math.log(self.graphScale+0.000001,10)+1)))
                 for i in range(startI - 3, startI + 33):
                     pos = 29 + ((i*(10**math.floor(math.log(self.graphScale+0.000001,10)+1)))-self.graphOffset)*(1/(self.graphScale+0.000001))*25
@@ -198,35 +201,66 @@ class Interface:
                             time = str(time)
                         placeOver(img, displayText(time, "s"), (pos,492), True)
                 
+                if self.previousEditorTab != "v":
+                    self.stringKeyQueue = ""
+                else:
+                    for i in range(1,8):
+                            if str(i) in self.stringKeyQueue: self.selectedProperty = i
+                    self.stringKeyQueue = ""
+                    print(self.stringKeyQueue)
+
                 data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
                 lenData = round(len(data)/3)
 
                 if self.selectedProperty > 1: # Not coordinate data!
                     evgs = listEVG(self.interactableVisualObjects)
-                    print(f"evgs: {len(evgs)} data: {lenData}")
-                    if len(evgs) != lenData:
+                    if self.previousEditorTab != "v" or self.selectedProperty != self.previousSelectedProperty:
                         if len(evgs) > lenData:
-                            for i in range(len(evgs)-lenData-1):
-                                self.interactableVisualObjects.pop(i)
-                            print("pruned")
+                            for i in range(len(evgs)-lenData):
+                                self.interactableVisualObjects.pop(evgs[i])
                         else:
                             i = 0
                             while len(evgs) + i < lenData:
                                 self.interactableVisualObjects[self.c.c()] = ["evg",PointVisualObject("point",(50,50))]
                                 i+=1
-                        for i in range(len(evgs)):
+                        evgs = listEVG(self.interactableVisualObjects)
+                        for i in range(len(evgs)-1):
                             self.interactableVisualObjects[evgs[i]][1].setPointData(data[i*3+1])
-                            self.interactableVisualObjects[evgs[i]][1].updatePos((data[i*3]-self.graphOffset)*25/(self.graphScale+0.000001),round((100-data[i*3+1])/100*223))
+                            self.interactableVisualObjects[evgs[i]][1].updatePos((data[i*3]-self.graphOffset)*25/(self.graphScale+0.000001),(100-data[i*3+1])*2.23)
                     else:
+                        evgs = listEVG(self.interactableVisualObjects)
                         if self.interacting == -999:
-                            for i in range(len(evgs)):
+                            for i in range(len(evgs)-1):
                                 self.interactableVisualObjects[evgs[i]][1].setPointData(data[i*3+1])
-                                self.interactableVisualObjects[evgs[i]][1].updatePos((data[i*3]-self.graphOffset)*25/(self.graphScale+0.000001),round((100-data[i*3+1])/100*223))
-                        for i in range(len(evgs)):
+                                self.interactableVisualObjects[evgs[i]][1].updatePos((data[i*3]-self.graphOffset)*25/(self.graphScale+0.000001),(100-data[i*3+1])*2.23)
+                        for i in range(len(evgs)-1):
                             x, y = self.interactableVisualObjects[evgs[i]][1].positionO.getPosition()
                             data[i*3] = x*(self.graphScale+0.000001)/25+self.graphOffset
-                            y = round(100-((y/233)*100))
+                            y = 100-(y/2.33)
                             data[i*3+1] = y if abs(data[i*3+1]-y) > 5 else data[i*3+1]
+                        evgs = [data[i*3] for i in range(len(evgs)-1)]
+                        evgsS = evgs.copy()
+                        evgsS.sort()
+                        if evgs != evgsS:
+                            dataS = [[data[i*3],data[i*3+1],data[i*3+2]] for i in range(len(evgs)-1)]
+                            dataS.sort(key = lambda x: x[0])
+                            data = []
+                            for timeState in dataS: 
+                                for thing in timeState: data.append(thing)
+                            self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
+
+                self.previousSelectedProperty = self.selectedProperty
+
+                if self.interacting != -999:
+                    if self.interactableVisualObjects[self.interacting][1].type == "point":
+                        x, y = self.interactableVisualObjects[self.interacting][1].positionO.getPosition()
+                        x = x*(self.graphScale+0.000001)/25+self.graphOffset
+                        y = 100-(y/2.33)                        
+                        placeOver(img, displayText(f"{(roundf(x,2),roundf(y,2))}", "m"), (95,190), True)
+
+                if 1 <= self.selectedProperty and self.selectedProperty <= 8:
+                    placeOver(img, displayText(f"({self.selectedProperty}) - {PROPERTY_DISPLAY_NAMES[self.selectedProperty-1]}", "m"), (95,190), True)
+
                             
                 for id in self.interactableVisualObjects:
                     if self.interactableVisualObjects[id][0][0] == "e":
@@ -267,6 +301,8 @@ class Interface:
     def getImageOptions(self):
         '''Options Interface: `(953,558) to (1340,680)`: size `(388,123)`'''
         img = FRAME_OPTIONS_ARRAY.copy()
+        
+        self.previousEditorTab = self.editorTab 
 
         for id in self.interactableVisualObjects:
             if self.interactableVisualObjects[id][0] == "o":

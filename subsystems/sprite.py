@@ -43,14 +43,14 @@ class SingleSprite:
         self.data = {
             "name":name, 
             "images":self.images, 
-            "c":[], 
-            "r":[],
-            "a":[], 
-            "s":[], 
-            "h":[],
-            "t":[],
-            "b":[],
-            "w":[]
+            "c":[0,0,None], 
+            "r":[0,0,None],
+            "a":[0,0,None], 
+            "s":[0,0,None], 
+            "h":[0,0,None],
+            "t":[0,0,None],
+            "b":[0,0,None],
+            "w":[0,0,None]
         }
     def setData(self, key, data):
         '''Sets a properity's set of data, given the key and data'''

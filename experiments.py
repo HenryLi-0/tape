@@ -81,7 +81,7 @@ for i in range(81):
 print(thing)
 '''
 
-# '''
+'''
 from subsystems.sprite import SingleSprite
 thing = SingleSprite("Test Sprite")
 
@@ -95,7 +95,7 @@ thing.setData("b", [0, 0, "S", 2.5, 100, "S", 7.5, 100, "S", 10, 0, None])
 thing.setData("w", [0, 0, "L", 5, 100, "L", 6, 0, None])
 
 print(thing.generateFullSequence())
-# '''
+'''
 
 '''
 from subsystems.render import setBrightness
@@ -103,3 +103,11 @@ from settings import PLACEHOLDER_IMAGE_5_ARRAY
 from PIL import Image
 Image.fromarray(setBrightness(PLACEHOLDER_IMAGE_5_ARRAY, 50)).show()
 '''
+
+thingy = [
+    [0,5,6],
+    [0.5,999,2],
+    [1,0,0]
+]
+thingy.sort(key = lambda x: x[1])
+print(thingy)
