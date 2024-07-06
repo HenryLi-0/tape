@@ -165,3 +165,12 @@ def smoothChangeAt(a, b, steps):
 
 def straightChangeAt(a, b, steps):
     return [a + (b-a)*(i/steps) for i in range(round(steps))]
+
+# Math
+
+def coordVelocity(tcoords: tuple|list):
+    path = [(tcoords[0][0], 0)]
+    for i in range(1, len(tcoords)):
+        change = subtractP(tcoords[i][1],tcoords[i-1][1])
+        path.append((tcoords[i][0],roundf(math.sqrt(change[0]**2 + change[1]**2), PATH_FLOAT_ACCURACY)))
+    return path
