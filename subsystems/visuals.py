@@ -1,7 +1,7 @@
 '''This file contains classes all about the visual objects the user sees'''
 
 import time, numpy, random, math
-from subsystems.pathing import bezierPathCoords, straightPathCoords, addP, mergeCoordRotationPath, pointNextCoordRotationPath
+from subsystems.pathing import bezierPathCoords, straightPathCoords, addP, subtractP, mergeCoordRotationPath, pointNextCoordRotationPath
 from subsystems.render import placeOver
 from subsystems.fancy import displayText, generateColorBox, generateBorderBox
 from settings import *
@@ -34,6 +34,7 @@ class VisualManager:
                 self.memoryManage.pop(i)
         return self.cache[key]
     
+'''Hitboxes'''
 
 class CircularPositionalBox:
     '''Just remembers where the object is supposed to be on screen, given the mouse position and updates when the mouse is in a specific ciruclar range'''
@@ -64,6 +65,7 @@ class RectangularPositionalBox:
         '''Should be called whenever the position wants to question its position'''
         if interact: self.ix, self.iy = rmx, rmy
     def getInteract(self, rmx, rmy):
+        '''Returns whether or not the mouse is in the bounding box of interaction'''
         return (self.ix < rmx) and (rmx < (self.ix+self.bbox[0])) and (self.iy < rmy) and (rmy < (self.iy+self.bbox[1]))
     def getPosition(self): return (self.ix, self.iy)
     def getX(self): return self.ix
@@ -74,6 +76,30 @@ class RectangularPositionalBox:
     def setY(self, ny): self.iy = ny
     def setBBOX(self, nbbox): self.bbox = nbbox
 
+class FixedRegionPositionalBox:
+    '''Just remembers where the object is supposed to be on screen, given the mouse position and updates when the mouse is in a specific region. Not movable by interaction.'''
+    def __init__(self, pointA:tuple|list = (0,0), pointB:tuple|list = (10,10)):
+        '''Point A and Point B are two opposite corners of a region!'''
+        self.pointA = (min(pointA[0], pointB[0]), min(pointA[1], pointB[1]))
+        self.pointB = (max(pointA[0], pointB[0]), max(pointA[1], pointB[1]))
+    def process(self, interact, rmx, rmy):
+        '''Should be called whenever the position wants to question its position'''
+        pass
+    def getInteract(self, rmx, rmy):
+        '''Returns whether or not the mouse is in the region of interaction'''
+        return (self.pointA[0] < rmx) and (rmx < self.pointB[0]) and (self.pointA[1] < rmy) and (rmy < self.pointB[1])
+    def getPosition(self): return self.pointA
+    def getX(self): return self.pointA[0]
+    def getY(self): return self.pointA[1]
+    def getRegion(self): return (self.pointA, self.pointB)
+    def setPosition(self, position: tuple|list): 
+        self.pointB = subtractP(self.pointB, subtractP(self.pointA, position))
+        self.pointA = position
+    def setRegion(self, pointA, pointB):
+        self.pointA = (min(pointA[0], pointB[0]), min(pointA[1], pointB[1]))
+        self.pointB = (max(pointA[0], pointB[0]), max(pointA[1], pointB[1]))
+
+'''Visual Objects'''
 
 from settings import ORB_IDLE_ARRAY, ORB_SELECTED_ARRAY, CURSOR_SELECT_ARRAY
 
@@ -83,7 +109,7 @@ class PathWorker:
         return bezierPathCoords(pathData[0], pathData[1]) if pathData[0] else straightPathCoords(pathData[0], pathData[1])
     
 class PathVisualObject:
-    '''A path'''
+    '''A path.'''
     def __init__(self, id, name):
         self.id = id
         self.name = name
@@ -174,12 +200,6 @@ class DummyVisualObject:
     def getInteractable(self,rmx,rmy):
         return False
 
-class GraphVisuals:
-    def render(img, data):
-        pass
-
-
-
 class PointVisualObject:
     '''A smaller movable point OFFSET BY X29,Y242 FOR GRAPH. MEANT FOR THE GRAPH AND THE GRAPH ONLY.'''
     def __init__(self, name, pos:tuple|list=(random.randrange(0,20), random.randrange(0,20))):
@@ -196,6 +216,29 @@ class PointVisualObject:
         self.positionO.setPosition((rmx, rmy))
     def setPointData(self, data):
         self.pointData = data
+    def keepInFrame(self, maxX, maxY):
+        pos = self.positionO.getPosition()
+        if pos[0] < 0 or maxX < pos[0] or pos[1] < 0 or maxY < pos[1]:
+            self.positionO.setPosition((round(max(0,min(pos[0],maxX))), round(max(0,min(pos[1],maxY)))))
+    def getInteractable(self, rmx, rmy):
+        return self.positionO.getInteract(rmx, rmy)
+
+class PointConnectionVisualObject:
+    '''A graph connection between two points on a graph. MEANT FOR THE GRAPH AND THE GRAPH ONLY.'''
+    def __init__(self, name, regionA, regionB):
+        self.type = "connection"
+        self.name = name
+        self.positionO = FixedRegionPositionalBox(regionA, regionB)
+        self.pathData = []
+    def tick(self, window, active, graphOffset, graphScale):
+        for point in self.pathData:
+            target = ((point[0]-graphOffset)*25/(graphScale+0.000001),100-point[1]*2.23)
+            # if 0 < target[0] and target[0] < 337 and 0 < target[1] and target[1] < 233:
+            placeOver(window, PATH_POINT_SELECTED_ARRAY if active else PATH_POINT_IDLE_ARRAY, addP(target, (29,364)), True)
+    def updatePos(self, rmx, rmy):
+        self.positionO.setPosition((rmx, rmy))
+    def setPathData(self, data):
+        self.pathData = data
     def keepInFrame(self, maxX, maxY):
         pos = self.positionO.getPosition()
         if pos[0] < 0 or maxX < pos[0] or pos[1] < 0 or maxY < pos[1]:

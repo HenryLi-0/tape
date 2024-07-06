@@ -125,7 +125,7 @@ class SingleSprite:
 
 # Compact Storage Reading
 
-def iterateThoughSingle(compact):
+def iterateThoughSingle(compact, partition = False):
     '''Returns a path of single sequences with straight or smooth connections given the compact path'''
     sequence = []
     timeStamps = [compact[i*3] for i in range(math.floor(len(compact)/3))]
@@ -133,7 +133,10 @@ def iterateThoughSingle(compact):
         add = []
         if compact[i*3+2] == "L": add = straightChangeAt(compact[i*3+1], compact[(i+1)*3+1], (compact[(i+1)*3]-compact[i*3])*RENDER_FPS)
         if compact[i*3+2] == "S": add = smoothChangeAt(compact[i*3+1], compact[(i+1)*3+1], (compact[(i+1)*3]-compact[i*3])*RENDER_FPS)
-        for state in add: sequence.append(roundf(state, PATH_FLOAT_ACCURACY))
+        if partition:
+            sequence.append([(compact[i*3] + roundf(ie/RENDER_FPS, PATH_FLOAT_ACCURACY), add[ie]) for ie in range(len(add))])
+        else:
+            for state in add: sequence.append(roundf(state, PATH_FLOAT_ACCURACY))
     return sequence
 
 def findStateThroughSingle(compact, time):
@@ -203,10 +206,18 @@ def readImgSingleFullState(state, images):
     img = rotateDeg(img, state[0][2])
     return img
 
-def listEVG(interactableVisualObjects):
+def listEVGPoints(interactableVisualObjects):
     '''Returns a list of all EVG Point Visual Object IDs in the given `interactableVisualObjects` list'''
     ids = []
     allIDs= list(interactableVisualObjects.keys())
     for id in allIDs:
         if interactableVisualObjects[id][0]=="evg" and interactableVisualObjects[id][1].type=="point": ids.append(id)
+    return ids
+
+def listEVGConnections(interactableVisualObjects):
+    '''Returns a list of all EVG Point Connection Visual Object IDs in the given `interactableVisualObjects` list'''
+    ids = []
+    allIDs= list(interactableVisualObjects.keys())
+    for id in allIDs:
+        if interactableVisualObjects[id][0]=="evg" and interactableVisualObjects[id][1].type=="connection": ids.append(id)
     return ids

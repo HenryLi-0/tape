@@ -126,6 +126,8 @@ POINT_SELECTED_ARRAY = numpy.array(POINT_SELECTED)
 RECTANGULAR_RED_BUTTON_ARRAY = numpy.array(Image.open(os.path.join("resources", "rectangular_red_button.png")).convert("RGBA"))
 RECTANGULAR_GREEN_BUTTON_ARRAY = numpy.array(Image.open(os.path.join("resources", "rectangular_green_button.png")).convert("RGBA"))
 UP_ARROW_ARRAY = numpy.array(Image.open(os.path.join("resources", "up_arrow.png")).convert("RGBA"))
+PATH_POINT_IDLE_ARRAY = numpy.array(Image.open(os.path.join("resources", "path_point_idle.png")).convert("RGBA"))
+PATH_POINT_SELECTED_ARRAY = numpy.array(Image.open(os.path.join("resources", "path_point_selected.png")).convert("RGBA"))
 
 TEST_PATH_VERY_COOL = [((0.0, 0.0, 0.0), 0, 100.0, 0.0, 100.0, 0.0, 0.0), ((1.333, 1.333, 14.405), 0, 112.787, 11.342, 100.0, 16.005, 0.667)]
 
