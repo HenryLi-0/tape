@@ -78,14 +78,19 @@ class Interface:
                 if key=="Return":
                     self.interacting = -998
                     break
+            if key in EDITOR_VISUAL_OFFSET_LEFT:
+                self.graphOffset -= (self.graphScale+0.000001)
+            if key in EDITOR_VISUAL_OFFSET_RIGHT:
+                self.graphOffset += (self.graphScale+0.000001)
         self.mouseScroll = mouseScroll
         if self.editorTab == "v" and 955<self.mx and 257<self.my and self.mx<1336 and self.my<537:
+            graphScalePrevious = self.graphScale
             self.graphScale = 10**(math.log(self.graphScale+0.000001,10) + self.mouseScroll/2500)-0.000001
             if abs(self.mouseScroll) > 0:
-                target = (self.mx-982)*(self.graphScale+0.000001)/25+self.graphOffset
-                self.graphOffset += (target-self.graphOffset)/2
+                self.graphOffset -= (self.graphScale-graphScalePrevious)*(self.mx-982)/25
         self.graphScale = 0.001 if self.graphScale < 0.001 else self.graphScale
         self.graphScale = 2000 if 2000 < self.graphScale else self.graphScale
+        self.graphOffset = 0 if self.graphOffset < 0 else self.graphOffset
         pass
 
         '''Interacting With...'''
@@ -220,8 +225,8 @@ class Interface:
                 else: pathP = iterateThroughSingle(data, True)
                 lenData = round(len(data)/3)
 
-                regen = False
                 '''Keybinds'''
+                regen = False
                 if self.previousEditorTab != "v":
                     self.stringKeyQueue = ""
                 else:
@@ -264,8 +269,6 @@ class Interface:
                     self.stringKeyQueue = ""
 
                 '''Graph Points and Editing'''
-                
-
                 if self.selectedProperty == 1: # Not coordinate data!
                     pass
                 else:
@@ -324,32 +327,31 @@ class Interface:
                         for i in range(len(evgConnections)):
                             self.interactableVisualObjects[evgConnections[i]][1].setPathData(pathP[i])
                     
-                    
 
                 self.previousSelectedProperty = self.selectedProperty
-
+                evgPoints = listEVGPoints(self.interactableVisualObjects)
+                evgConnections = listEVGConnections(self.interactableVisualObjects)
                 if self.interacting != -999:
                     if self.interactableVisualObjects[self.interacting][1].type == "point":
+                        i = evgPoints.index(self.interacting)
                         x, y = self.interactableVisualObjects[self.interacting][1].positionO.getPosition()
                         x = x*(self.graphScale+0.000001)/25+self.graphOffset
                         y = 100-(y/2.33)                        
-                        placeOver(img, displayText(f"{(roundf(x,2),roundf(y,2))}", "m"), (95,190), True)
+                        placeOver(img, displayText(f"P {i+1}: {(roundf(x,2),roundf(y,2))}", "m"), (95,190), True)
                     if self.interactableVisualObjects[self.interacting][1].type == "connection":
                         i = evgConnections.index(self.interacting)
                         if data[i*3+2] == "L": placeOver(img, displayText(f"C {i+1}: Linear", "m"), (95,190), True)
                         elif data[i*3+2] == "S": placeOver(img, displayText(f"C {i+1}: Smooth", "m"), (95,190), True)
-                        else: placeOver(img, displayText(f"C {i+0}: {data[i*3+2]}", "m"), (95,190), True)
+                        else: placeOver(img, displayText(f"C {i+1}: {data[i*3+2]}", "m"), (95,190), True)
                         if connectionEdit in ["L", "S"]:
                             data[i*3+2] = connectionEdit
                             self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
-
 
                 evgPoints = listEVGPoints(self.interactableVisualObjects)
                 evgConnections = listEVGConnections(self.interactableVisualObjects)
                 if 1 <= self.selectedProperty and self.selectedProperty <= 8:
                     placeOver(img, displayText(f"({self.selectedProperty}) - {PROPERTY_DISPLAY_NAMES[self.selectedProperty-1]} - [P: {len(evgPoints)}, C: {len(evgConnections)}, S: {sum([len(p) for p in pathP])}]", "m"), (170,135), True)
 
-                            
                 for id in self.interactableVisualObjects:
                     if self.interactableVisualObjects[id][0][0] == "e":
                         if self.interactableVisualObjects[id][1].type == "connection":
