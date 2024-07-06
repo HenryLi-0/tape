@@ -221,6 +221,7 @@ class Interface:
                     evgPoints = listEVGPoints(self.interactableVisualObjects)
                     evgConnections = listEVGConnections(self.interactableVisualObjects)
                     if self.previousEditorTab != "v" or self.selectedProperty != self.previousSelectedProperty:
+                        self.graphLastCheck = self.ticks
                         if len(evgPoints) > lenData:
                             for i in range(len(evgPoints)-lenData): self.interactableVisualObjects.pop(evgPoints[i])
                         else:
@@ -257,7 +258,7 @@ class Interface:
                             data[i*3] = x*(self.graphScale+0.000001)/25+self.graphOffset
                             y = 100-(y/2.33)
                             data[i*3+1] = y if abs(data[i*3+1]-y) > 5 else data[i*3+1]
-                        evgPoints = [data[i*3] for i in range(len(evgPoints)-1)]
+                        evgPoints = [data[i*3] for i in range(len(evgPoints))]
                         evgsS = evgPoints.copy()
                         evgsS.sort()
                         if evgPoints != evgsS:

@@ -87,7 +87,7 @@ class Window:
     def mPress(self, side = 0): self.mPressed = 1
     def mRelease(self, side = 0): self.mPressed = -999
     def keyPressed(self, key): self.keyQueue.append(str(key.keysym))
-    def mouseWheel(self, event): self.mouseScroll += event.delta
+    def mouseWheel(self, event): self.mouseScroll -= event.delta
     
     def start(self):
         '''start window main loop'''
