@@ -43,17 +43,18 @@ class SingleSprite:
         self.data = {
             "name":name, 
             "images":self.images, 
-            "c":[0,0,None], 
-            "r":[0,0,None],
-            "a":[0,0,None], 
-            "s":[0,0,None], 
-            "h":[0,0,None],
-            "t":[0,0,None],
-            "b":[0,0,None],
-            "w":[0,0,None]
+            "c":[0,(0,0),"L",1,(0,0),"L"], 
+            "r":[0,0,"L",1,0,"L"],
+            "a":[0,0,"L",1,0,"L"], 
+            "s":[0,0,"L",1,0,"L"], 
+            "h":[0,0,"L",1,0,"L"],
+            "t":[0,0,"L",1,0,"L"],
+            "b":[0,0,"L",1,0,"L"],
+            "w":[0,0,"L",1,0,"L"]
         }
     def setData(self, key, data):
         '''Sets a properity's set of data, given the key and data'''
+        dataCheck(key, data)
         self.data[key] = data
     def getData(self, key):
         '''Gets a properity's set of data, given the key'''
@@ -61,9 +62,9 @@ class SingleSprite:
     def generateSequence(self, key):
         '''Generates a state sequence for a given property, given the key'''
         if key == "c": return iterateThroughPath(self.data["c"])
-        if key == "p": return mergeCoordRotationPath(iterateThroughPath(self.data["c"]), iterateThoughSingle(self.data["r"]))
-        if key == "a": return [max(0, min(len(self.images)-1, round(item))) for item in iterateThoughSingle(self.data["a"])]
-        if key in "rshtbw" and len(key) == 1: return iterateThoughSingle(self.data[key])
+        if key == "p": return mergeCoordRotationPath(iterateThroughPath(self.data["c"]), iterateThroughSingle(self.data["r"]))
+        if key == "a": return [max(0, min(len(self.images)-1, round(item))) for item in iterateThroughSingle(self.data["a"])]
+        if key in "rshtbw" and len(key) == 1: return iterateThroughSingle(self.data[key])
     def getStateAt(self, key, time):
         '''Returns a state of a given property for a given time, given the key and time'''
         if key == "c": return findStateThroughPath(self.data["c"], time)
@@ -122,10 +123,25 @@ class SingleSprite:
         '''Sets the name of the sprite'''
         self.name = name
 
+def dataCheck(key, data):
+    '''Modifies the original given data with all checked values (rounding and connections)'''
+    dataLen = round(len(data)/3)
+    for i in range(dataLen):
+        data[i*3] = roundf(data[i*3], PATH_FLOAT_ACCURACY)
+        if key in "rashtbw " and len(key) == 1:
+            data[i*3+1] = roundf(data[i*3+1], PATH_FLOAT_ACCURACY)
+        if key == "c":
+            data[i*3+1] = (roundf(data[i*3+1][0], PATH_FLOAT_ACCURACY), roundf(data[i*3+1][1], PATH_FLOAT_ACCURACY))
+        if data[i*3+2] == None and i != dataLen-1:
+            data[i*3+2] = "L"
+    if dataLen == 0:
+        for thing in ["L", (0,0) if key == "c" else 0, 2]: data.insert(0, thing)
+    if dataLen == 1:
+        for thing in ["L", (0,0) if key == "c" else 0, 1]: data.insert(0, thing)
 
 # Compact Storage Reading
 
-def iterateThoughSingle(compact, partition = False):
+def iterateThroughSingle(compact, partition = False):
     '''Returns a path of single sequences with straight or smooth connections given the compact path'''
     sequence = []
     timeStamps = [compact[i*3] for i in range(math.floor(len(compact)/3))]
@@ -152,7 +168,7 @@ def findStateThroughSingle(compact, time):
     elif compact[low*3+2] == "S": return smoothChangeAt(compact[low*3+1], compact[(low+1)*3+1], (compact[(low+1)*3]-compact[low*3])*RENDER_FPS)[index]
     else: return compact[low*3+1]
 
-def iterateThroughPath(compact):
+def iterateThroughPath(compact, partion = False):
     '''Returns a path of coordinates, given the compact storage of the path'''
     path = []
     timeStamps = [compact[i*3] for i in range(math.floor(len(compact)/3))]
@@ -167,7 +183,10 @@ def iterateThroughPath(compact):
                 i+=1
             temp.append(i+1)
             add = timelyBezierPathCoords([compact[ie*3+1] for ie in temp], [round((timeStamps[temp[ie]]-timeStamps[temp[ie-1]])*RENDER_FPS) for ie in range(1,len(temp))])
-        for coord in add: path.append((coord[0], coord[1]))
+        if partion:
+            path.append(add)
+        else:
+            for coord in add: path.append((coord[0], coord[1]))
         i+=1
     return path
 

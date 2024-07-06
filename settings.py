@@ -40,6 +40,8 @@ EDITOR_VISUAL_KEYBINDS = {
     7 : "B",
     8 : "W"
 }
+EDITOR_VISUAL_LINEAR_CONNECTION = ["Q", "q"]
+EDITOR_VISUAL_SMOOTH_CONNECTION = ["W", "w"]
 
 '''Constants - DO NOT CHANGE!!!'''
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 

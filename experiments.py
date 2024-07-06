@@ -104,10 +104,19 @@ from PIL import Image
 Image.fromarray(setBrightness(PLACEHOLDER_IMAGE_5_ARRAY, 50)).show()
 '''
 
-thingy = [
-    [0,5,6],
-    [0.5,999,2],
-    [1,0,0]
+from subsystems.sprite import iterateThroughPath
+compact = [
+    0, 1, "S",
+    1, 2, "S"
 ]
-thingy.sort(key = lambda x: x[1])
-print(thingy)
+a = iterateThroughPath(compact, True)
+
+compact = [
+    0, 1, "S",
+    1, 2, None
+]
+b = iterateThroughPath(compact, True)
+
+print(a)
+print(b)
+print(a == b)

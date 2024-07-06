@@ -233,19 +233,23 @@ class PointConnectionVisualObject:
     def tick(self, window, active, graphOffset, graphScale):
         if len(self.pathData) > 0:
             previousTargetX = (self.pathData[0][0]-graphOffset)*25/(graphScale+0.000001)
-            previousTargetY = (self.pathData[0][1]-graphOffset)*25/(graphScale+0.000001)
+            previousTargetY = 100-self.pathData[0][1]*2.23
             for point in self.pathData:
                 target = ((point[0]-graphOffset)*25/(graphScale+0.000001),100-point[1]*2.23)
                 if 0 < target[0] and target[0] < 337 and (abs(target[0]-previousTargetX) > 5 or abs(target[1]-previousTargetY) > 5):
                     placeOver(window, PATH_POINT_SELECTED_ARRAY if active else PATH_POINT_IDLE_ARRAY, addP(target, (29,364)), True)
                     previousTargetX, previousTargetY = target
-
+            self.setShapeTime((self.pathData[0][0],self.pathData[0][1]),(self.pathData[-1][0],self.pathData[-1][1]), graphOffset, graphScale)
+        else:
+            self.setShapeTime((0,0),(0,0), graphOffset, graphScale)
     def updatePos(self, rmx, rmy):
         self.positionO.setPosition((rmx, rmy))
     def setPathData(self, data):
         self.pathData = data
-    def setShape(self, pointA, pointB):
-        self.positionO.setRegion(pointA, pointB)
+    def setShapeTime(self, pointA, pointB, graphOffset, graphScale):
+        a = ((pointA[0]-graphOffset)*25/(graphScale+0.000001), 243)
+        b = ((pointB[0]-graphOffset)*25/(graphScale+0.000001), 475)
+        self.positionO.setRegion(a,b)
     def keepInFrame(self, maxX, maxY):
         pos = self.positionO.getPosition()
         if pos[0] < 0 or maxX < pos[0] or pos[1] < 0 or maxY < pos[1]:
