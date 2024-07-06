@@ -81,6 +81,9 @@ class Interface:
         self.mouseScroll = mouseScroll
         if self.editorTab == "v" and 955<self.mx and 257<self.my and self.mx<1336 and self.my<537:
             self.graphScale = 10**(math.log(self.graphScale+0.000001,10) + self.mouseScroll/2500)-0.000001
+            if abs(self.mouseScroll) > 0:
+                target = (self.mx-982)*(self.graphScale+0.000001)/25+self.graphOffset
+                self.graphOffset += (target-self.graphOffset)/2
         self.graphScale = 0.001 if self.graphScale < 0.001 else self.graphScale
         self.graphScale = 2000 if 2000 < self.graphScale else self.graphScale
         pass
@@ -210,6 +213,15 @@ class Interface:
                             time = str(time)
                         placeOver(img, displayText(time, "s"), (pos,492), True)
                 
+                '''Get Data and Stuff'''
+                data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
+                dataCheck("crashtbw"[self.selectedProperty-1], data)
+                if self.selectedProperty == 1: pathP = iterateThroughPath(data, True)
+                else: pathP = iterateThroughSingle(data, True)
+                lenData = round(len(data)/3)
+
+                regen = False
+                '''Keybinds'''
                 if self.previousEditorTab != "v":
                     self.stringKeyQueue = ""
                 else:
@@ -220,21 +232,46 @@ class Interface:
                         if str(keybind) in self.stringKeyQueue: connectionEdit = "L"
                     for keybind in EDITOR_VISUAL_SMOOTH_CONNECTION:
                         if str(keybind) in self.stringKeyQueue: connectionEdit = "S"
+
+                    for keybind in EDITOR_VISUAL_POINT_CREATE:
+                        if str(keybind) in self.stringKeyQueue:
+                            if self.interacting == -999:
+                                x = (self.mx-982)*(self.graphScale+0.000001)/25+self.graphOffset
+                                y = 100-((self.my-279)/2.33)   
+                                timeStamps = [data[i*3] for i in range(lenData)]
+                                low = -1
+                                for i in range(len(timeStamps)-1):
+                                    if timeStamps[i]<=x: low = i
+                                    else: break
+                                for item in ["L", (0,0) if self.selectedProperty == 1 else y, x]: data.insert((low+1)*3, item)
+                                self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
+                                dataCheck("crashtbw"[self.selectedProperty-1], data)
+                                if self.selectedProperty == 1: pathP = iterateThroughPath(data, True)
+                                else: pathP = iterateThroughSingle(data, True)
+                                lenData = round(len(data)/3)
+                                self.interacting = -999
+                                regen = True                                
+                    for keybind in EDITOR_VISUAL_POINT_DELETE:
+                        if str(keybind) in self.stringKeyQueue and self.interacting != -999:
+                            if self.interactableVisualObjects[self.interacting][1].type == "point":
+                                index = listEVGPoints(self.interactableVisualObjects).index(self.interacting)
+                                for i in range(3): data.pop(index*3)
+                                self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
+                                lenData = round(len(data)/3)
+                                self.interacting = -999
+                                regen = True
+                    
                     self.stringKeyQueue = ""
 
                 '''Graph Points and Editing'''
-                data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
-                dataCheck("crashtbw"[self.selectedProperty-1], data)
-                if self.selectedProperty == 1: pathP = iterateThroughPath(data, True)
-                else: pathP = iterateThroughSingle(data, True)
-                lenData = round(len(data)/3)
+                
 
                 if self.selectedProperty == 1: # Not coordinate data!
                     pass
                 else:
                     evgPoints = listEVGPoints(self.interactableVisualObjects)
                     evgConnections = listEVGConnections(self.interactableVisualObjects)
-                    if self.previousEditorTab != "v" or self.selectedProperty != self.previousSelectedProperty:
+                    if self.previousEditorTab != "v" or self.selectedProperty != self.previousSelectedProperty or regen:
                         self.graphLastCheck = self.ticks
                         if len(evgPoints) > lenData:
                             for i in range(len(evgPoints)-lenData): self.interactableVisualObjects.pop(evgPoints[i])

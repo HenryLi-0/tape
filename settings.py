@@ -42,6 +42,8 @@ EDITOR_VISUAL_KEYBINDS = {
 }
 EDITOR_VISUAL_LINEAR_CONNECTION = ["Q", "q"]
 EDITOR_VISUAL_SMOOTH_CONNECTION = ["W", "w"]
+EDITOR_VISUAL_POINT_CREATE = ["A", "a"]
+EDITOR_VISUAL_POINT_DELETE = ["S", "s"]
 
 '''Constants - DO NOT CHANGE!!!'''
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 
