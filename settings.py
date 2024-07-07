@@ -44,8 +44,10 @@ EDITOR_VISUAL_LINEAR_CONNECTION = ["Q", "q"]
 EDITOR_VISUAL_SMOOTH_CONNECTION = ["W", "w"]
 EDITOR_VISUAL_POINT_CREATE = ["A", "a"]
 EDITOR_VISUAL_POINT_DELETE = ["S", "s"]
-EDITOR_VISUAL_OFFSET_LEFT = ["Left"]
-EDITOR_VISUAL_OFFSET_RIGHT = ["Right"]
+EDITOR_VISUAL_OFFSET_LEFT = ["Z", "z"]
+EDITOR_VISUAL_OFFSET_RIGHT = ["X", "x"]
+TIMELINE_OFFSET_LEFT = ["Left"]
+TIMELINE_OFFSET_RIGHT = ["Right"]
 
 '''Constants - DO NOT CHANGE!!!'''
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 
@@ -86,6 +88,7 @@ EDITOR_SPACING = lambda x: x*20+15
 
 D_FRAME_ANIMATION_PATH = os.path.join("resources", "themed", "frame_animation.png")
 D_FRAME_TIMELINE_PATH = os.path.join("resources", "themed", "frame_timeline.png")
+D_FRAME_TIMELINE_READER_PATH = os.path.join("resources", "themed", "frame_timeline_reader.png")
 D_FRAME_EDITOR_PATH = os.path.join("resources", "themed", "frame_editor.png")
 D_FRAME_EDITOR_VISUALS_PATH = os.path.join("resources", "themed", "frame_editor_visuals.png")
 D_FRAME_EDITOR_VISUALS_GRAPH_PATH = os.path.join("resources", "themed", "frame_editor_visuals_graph.png")
@@ -97,6 +100,8 @@ FRAME_ANIMATION = Image.open(os.path.join("resources", "themed", "u_frame_animat
 FRAME_ANIMATION_ARRAY = numpy.array(FRAME_ANIMATION)
 FRAME_TIMELINE = Image.open(os.path.join("resources", "themed", "u_frame_timeline.png")).convert("RGBA")
 FRAME_TIMELINE_ARRAY = numpy.array(FRAME_TIMELINE)
+FRAME_TIMELINE_READER = Image.open(os.path.join("resources", "themed", "u_frame_timeline_reader.png")).convert("RGBA")
+FRAME_TIMELINE_READER_ARRAY = numpy.array(FRAME_TIMELINE_READER)
 FRAME_EDITOR = Image.open(os.path.join("resources", "themed", "u_frame_editor.png")).convert("RGBA")
 FRAME_EDITOR_ARRAY = numpy.array(FRAME_EDITOR)
 FRAME_EDITOR_VISUALS = Image.open(os.path.join("resources", "themed", "u_frame_editor_visuals.png")).convert("RGBA")

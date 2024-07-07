@@ -49,6 +49,8 @@ class Interface:
         self.previousSelectedProperty = self.selectedProperty
         self.graphScale = 1.0
         self.graphOffset = 0
+        self.timelineScale = 1.0
+        self.timelineOffset = 0
         self.interacting = -999
         self.editorTab = "p"
         self.previousEditorTab = self.editorTab
@@ -66,7 +68,7 @@ class Interface:
         self.fps = fps
         self.ticks += 1 if self.fps==0 else round(RENDER_FPS/self.fps)
 
-        '''Keyboard and Scroll (graph only)'''
+        '''Keyboard and Scroll (graph and timeline)'''
         for key in keyQueue: 
             if key in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789":
                 self.stringKeyQueue+=key
@@ -82,6 +84,10 @@ class Interface:
                 self.graphOffset -= (self.graphScale+0.000001)
             if key in EDITOR_VISUAL_OFFSET_RIGHT:
                 self.graphOffset += (self.graphScale+0.000001)
+            if key in TIMELINE_OFFSET_LEFT:
+                self.timelineOffset -= (self.timelineScale+0.000001)
+            if key in TIMELINE_OFFSET_RIGHT:
+                self.timelineOffset += (self.timelineScale+0.000001)
         self.mouseScroll = mouseScroll
         if self.editorTab == "v" and 955<self.mx and 257<self.my and self.mx<1336 and self.my<537:
             graphScalePrevious = self.graphScale
@@ -91,6 +97,18 @@ class Interface:
         self.graphScale = 0.001 if self.graphScale < 0.001 else self.graphScale
         self.graphScale = 2000 if 2000 < self.graphScale else self.graphScale
         self.graphOffset = 0 if self.graphOffset < 0 else self.graphOffset
+        if 71<self.mx and 558<self.my and self.mx<925 and self.my<679:
+            timelineScalePrevious = self.timelineScale
+            self.timelineScale = 10**(math.log(self.timelineScale+0.000001,10) + self.mouseScroll/2500)-0.000001
+            if abs(self.mouseScroll) > 0:
+                self.timelineOffset -= (self.timelineScale-timelineScalePrevious)*(self.mx-71)/25
+            if mPressed:
+                self.animationTime = (self.mx-71)*(self.timelineScale+0.000001)/25+self.timelineOffset
+                if self.animationTime < 0: self.animationTime = 0
+        self.timelineScale = 0.001 if self.timelineScale < 0.001 else self.timelineScale
+        self.timelineScale = 2000 if 2000 < self.timelineScale else self.timelineScale
+        self.timelineOffset = 0 if self.timelineOffset < 0 else self.timelineOffset
+
         pass
 
         '''Interacting With...'''
@@ -152,6 +170,14 @@ class Interface:
         # aSillyCat = rotateDeg(UP_ARROW_ARRAY,pointAt((350,350),(self.mx, self.my)))
         # placeOver(img, aSillyCat, (round(350+(128-aSillyCat.shape[1])/2),round(350+(128-aSillyCat.shape[0])/2)))
 
+        placeOver(img, displayText(f"FPS: {self.fps}", "m"), (55,15))
+        placeOver(img, displayText(f"Relative (animation) Mouse Position: ({self.mx-23}, {self.my-36})", "m"), (455,55))
+        placeOver(img, displayText(f"Mouse Pressed: {self.mPressed}", "m", colorTXT = (0,255,0,255) if self.mPressed else (255,0,0,255)), (55,55))
+        placeOver(img, displayText(f"Rising Edge: {self.mRising}", "m", colorTXT = (0,255,0,255) if self.mRising else (255,0,0,255)), (55,95))
+        placeOver(img, displayText(f"Interacting With Element: {self.interacting}", "m"), (455,15))
+        placeOver(img, displayText(f"stringKeyQueue: {self.stringKeyQueue}", "m"), (455,95))
+
+
         for id in self.interactableVisualObjects:
             if self.interactableVisualObjects[id][0] == "a":
                 self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
@@ -180,12 +206,26 @@ class Interface:
     def getImageTimeline(self):
         '''Timeline Interface: `(23,558) to (925,680)`: size `(903,123)`'''
         img = FRAME_TIMELINE_ARRAY.copy()
-        placeOver(img, displayText(f"FPS: {self.fps}", "m"), (55,15))
-        placeOver(img, displayText(f"Relative (animation) Mouse Position: ({self.mx-23}, {self.my-36})", "m"), (455,55))
-        placeOver(img, displayText(f"Mouse Pressed: {self.mPressed}", "m", colorTXT = (0,255,0,255) if self.mPressed else (255,0,0,255)), (55,55))
-        placeOver(img, displayText(f"Rising Edge: {self.mRising}", "m", colorTXT = (0,255,0,255) if self.mRising else (255,0,0,255)), (55,95))
-        placeOver(img, displayText(f"Interacting With Element: {self.interacting}", "m"), (455,15))
-        placeOver(img, displayText(f"stringKeyQueue: {self.stringKeyQueue}", "m"), (455,95))
+        startI = round(self.timelineOffset/(10**math.floor(math.log(self.timelineScale+0.000001,10)+1)))
+        for i in range(startI - 3, startI + 33):
+            pos = 48 + ((i*(10**math.floor(math.log(self.timelineScale+0.000001,10)+1)))-self.timelineOffset)*(1/(self.timelineScale+0.000001))*25
+            if pos > 902: break
+            if pos > 48: 
+                placeOver(img, FRAME_EDITOR_VISUALS_GRAPH_BAR_ARRAY, (pos, 0))
+                time = roundf((i*(10**math.floor(math.log(self.timelineScale+0.000001,10)+1))),2)
+                if time >= 1:
+                    if time < 3600:
+                        time = "{:02}:{:02}".format(math.floor(time/60), roundf(time%60,2))
+                    else:
+                        time = "{:02}:{:02}:{:02}".format(math.floor(time/3600), math.floor((time-3600*math.floor(time/3600))/60), roundf(time%60,2))
+                else:
+                    time = str(time)
+                placeOver(img, displayText(time, "s"), (pos,15), True)
+        
+        pos = (self.animationTime-self.timelineOffset)*25/(self.timelineScale+0.000001) + 51
+        if 48 < pos and pos < 896:
+            placeOver(img, FRAME_TIMELINE_READER_ARRAY, (pos, 3))
+
 
         return arrayToImage(img)
     
