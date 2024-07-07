@@ -104,6 +104,7 @@ class Interface:
                 self.timelineOffset -= (self.timelineScale-timelineScalePrevious)*(self.mx-71)/25
             if mPressed:
                 self.animationTime = (self.mx-71)*(self.timelineScale+0.000001)/25+self.timelineOffset
+                self.animationTime = roundf(round(self.animationTime * RENDER_FPS) / RENDER_FPS, PATH_FLOAT_ACCURACY)
                 if self.animationTime < 0: self.animationTime = 0
         self.timelineScale = 0.001 if self.timelineScale < 0.001 else self.timelineScale
         self.timelineScale = 2000 if 2000 < self.timelineScale else self.timelineScale
@@ -211,7 +212,7 @@ class Interface:
             pos = 48 + ((i*(10**math.floor(math.log(self.timelineScale+0.000001,10)+1)))-self.timelineOffset)*(1/(self.timelineScale+0.000001))*25
             if pos > 902: break
             if pos > 48: 
-                placeOver(img, FRAME_EDITOR_VISUALS_GRAPH_BAR_ARRAY, (pos, 0))
+                placeOver(img, FRAME_EDITOR_VISUALS_GRAPH_BAR_ARRAY, (pos, 25))
                 time = roundf((i*(10**math.floor(math.log(self.timelineScale+0.000001,10)+1))),2)
                 if time >= 1:
                     if time < 3600:
@@ -222,9 +223,9 @@ class Interface:
                     time = str(time)
                 placeOver(img, displayText(time, "s"), (pos,15), True)
         
-        pos = (self.animationTime-self.timelineOffset)*25/(self.timelineScale+0.000001) + 51
-        if 48 < pos and pos < 896:
-            placeOver(img, FRAME_TIMELINE_READER_ARRAY, (pos, 3))
+        pos = (self.animationTime-self.timelineOffset)*25/(self.timelineScale+0.000001) + 47
+        if 46 < pos and pos < 896:
+            placeOver(img, FRAME_TIMELINE_READER_ARRAY, (max(51,pos), 3))
 
 
         return arrayToImage(img)
