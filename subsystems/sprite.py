@@ -3,7 +3,7 @@
 from settings import *
 import numpy, math
 from subsystems.pathing import smoothChangeAt, straightChangeAt, roundf, timelyBezierPathCoords, selectiveBezierPathCoords, straightPathCoords, mergeCoordRotationPath, betweenP
-from subsystems.render import rotateDeg, setSize, setColorEffect, setTransparency, setBrightness, setBlur
+from subsystems.render import rotateDegHundred, setSize, setColorEffect, setTransparency, setBrightness, setBlur
 from settings import PATH_FLOAT_ACCURACY, RENDER_FPS
 
 class SingleSprite:
@@ -43,14 +43,14 @@ class SingleSprite:
         self.data = {
             "name":name, 
             "images":self.images, 
-            "c":[0,(0,0),"L",1,(0,0),"L"], 
-            "r":[0,0,"L",1,0,"L"],
-            "a":[0,0,"L",1,0,"L"], 
-            "s":[0,0,"L",1,0,"L"], 
-            "h":[0,0,"L",1,0,"L"],
-            "t":[0,0,"L",1,0,"L"],
-            "b":[0,0,"L",1,0,"L"],
-            "w":[0,0,"L",1,0,"L"]
+            "c":[0,(0,0),"L",1,(0,0),"L"],  # Coordinate
+            "r":[0,    0,"L",1,    0,"L"],  # Rotation - 0 up CCW
+            "a":[0,    0,"L",1,    0,"L"],  # Apperance - 0 = image0
+            "s":[0,   50,"L",1,   50,"L"],  # Size - 50 = normal
+            "h":[0,    0,"L",1,    0,"L"],  # Hue - 0 = normal
+            "t":[0,  100,"L",1,  100,"L"],  # Transparency - 100 = normal
+            "b":[0,   50,"L",1,   50,"L"],  # Brightness - 50 = normal
+            "w":[0,    0,"L",1,    0,"L"]   # Blur - 0 = normal
         }
     def setData(self, key, data):
         '''Sets a properity's set of data, given the key and data'''
@@ -175,17 +175,20 @@ def iterateThroughPath(compact, partion = False):
     connections = [compact[i*3+2] for i in range(math.floor(len(compact)/3))]
     i = 0
     while i < len(timeStamps)-1:
-        if connections[i] == "L": add = straightPathCoords([compact[i*3+1], compact[(i+1)*3+1]], round((compact[(i+1)*3]-compact[i*3])*RENDER_FPS))
+        if connections[i] == "L": 
+            add = straightPathCoords([compact[i*3+1], compact[(i+1)*3+1]], round((compact[(i+1)*3]-compact[i*3])*RENDER_FPS))
+            if partion: path.append([(compact[i*3] + roundf(ie/RENDER_FPS, PATH_FLOAT_ACCURACY), add[ie]) for ie in range(len(add))])
         if connections[i] == "S":
             temp = [i]
             while connections[i+1] == "S":
                 temp.append(i+1)
                 i+=1
             temp.append(i+1)
-            add = timelyBezierPathCoords([compact[ie*3+1] for ie in temp], [round((timeStamps[temp[ie]]-timeStamps[temp[ie-1]])*RENDER_FPS) for ie in range(1,len(temp))])
-        if partion:
-            path.append([(compact[i*3] + roundf(ie/RENDER_FPS, PATH_FLOAT_ACCURACY), add[ie]) for ie in range(len(add))])
-        else:
+            add = timelyBezierPathCoords([compact[ie*3+1] for ie in temp], [round((timeStamps[temp[ie]]-timeStamps[temp[ie-1]])*RENDER_FPS) for ie in range(1,len(temp))], True)
+            if partion:
+                for addSegment in add:
+                    path.append([(compact[i*3] + roundf(ie/RENDER_FPS, PATH_FLOAT_ACCURACY), addSegment[ie]) for ie in range(len(addSegment))])
+        if not(partion):
             for coord in add: path.append((coord[0], coord[1]))
         i+=1
     return path
@@ -206,7 +209,7 @@ def findStateThroughPath(compact, time):
             bottom += -1
         while connections[top+1] == "S":
             top += 1
-        segment = selectiveBezierPathCoords([compact[point*3+1] for point in range(bottom, top+2)], (compact[(low+1)*3]-compact[low*3])*RENDER_FPS, low)
+        segment = selectiveBezierPathCoords([compact[point*3+1] for point in range(bottom, top+2)], round((compact[(low+1)*3]-compact[low*3])*RENDER_FPS), low)
         return segment[round((time-compact[(low)*3])*RENDER_FPS)]
 
 def protectedBoundary(sequence, i):
@@ -222,7 +225,7 @@ def readImgSingleFullState(state, images):
     img = setTransparency(img, state[4])
     img = setBrightness(img, state[5])
     img = setBlur(img, state[6])
-    img = rotateDeg(img, state[0][2])
+    img = rotateDegHundred(img, state[0][2])
     return img
 
 def listEVGPoints(interactableVisualObjects):

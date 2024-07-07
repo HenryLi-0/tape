@@ -2,7 +2,7 @@
 
 from settings import *
 from PIL import ImageTk, Image
-import time
+import time, random
 from subsystems.render import *
 from subsystems.fancy import displayText, generateColorBox, generateBorderBox
 from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject, EditableTextBoxVisualObject, DummyVisualObject, PointVisualObject, PointConnectionVisualObject
@@ -43,7 +43,6 @@ class Interface:
         self.sprites = [
             SingleSprite("test")
         ]
-        self.sprites[0].setData("r", [1,2,"S",5,6,"S",10, 100,"S", 25, 0, "S", 30, 50, None])
         self.selectedSprite = 0
         self.selectedProperty = 2
         self.previousSelectedProperty = self.selectedProperty
@@ -192,7 +191,11 @@ class Interface:
         bigPath = TEST_PATH_VERY_COOL 
 
         frame = bigPath[self.ticks%(len(bigPath)-1)]
-        placeOver(img, readImgSingleFullState(frame, [PLACEHOLDER_IMAGE_5_ARRAY]), (frame[0][0],frame[0][1]), True)
+
+        for sprite in self.sprites:
+            frame = sprite.getFullStateAt(self.animationTime)
+            placeOver(img, readImgSingleFullState(frame, sprite.images), (frame[0][0],frame[0][1]), True)
+
 
         placeOver(img, displayText(f"at frame {self.ticks%(len(bigPath)-1)} of {len(bigPath)-1}","m"), (50,450))
 
@@ -265,7 +268,6 @@ class Interface:
                 if self.selectedProperty == 1: 
                     pathP = iterateThroughPath(data, True)
                     pathV = [coordVelocity(partition) for partition in pathP]
-                    print(pathV)
                 else: 
                     pathP = iterateThroughSingle(data, True)
                 lenData = round(len(data)/3)
@@ -294,11 +296,14 @@ class Interface:
                                 for i in range(len(timeStamps)-1):
                                     if timeStamps[i]<=x: low = i
                                     else: break
-                                for item in ["L", (0,0) if self.selectedProperty == 1 else y, x]: data.insert((low+1)*3, item)
+                                for item in ["L", (random.randrange(0,903),random.randrange(0,507)) if self.selectedProperty == 1 else y, x]: data.insert((low+1)*3, item)
                                 self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
                                 dataCheck("crashtbw"[self.selectedProperty-1], data)
-                                if self.selectedProperty == 1: pathP = iterateThroughPath(data, True)
-                                else: pathP = iterateThroughSingle(data, True)
+                                if self.selectedProperty == 1: 
+                                    pathP = iterateThroughPath(data, True)
+                                    pathV = [coordVelocity(partition) for partition in pathP]
+                                else: 
+                                    pathP = iterateThroughSingle(data, True)
                                 lenData = round(len(data)/3)
                                 self.interacting = -999
                                 regen = True                                
@@ -376,7 +381,9 @@ class Interface:
                     self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
                     evgConnections = listEVGConnections(self.interactableVisualObjects)
                     for i in range(len(evgConnections)):
-                        if self.selectedProperty == 1: self.interactableVisualObjects[evgConnections[i]][1].setPathData(pathV[i])
+                        if self.selectedProperty == 1: 
+                            print(f"pathV {len(pathV)}, evgConnections: {len(evgConnections)}")
+                            self.interactableVisualObjects[evgConnections[i]][1].setPathData(pathV[i])
                         else: self.interactableVisualObjects[evgConnections[i]][1].setPathData(pathP[i])
                     
 

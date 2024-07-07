@@ -89,9 +89,9 @@ def bezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int):
         return totalPath
     else: return straightPathCoords(coords,steps)
 
-def timelyBezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: tuple|list):
+def timelyBezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: tuple|list, partion = False):
     '''Generates a bezier path of coordinates based on a given list of coords and time, with a changing number of steps number of points between each given coordinate based on the given steps list'''
-    if len(coords) == 0: return []
+    if len(coords) == 0: return [[]] if partion else []
     if len(coords) >= 3:
         coordsc = coords.copy()
         coordsI = range(1,len(coordsc)-1)
@@ -102,10 +102,16 @@ def timelyBezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: tu
         for i in coordsI:
             coordsc.insert(i*2+1, subtractP(multiplyP(coordsc[i*2],2),coordsc[i*2-1]))
             bezier = bezierCurve(coordsc[i*2],coordsc[i*2+1],coordsc[i*2+2])
-            for t in range(0, steps[i]): totalPath.append(roundp(bezier(t/steps[i])))
-        totalPath.append(coordsc[-1])
+            if partion:
+                tempPath = []
+                for t in range(0, steps[i]): tempPath.append(roundp(bezier(t/steps[i])))
+                totalPath.append(tempPath)
+            else:
+                for t in range(0, steps[i]): totalPath.append(roundp(bezier(t/steps[i])))
+        if not(partion):
+            totalPath.append(coordsc[-1])
         return totalPath
-    else: return straightPathCoords(coords,steps)
+    else: return [straightPathCoords(coords,steps[0])]
 
 def selectiveBezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int, lower: tuple|list):
     '''Generates a bezier path of coordinates between a given low point and the next point, based on a given list of coords and the index of the lower point, with steps number of points between the given coordinates'''

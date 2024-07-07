@@ -70,10 +70,14 @@ def rotateDeg(img: numpy.ndarray, degrees:float):
     '''Returns an array of a rotated version of the given image by (degrees) degrees, using the 0 up CCW rotation system'''
     return numpy.array(Image.fromarray(img).rotate(degrees,expand=True))
 
+def rotateDegHundred(img: numpy.ndarray, cent:float):
+    '''Returns an array of a rotated version of the given image by (cent) cents, using the 0 up CCW rotation system. 100 cents = 360 degrees, 1 cent = 3.6 degrees'''
+    return numpy.array(Image.fromarray(img).rotate(cent*3.6,expand=True))
+
 def setSize(img: numpy.ndarray, size):
-    '''Returns a copy of the given image scaled by size, given the size change (given with 100 as normal, >100 scale up, <100 scale down)'''
+    '''Returns a copy of the given image scaled by size, given the size change (given with 50 as normal, >50 scale up, <50 scale down)'''
     x, y, temp = img.shape
-    return numpy.array(Image.fromarray(img).resize((max(1, (round(x*size/100))),max(1, round(y*size/100)))))
+    return numpy.array(Image.fromarray(img).resize((max(1, (round(x*(size/50)**2))),max(1, round(y*(size/50)**2)))))
 
 def setColorEffect(img: numpy.ndarray, colorEffect):
     '''Returns a copy of the given image with a color shift, given the shift value (given 0-100)'''
@@ -89,9 +93,9 @@ def setTransparency(img: numpy.ndarray, transparency):
     return imgc
 
 def setBrightness(img: numpy.ndarray, brightness):
-    '''Returns a copy of the given image with brightness changed, given the brightness value (>0 = brighter, <0 = darker)'''
+    '''Returns a copy of the given image with brightness changed, given the brightness value (>50 = brighter, <50 = darker)'''
     imgc = ImageEnhance.Brightness(Image.fromarray(img))
-    imgc = imgc.enhance((brightness+100)/100)
+    imgc = imgc.enhance((brightness+50)/100)
     return numpy.array(imgc)
 
 def setBlur(img: numpy.ndarray, pixelation):
