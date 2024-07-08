@@ -160,6 +160,7 @@ def findStateThroughSingle(compact, time):
     timeStamps = [compact[i*3] for i in range(math.floor(len(compact)/3))]
     if time <= timeStamps[0]: return compact[1]
     if time >= timeStamps[-1]: return compact[-2]
+    low = 0
     for i in range(len(timeStamps)-1):
         if timeStamps[i]<=time: low = i
         else: break
@@ -197,6 +198,7 @@ def findStateThroughPath(compact, time):
     '''Returns a path of coordinates at a given time, given the compact storage of the path'''
     timeStamps = [compact[i*3] for i in range(math.floor(len(compact)/3))]
     connections = [compact[i*3+2] for i in range(math.floor(len(compact)/3))]
+    low = 0
     for i in range(len(timeStamps)-1):
         if timeStamps[i]<=time: low = i
         else: break
@@ -210,7 +212,7 @@ def findStateThroughPath(compact, time):
         while connections[top+1] == "S":
             top += 1
         segment = selectiveBezierPathCoords([compact[point*3+1] for point in range(bottom, top+2)], round((compact[(low+1)*3]-compact[low*3])*RENDER_FPS), low)
-        return segment[round((time-compact[(low)*3])*RENDER_FPS)]
+        return protectedBoundary(segment, round((time-compact[(low)*3])*RENDER_FPS))
 
 def protectedBoundary(sequence, i):
     if len(sequence) == 0: return 0

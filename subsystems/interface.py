@@ -149,26 +149,22 @@ class Interface:
             self.stringKeyQueue = self.interactableVisualObjects[self.interacting][1].txt
         if (self.interacting != -999) and (self.interactableVisualObjects[self.interacting][1].type  == "textbox"):
             self.interactableVisualObjects[self.interacting][1].updateText(self.stringKeyQueue)
-        if (previousInteracting != -999) and (previousInteracting != -998) and (self.interactableVisualObjects[previousInteracting][1].type  == "textbox"):
-            if not(self.interacting == -998):
-                self.interacting = previousInteracting
-                self.interactableVisualObjects[self.interacting][1].updateText(self.stringKeyQueue)
-            else:
-                self.interactableVisualObjects[previousInteracting][1].updateText(self.stringKeyQueue)
+        if (previousInteracting != -999) and (previousInteracting != -998):
+            if (self.interactableVisualObjects[previousInteracting][1].type  == "textbox"):
+                if not(self.interacting == -998):
+                    self.interacting = previousInteracting
+                    self.interactableVisualObjects[self.interacting][1].updateText(self.stringKeyQueue)
+                else:
+                    self.interactableVisualObjects[previousInteracting][1].updateText(self.stringKeyQueue)
+            if (self.selectedProperty == 1) and (self.interactableVisualObjects[previousInteracting][1].type  == "point"):
+                if not(self.interacting == -998):
+                    self.interacting = previousInteracting
 
     def getImageAnimation(self):
         '''Animation Interface: `(23,36) to (925,542)`: size `(903,507)`'''
         rmx = self.mx - 23
         rmy = self.my - 36
         img = FRAME_ANIMATION_ARRAY.copy()
-
-        # tempPoint = self.pathVisualObject.path[self.ticks%len(self.pathVisualObject.path)]
-        # aSillyCat = rotateDeg(UP_ARROW_ARRAY, tempPoint[2]%360)
-        # placeOver(img, aSillyCat, (round(tempPoint[0]+(128-aSillyCat.shape[1])/2),round(tempPoint[1]+(128-aSillyCat.shape[0])/2)), False)
-
-        # placeOver(img, displayText(f"Pointing At: {pointAt((350,350),(self.mx, self.my))}", "m"), (200,100))
-        # aSillyCat = rotateDeg(UP_ARROW_ARRAY,pointAt((350,350),(self.mx, self.my)))
-        # placeOver(img, aSillyCat, (round(350+(128-aSillyCat.shape[1])/2),round(350+(128-aSillyCat.shape[0])/2)))
 
         placeOver(img, displayText(f"FPS: {self.fps}", "m"), (55,15))
         placeOver(img, displayText(f"Relative (animation) Mouse Position: ({self.mx-23}, {self.my-36})", "m"), (455,55))
@@ -230,7 +226,6 @@ class Interface:
         if 46 < pos and pos < 896:
             placeOver(img, FRAME_TIMELINE_READER_ARRAY, (max(51,pos), 3))
 
-
         return arrayToImage(img)
     
     def getImageEditor(self):
@@ -287,26 +282,25 @@ class Interface:
                         if str(keybind) in self.stringKeyQueue: connectionEdit = "S"
 
                     for keybind in EDITOR_VISUAL_POINT_CREATE:
-                        if str(keybind) in self.stringKeyQueue:
-                            if self.interacting == -999:
-                                x = (self.mx-982)*(self.graphScale+0.000001)/25+self.graphOffset
-                                y = 100-((self.my-279)/2.33)   
-                                timeStamps = [data[i*3] for i in range(lenData)]
-                                low = -1
-                                for i in range(len(timeStamps)-1):
-                                    if timeStamps[i]<=x: low = i
-                                    else: break
-                                for item in ["L", (random.randrange(0,903),random.randrange(0,507)) if self.selectedProperty == 1 else y, x]: data.insert((low+1)*3, item)
-                                self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
-                                dataCheck("crashtbw"[self.selectedProperty-1], data)
-                                if self.selectedProperty == 1: 
-                                    pathP = iterateThroughPath(data, True)
-                                    pathV = [tcoordVelocity(partition) for partition in pathP]
-                                else: 
-                                    pathP = iterateThroughSingle(data, True)
-                                lenData = round(len(data)/3)
-                                self.interacting = -999
-                                regen = True                                
+                        if str(keybind) in self.stringKeyQueue and self.interacting == -999:
+                            x = (self.mx-982)*(self.graphScale+0.000001)/25+self.graphOffset
+                            y = 100-((self.my-279)/2.33)   
+                            timeStamps = [data[i*3] for i in range(lenData)]
+                            low = -1
+                            for i in range(len(timeStamps)-1):
+                                if timeStamps[i]<=x: low = i
+                                else: break
+                            for item in ["L", (random.randrange(0,903),random.randrange(0,507)) if self.selectedProperty == 1 else y, x]: data.insert((low+1)*3, item)
+                            self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
+                            dataCheck("crashtbw"[self.selectedProperty-1], data)
+                            if self.selectedProperty == 1: 
+                                pathP = iterateThroughPath(data, True)
+                                pathV = [tcoordVelocity(partition) for partition in pathP]
+                            else: 
+                                pathP = iterateThroughSingle(data, True)
+                            lenData = round(len(data)/3)
+                            self.interacting = -999
+                            regen = True                                
                     for keybind in EDITOR_VISUAL_POINT_DELETE:
                         if str(keybind) in self.stringKeyQueue and self.interacting != -999:
                             if self.interactableVisualObjects[self.interacting][1].type == "point":
@@ -345,7 +339,7 @@ class Interface:
 
                     for i in range(len(evgPoints)):
                         self.interactableVisualObjects[evgPoints[i]][1].setPointData(data[i*3+1])
-                        if self.selectedProperty == 1: self.interactableVisualObjects[evgPoints[i]][1].updatePos((data[i*3]-self.graphOffset)*25/(self.graphScale+0.000001),100)
+                        if self.selectedProperty == 1: self.interactableVisualObjects[evgPoints[i]][1].updatePos((data[i*3]-self.graphOffset)*25/(self.graphScale+0.000001),223)
                         else: self.interactableVisualObjects[evgPoints[i]][1].updatePos((data[i*3]-self.graphOffset)*25/(self.graphScale+0.000001),(100-data[i*3+1])*2.23)
 
 
@@ -354,12 +348,17 @@ class Interface:
                     else:
                         for i in range(len(evgConnections)): self.interactableVisualObjects[evgConnections[i]][1].setPathData(pathP[i])
                 else:
+
+                    if self.selectedProperty == 1:
+                        if self.interactableVisualObjects[self.interacting][1].type == "point":
+                            self.interacting = self.interacting
+
                     evgPoints = listEVGPoints(self.interactableVisualObjects)
                     if self.interacting == -999:
                         for i in range(len(evgPoints)):
                             self.interactableVisualObjects[evgPoints[i]][1].setPointData(data[i*3+1])
                             if self.selectedProperty == 1:
-                                self.interactableVisualObjects[evgPoints[i]][1].updatePos((data[i*3]-self.graphOffset)*25/(self.graphScale+0.000001),100)
+                                self.interactableVisualObjects[evgPoints[i]][1].updatePos((data[i*3]-self.graphOffset)*25/(self.graphScale+0.000001),223)
                             else:
                                 self.interactableVisualObjects[evgPoints[i]][1].updatePos((data[i*3]-self.graphOffset)*25/(self.graphScale+0.000001),(100-data[i*3+1])*2.23)
                     for i in range(len(evgPoints)):
