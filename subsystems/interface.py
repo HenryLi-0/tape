@@ -7,7 +7,7 @@ from subsystems.render import *
 from subsystems.fancy import displayText, generateColorBox, generateBorderBox
 from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject, EditableTextBoxVisualObject, DummyVisualObject, PointVisualObject, PointConnectionVisualObject
 from subsystems.counter import Counter
-from subsystems.pathing import pointAt, roundf, coordVelocity
+from subsystems.pathing import pointAt, roundf, tcoordVelocity
 from subsystems.sprite import SingleSprite, readImgSingleFullState, listEVGPoints, listEVGConnections, iterateThroughSingle, iterateThroughPath, dataCheck
 
 class Interface:
@@ -267,7 +267,7 @@ class Interface:
                 dataCheck("crashtbw"[self.selectedProperty-1], data)
                 if self.selectedProperty == 1: 
                     pathP = iterateThroughPath(data, True)
-                    pathV = [coordVelocity(partition) for partition in pathP]
+                    pathV = [tcoordVelocity(partition) for partition in pathP]
                 else: 
                     pathP = iterateThroughSingle(data, True)
                 lenData = round(len(data)/3)
@@ -301,7 +301,7 @@ class Interface:
                                 dataCheck("crashtbw"[self.selectedProperty-1], data)
                                 if self.selectedProperty == 1: 
                                     pathP = iterateThroughPath(data, True)
-                                    pathV = [coordVelocity(partition) for partition in pathP]
+                                    pathV = [tcoordVelocity(partition) for partition in pathP]
                                 else: 
                                     pathP = iterateThroughSingle(data, True)
                                 lenData = round(len(data)/3)
@@ -382,7 +382,6 @@ class Interface:
                     evgConnections = listEVGConnections(self.interactableVisualObjects)
                     for i in range(len(evgConnections)):
                         if self.selectedProperty == 1: 
-                            print(f"pathV {len(pathV)}, evgConnections: {len(evgConnections)}")
                             self.interactableVisualObjects[evgConnections[i]][1].setPathData(pathV[i])
                         else: self.interactableVisualObjects[evgConnections[i]][1].setPathData(pathP[i])
                     

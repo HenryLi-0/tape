@@ -98,7 +98,12 @@ def timelyBezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: tu
         totalPath = []
         coordsc.insert(1,averagep(coordsc[0],coordsc[1]))
         bezier = bezierCurve(coordsc[0],coordsc[1],coordsc[2])
-        for t in range(0, steps[0]): totalPath.append(roundp(bezier(t/steps[0])))
+        if partion:
+            tempPath = []
+            for t in range(0, steps[0]): tempPath.append(roundp(bezier(t/steps[0])))
+            totalPath.append(tempPath)
+        else:
+            for t in range(0, steps[0]): totalPath.append(roundp(bezier(t/steps[0])))
         for i in coordsI:
             coordsc.insert(i*2+1, subtractP(multiplyP(coordsc[i*2],2),coordsc[i*2-1]))
             bezier = bezierCurve(coordsc[i*2],coordsc[i*2+1],coordsc[i*2+2])
@@ -174,7 +179,7 @@ def straightChangeAt(a, b, steps):
 
 # Math
 
-def coordVelocity(tcoords: tuple|list):
+def tcoordVelocity(tcoords: tuple|list):
     path = [(tcoords[0][0], 0)]
     for i in range(1, len(tcoords)):
         change = subtractP(tcoords[i][1],tcoords[i-1][1])
