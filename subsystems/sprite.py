@@ -181,17 +181,17 @@ def iterateThroughPath(compact, partion = False):
             if partion: path.append([(compact[i*3] + roundf(ie/RENDER_FPS, PATH_FLOAT_ACCURACY), add[ie]) for ie in range(len(add))])
         if connections[i] == "S":
             temp = [i]
-            while connections[i+1] == "S":
+            while connections[i+1] == "S" and i+1<len(connections)-1:
                 temp.append(i+1)
                 i+=1
                 if i+1 > len(connections)-1: break
             temp.append(i+1)
-            add = timelyBezierPathCoords([compact[ie*3+1] for ie in temp], [round((timeStamps[temp[ie]]-timeStamps[temp[ie-1]])*RENDER_FPS) for ie in range(1,len(temp))], partion)
+            add = timelyBezierPathCoords([protectedBoundary(compact,iee*3+1) for iee in temp], [round((timeStamps[temp[ie]]-timeStamps[temp[ie-1]])*RENDER_FPS) for ie in range(1,len(temp))], partion)
             if partion:
                 for iee in range(len(add)):
                     path.append([(compact[(temp[0]+iee)*3] + roundf(ie/RENDER_FPS, PATH_FLOAT_ACCURACY), add[iee][ie]) for ie in range(len(add[iee]))])
         if not(partion):
-            for coord in add: path.append((coord[0], coord[1]))
+            for coord in add: path.append(coord)
         i+=1
     return path
 
@@ -210,11 +210,14 @@ def findStateThroughPath(compact, time):
         bottom, top = low, low
         while connections[bottom-1] == "S":
             bottom += -1
+            if bottom < 0: 
+                bottom = 0
+                break
         while connections[top+1] == "S":
             top += 1
             if top+1 > len(connections)-1: break
-        segment = selectiveBezierPathCoords([compact[point*3+1] for point in range(bottom, top+2)], round((compact[(low+1)*3]-compact[low*3])*RENDER_FPS), low)
-        return protectedBoundary(segment, round((time-compact[(low)*3])*RENDER_FPS))
+        segment = selectiveBezierPathCoords([compact[point*3+1] for point in range(bottom, top)], round((compact[(low+1)*3]-compact[low*3])*RENDER_FPS), low)
+        return protectedBoundary(segment, round((time-compact[(low)*3])*RENDER_FPS), (0,0))
 
 def findExtentThroughPath(compact, low):
     '''Returns a list of indexes of points that are how far the connections go, given the compact storage of the path'''
@@ -222,15 +225,20 @@ def findExtentThroughPath(compact, low):
     if connections[low] == "L": return [low, low + 1] if low<len(connections)-1 else [low]
     if connections[low] == "S":
         bottom, top = low, low
-        while connections[bottom-1] == "S" and top+1 > -1: bottom += -1
-        while connections[top+1] == "S":
-            top += 1
-            if top+1 > len(connections)-1: break
+        while connections[bottom-1] == "S": 
+            bottom += -1
+            if bottom < 0:
+                bottom = 0
+                break
+        if not(top+1 > len(connections)-1):
+            while connections[top+1] == "S":
+                top += 1
+                if top+1 > len(connections)-1: break
         return list(range(bottom, top+2))
 
-def protectedBoundary(sequence, i):
+def protectedBoundary(sequence, i, empty = 0):
     '''Returns the index closest to i of a list, given a list and index. (if i is too high, gives the highest index, if it is too low, gives the least index)'''
-    if len(sequence) == 0: return 0
+    if len(sequence) == 0: return empty
     return sequence[max(0, min(round(i), len(sequence)-1))]
 
 def readImgSingleFullState(state, images):

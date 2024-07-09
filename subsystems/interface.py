@@ -80,14 +80,11 @@ class Interface:
                     self.interacting = -998
                     break
             if self.interacting == -999:
-                if key in EDITOR_VISUAL_OFFSET_LEFT:
-                    self.graphOffset -= (self.graphScale+0.000001)
-                if key in EDITOR_VISUAL_OFFSET_RIGHT:
-                    self.graphOffset += (self.graphScale+0.000001)
-                if key in TIMELINE_OFFSET_LEFT:
-                    self.timelineOffset -= (self.timelineScale+0.000001)
-                if key in TIMELINE_OFFSET_RIGHT:
-                    self.timelineOffset += (self.timelineScale+0.000001)
+                if self.editorTab == "v":
+                    if key in EDITOR_VISUAL_OFFSET_LEFT:  self.graphOffset -= (self.graphScale+0.000001)
+                    if key in EDITOR_VISUAL_OFFSET_RIGHT: self.graphOffset += (self.graphScale+0.000001)
+                if key in TIMELINE_OFFSET_LEFT:  self.timelineOffset -= (self.timelineScale+0.000001)
+                if key in TIMELINE_OFFSET_RIGHT: self.timelineOffset += (self.timelineScale+0.000001)
             else:
                 if self.selectedProperty == 1 and self.editorTab == "v":
                     if self.interactableVisualObjects[self.interacting][1].type == "point":
@@ -206,6 +203,8 @@ class Interface:
                 placeOver(img, PATH_POINT_IDLE_ARRAY, coord, True)
             evgP = listEVGPoints(self.interactableVisualObjects)
             extent = findExtentThroughPath(data, evgP.index(self.interacting))
+            if extent[-1] > len(evgP)-1:
+                extent = extent[0:-2]
             for id in [evgP[index] for index in extent]:
                 placeOver(img, ORB_SELECTED_ARRAY if id==self.interacting else ORB_IDLE_ARRAY, self.interactableVisualObjects[id][1].pointData, True)
                 

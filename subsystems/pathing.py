@@ -116,7 +116,9 @@ def timelyBezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: tu
         if not(partion):
             totalPath.append(coordsc[-1])
         return totalPath
-    else: return [straightPathCoords(coords,steps[0])]
+    else: 
+        if partion: return [straightPathCoords(coords,steps[0])]
+        else: return straightPathCoords(coords,steps[0])
 
 def selectiveBezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps: int, lower: tuple|list):
     '''Generates a bezier path of coordinates between a given low point and the next point, based on a given list of coords and the index of the lower point, with steps number of points between the given coordinates'''
@@ -180,8 +182,10 @@ def straightChangeAt(a, b, steps):
 # Math
 
 def tcoordVelocity(tcoords: tuple|list):
-    path = [(tcoords[0][0], 0)]
-    for i in range(1, len(tcoords)):
-        change = subtractP(tcoords[i][1],tcoords[i-1][1])
-        path.append((tcoords[i][0],roundf(math.sqrt(change[0]**2 + change[1]**2), PATH_FLOAT_ACCURACY)))
-    return path
+    if len(tcoords) > 0:
+        path = [(tcoords[0][0], 0)]
+        for i in range(1, len(tcoords)):
+            change = subtractP(tcoords[i][1],tcoords[i-1][1])
+            path.append((tcoords[i][0],roundf(math.sqrt(change[0]**2 + change[1]**2), PATH_FLOAT_ACCURACY)))
+        return path
+    else: return [(0, 0)]
