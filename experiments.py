@@ -104,19 +104,33 @@ from PIL import Image
 Image.fromarray(setBrightness(PLACEHOLDER_IMAGE_5_ARRAY, 50)).show()
 '''
 
-from subsystems.sprite import iterateThroughPath
+'''
+from subsystems.sprite import iterateThroughSingle
 compact = [
     0, 1, "S",
     1, 2, "S"
 ]
-a = iterateThroughPath(compact, True)
+a = iterateThroughSingle(compact, True)
 
 compact = [
     0, 1, "S",
     1, 2, None
 ]
-b = iterateThroughPath(compact, True)
+b = iterateThroughSingle(compact, True)
 
 print(a)
 print(b)
 print(a == b)
+'''
+
+from subsystems.sprite import findExtentThroughPath
+compact = [
+    0, (0,0), "L",
+    1, (0,5), "L",
+    2, (0,10), "L",
+    8, (0,15), "L",
+    9, (0,20), "L",
+    10, (0,25), "L",
+]
+
+print(findExtentThroughPath(compact, 7))

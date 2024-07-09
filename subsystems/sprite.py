@@ -165,8 +165,8 @@ def findStateThroughSingle(compact, time):
         if timeStamps[i]<=time: low = i
         else: break
     index = round((time-compact[low*3])*RENDER_FPS)
-    if compact[low*3+2] == "L": return straightChangeAt(compact[low*3+1], compact[(low+1)*3+1], (compact[(low+1)*3]-compact[low*3])*RENDER_FPS)[index]
-    elif compact[low*3+2] == "S": return smoothChangeAt(compact[low*3+1], compact[(low+1)*3+1], (compact[(low+1)*3]-compact[low*3])*RENDER_FPS)[index]
+    if compact[low*3+2] == "L": return protectedBoundary(straightChangeAt(compact[low*3+1], compact[(low+1)*3+1], (compact[(low+1)*3]-compact[low*3])*RENDER_FPS), index)
+    elif compact[low*3+2] == "S": return protectedBoundary(smoothChangeAt(compact[low*3+1], compact[(low+1)*3+1], (compact[(low+1)*3]-compact[low*3])*RENDER_FPS), index)
     else: return compact[low*3+1]
 
 def iterateThroughPath(compact, partion = False):
@@ -184,6 +184,7 @@ def iterateThroughPath(compact, partion = False):
             while connections[i+1] == "S":
                 temp.append(i+1)
                 i+=1
+                if i+1 > len(connections)-1: break
             temp.append(i+1)
             add = timelyBezierPathCoords([compact[ie*3+1] for ie in temp], [round((timeStamps[temp[ie]]-timeStamps[temp[ie-1]])*RENDER_FPS) for ie in range(1,len(temp))], partion)
             if partion:
@@ -211,12 +212,26 @@ def findStateThroughPath(compact, time):
             bottom += -1
         while connections[top+1] == "S":
             top += 1
+            if top+1 > len(connections)-1: break
         segment = selectiveBezierPathCoords([compact[point*3+1] for point in range(bottom, top+2)], round((compact[(low+1)*3]-compact[low*3])*RENDER_FPS), low)
         return protectedBoundary(segment, round((time-compact[(low)*3])*RENDER_FPS))
 
+def findExtentThroughPath(compact, low):
+    '''Returns a list of indexes of points that are how far the connections go, given the compact storage of the path'''
+    connections = [compact[i*3+2] for i in range(math.floor(len(compact)/3))]
+    if connections[low] == "L": return [low, low + 1] if low<len(connections)-1 else [low]
+    if connections[low] == "S":
+        bottom, top = low, low
+        while connections[bottom-1] == "S" and top+1 > -1: bottom += -1
+        while connections[top+1] == "S":
+            top += 1
+            if top+1 > len(connections)-1: break
+        return list(range(bottom, top+2))
+
 def protectedBoundary(sequence, i):
+    '''Returns the index closest to i of a list, given a list and index. (if i is too high, gives the highest index, if it is too low, gives the least index)'''
     if len(sequence) == 0: return 0
-    return sequence[max(0, min(i, len(sequence)-1))]
+    return sequence[max(0, min(round(i), len(sequence)-1))]
 
 def readImgSingleFullState(state, images):
     '''Returns an array of the image of the sprite at a given full state in [(x,y,dir), a, s, h, t, b, w] form, given the full state and the set of images'''

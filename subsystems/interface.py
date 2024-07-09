@@ -8,7 +8,7 @@ from subsystems.fancy import displayText, generateColorBox, generateBorderBox
 from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject, EditableTextBoxVisualObject, DummyVisualObject, PointVisualObject, PointConnectionVisualObject
 from subsystems.counter import Counter
 from subsystems.pathing import pointAt, roundf, tcoordVelocity
-from subsystems.sprite import SingleSprite, readImgSingleFullState, listEVGPoints, listEVGConnections, iterateThroughSingle, iterateThroughPath, dataCheck
+from subsystems.sprite import *
 
 class Interface:
     def __init__(self):
@@ -28,8 +28,8 @@ class Interface:
         o - options
         '''
         self.interactableVisualObjects = {
-
             -999 : [" ", DummyVisualObject("dummy", (0,0))],
+            -998 : [" ", DummyVisualObject("dummy", (0,0))],
 
             self.c.c():["o",ButtonVisualObject("sprites",(7,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
             self.c.c():["o",ButtonVisualObject("visuals",(134,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
@@ -76,19 +76,26 @@ class Interface:
                     self.stringKeyQueue+=" "
                 if key=="BackSpace":
                     self.stringKeyQueue=self.stringKeyQueue[0:-1]
-                if key=="Return":
+                if key=="Return" or key=="Control_L":
                     self.interacting = -998
                     break
-            if key in EDITOR_VISUAL_OFFSET_LEFT:
-                self.graphOffset -= (self.graphScale+0.000001)
-            if key in EDITOR_VISUAL_OFFSET_RIGHT:
-                self.graphOffset += (self.graphScale+0.000001)
-            if key in TIMELINE_OFFSET_LEFT:
-                self.timelineOffset -= (self.timelineScale+0.000001)
-            if key in TIMELINE_OFFSET_RIGHT:
-                self.timelineOffset += (self.timelineScale+0.000001)
+            if self.interacting == -999:
+                if key in EDITOR_VISUAL_OFFSET_LEFT:
+                    self.graphOffset -= (self.graphScale+0.000001)
+                if key in EDITOR_VISUAL_OFFSET_RIGHT:
+                    self.graphOffset += (self.graphScale+0.000001)
+                if key in TIMELINE_OFFSET_LEFT:
+                    self.timelineOffset -= (self.timelineScale+0.000001)
+                if key in TIMELINE_OFFSET_RIGHT:
+                    self.timelineOffset += (self.timelineScale+0.000001)
+            else:
+                if self.selectedProperty == 1 and self.editorTab == "v":
+                    if self.interactableVisualObjects[self.interacting][1].type == "point":
+                        if key in ANIMATION_POINT_POSITION_EDIT:
+                            self.interactableVisualObjects[self.interacting][1].setPointData((self.mx-23, self.my-36))
+                            
         self.mouseScroll = mouseScroll
-        if self.editorTab == "v" and 955<self.mx and 257<self.my and self.mx<1336 and self.my<537:
+        if self.editorTab == "v" and 955<self.mx and 257<self.my and self.mx<1336 and self.my<537 and self.interacting == -999:
             graphScalePrevious = self.graphScale
             self.graphScale = 10**(math.log(self.graphScale+0.000001,10) + self.mouseScroll/2500)-0.000001
             if abs(self.mouseScroll) > 0:
@@ -96,7 +103,7 @@ class Interface:
         self.graphScale = 0.001 if self.graphScale < 0.001 else self.graphScale
         self.graphScale = 2000 if 2000 < self.graphScale else self.graphScale
         self.graphOffset = 0 if self.graphOffset < 0 else self.graphOffset
-        if 71<self.mx and 558<self.my and self.mx<925 and self.my<679:
+        if 71<self.mx and 558<self.my and self.mx<925 and self.my<679 and self.interacting == -999:
             timelineScalePrevious = self.timelineScale
             self.timelineScale = 10**(math.log(self.timelineScale+0.000001,10) + self.mouseScroll/2500)-0.000001
             if abs(self.mouseScroll) > 0:
@@ -192,14 +199,16 @@ class Interface:
             frame = sprite.getFullStateAt(self.animationTime)
             placeOver(img, readImgSingleFullState(frame, sprite.images), (frame[0][0],frame[0][1]), True)
 
-
-        placeOver(img, displayText(f"at frame {self.ticks%(len(bigPath)-1)} of {len(bigPath)-1}","m"), (50,450))
-
-        placeOver(img, CURSOR_SELECT_ARRAY, (0,0), True)
-        placeOver(img, CURSOR_SELECT_ARRAY, (200,200), True)
-        placeOver(img, CURSOR_SELECT_ARRAY, (300,100), True)
-        placeOver(img, CURSOR_SELECT_ARRAY, (200,0), True)
-        placeOver(img, CURSOR_SELECT_ARRAY, (0,200), True)
+        if self.interacting != -999 and self.interactableVisualObjects[self.interacting][1].type == "point" and self.selectedProperty == 1:
+            data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
+            coords = iterateThroughPath(data)
+            for coord in coords:
+                placeOver(img, PATH_POINT_IDLE_ARRAY, coord, True)
+            evgP = listEVGPoints(self.interactableVisualObjects)
+            extent = findExtentThroughPath(data, evgP.index(self.interacting))
+            for id in [evgP[index] for index in extent]:
+                placeOver(img, ORB_SELECTED_ARRAY if id==self.interacting else ORB_IDLE_ARRAY, self.interactableVisualObjects[id][1].pointData, True)
+                
 
         return arrayToImage(img)
     
@@ -364,7 +373,9 @@ class Interface:
                     for i in range(len(evgPoints)):
                         x, y = self.interactableVisualObjects[evgPoints[i]][1].positionO.getPosition()
                         data[i*3] = x*(self.graphScale+0.000001)/25+self.graphOffset
-                        if self.selectedProperty != 1:
+                        if self.selectedProperty == 1:
+                            data[i*3+1] = self.interactableVisualObjects[evgPoints[i]][1].pointData
+                        else:
                             y = 100-(y/2.33)
                             data[i*3+1] = y if abs(data[i*3+1]-y) > 5 else data[i*3+1]
                     evgPoints = [data[i*3] for i in range(len(evgPoints))]

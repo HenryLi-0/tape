@@ -48,6 +48,7 @@ EDITOR_VISUAL_OFFSET_LEFT = ["Z", "z"]
 EDITOR_VISUAL_OFFSET_RIGHT = ["X", "x"]
 TIMELINE_OFFSET_LEFT = ["Left"]
 TIMELINE_OFFSET_RIGHT = ["Right"]
+ANIMATION_POINT_POSITION_EDIT = ["D", "d"]
 
 '''Constants - DO NOT CHANGE!!!'''
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 

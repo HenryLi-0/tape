@@ -210,7 +210,7 @@ class PointVisualObject:
         self.pointData = ""
     def tick(self, window, active):
         place = addP(self.positionO.getPosition(), (29,242))
-        if 29<place[0] and 221<place[1] and place[0]<383 and place[1]<477:
+        if 27<=place[0] and 221<=place[1] and place[0]<=383 and place[1]<=477:
             placeOver(window, POINT_SELECTED_ARRAY if active else POINT_IDLE_ARRAY, place, True)
         if type(self.pointData)in [int, float]:
             if active: placeOver(window, displayText(str(roundf(self.pointData, PATH_FLOAT_ACCURACY)), "m"), addP(self.positionO.getPosition(), (29,222)), True)
