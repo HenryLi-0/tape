@@ -136,4 +136,4 @@ print(iterateThroughPath(compact))
 '''
 from subsystems.sprite import findStateThroughPath
 compact = [0.0, (0.0, 0.0), 'S', 0.0, (64.0, 104.0), 'S', 1.0, (0.0, 0.0), 'S', 5.24, (714.0, 492.0), 'L', 10.12, (792.0, 59.0), 'S']
-print(findStateThroughPath(compact, 5.24))
+print(findStateThroughPath(compact, 2))

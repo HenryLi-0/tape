@@ -204,7 +204,9 @@ def findStateThroughPath(compact, time):
         if timeStamps[i]<=time: low = i
         else: break
     if connections[low] == "L":
-        cx, cy = betweenP(compact[low*3+1], compact[(low+1)*3+1])(time-compact[(low)*3])
+        timeC = (time-compact[low*3])/(compact[(low+1)*3]-compact[low*3])
+        timeC = max(0, min(timeC, 1))
+        cx, cy = betweenP(compact[low*3+1], compact[(low+1)*3+1])(timeC)
         return (roundf(cx, PATH_FLOAT_ACCURACY), roundf(cy, PATH_FLOAT_ACCURACY))
     if connections[low] == "S":
         bottom, top = low, low
@@ -217,8 +219,11 @@ def findStateThroughPath(compact, time):
             top += 1
             if top+1 > len(connections)-1: 
                 break
-        segment = selectiveBezierPathCoords([compact[point*3+1] for point in range(bottom, top)], math.ceil((compact[(top+1)*3]-compact[bottom*3])*RENDER_FPS), bottom)
-        return segment[round((time-compact[bottom*3])*RENDER_FPS)]
+        segment = selectiveBezierPathCoords([compact[point*3+1] for point in range(bottom, top+1)], math.ceil((compact[(low+1)*3]-compact[low*3])*RENDER_FPS), low)
+        print(segment)
+        print(round((time-compact[low*3])*RENDER_FPS))
+        print(len(segment))
+        return protectedBoundary(segment, round((time-compact[low*3])*RENDER_FPS), (0,0))
 
 def findExtentThroughPath(compact, low):
     '''Returns a list of indexes of points that are how far the connections go, given the compact storage of the path'''
