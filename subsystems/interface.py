@@ -20,10 +20,19 @@ class Interface:
         self.ticks = 0
         self.activity = ""
         self.c = Counter()
+        '''Generate Icons'''
+        i_plusIconIdle = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
+        placeOver(i_plusIconIdle, generateBorderBox((29,29),3, hexColorToRGBA(FRAME_COLOR)), (0,0))
+        placeOver(i_plusIconIdle, PLUS_SIGN_ARRAY, (17,17), True)
+        i_plusIconActive = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
+        placeOver(i_plusIconActive, generateBorderBox((29,29),3, hexColorToRGBA(SELECTED_COLOR)), (0,0))
+        placeOver(i_plusIconActive, PLUS_SIGN_ARRAY, (17,17), True)
+
         '''Interactable Visual Objects'''
         '''
         Code:
         a - animation
+        es - editor > sprites
         evg - editor > visuals > graph
         o - options
         '''
@@ -33,7 +42,9 @@ class Interface:
 
             self.c.c():["o",ButtonVisualObject("sprites",(7,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
             self.c.c():["o",ButtonVisualObject("visuals",(134,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            self.c.c():["o",ButtonVisualObject("project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)]
+            self.c.c():["o",ButtonVisualObject("project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
+
+            self.c.c():["es", ButtonVisualObject("new sprite", (338,15), i_plusIconIdle, i_plusIconActive)]
     
         }
         #for i in range(10): self.interactableVisualObjects[self.c.c()] = ["a", OrbVisualObject(f"test{i}")]
@@ -41,7 +52,7 @@ class Interface:
         self.pathVisualObject = PathVisualObject(self.c.c(), "path")
         '''Sprites'''
         self.sprites = [
-            SingleSprite("test")
+            SingleSprite("test"),
         ]
         self.selectedSprite = 0
         self.selectedProperty = 2
@@ -50,6 +61,8 @@ class Interface:
         self.graphOffset = 0
         self.timelineScale = 1.0
         self.timelineOffset = 0
+        self.spriteListOffset = 0
+        self.spriteListVelocity = 0
         self.interacting = -999
         self.editorTab = "p"
         self.previousEditorTab = self.editorTab
@@ -66,6 +79,7 @@ class Interface:
         self.mRising = mPressed==2
         self.fps = fps
         self.ticks += 1 if self.fps==0 else round(RENDER_FPS/self.fps)
+        if self.interactableVisualObjects[self.interacting][1].name == "new sprite" and mPressed < 3: self.sprites.append(SingleSprite(f"New Sprite {len(self.sprites)}"))
 
         '''Keyboard and Scroll (graph and timeline)'''
         for key in keyQueue: 
@@ -80,6 +94,20 @@ class Interface:
                     self.interacting = -998
                     break
             if self.interacting == -999:
+                if self.editorTab == "s":
+                    if key in SPRITE_LIST_OFFSET_UP:   self.spriteListVelocity -= 25
+                    if key in SPRITE_LIST_OFFSET_DOWN: self.spriteListVelocity += 25
+                    self.spriteListVelocity = self.spriteListVelocity * 0.99999
+                    self.spriteListOffset += self.spriteListVelocity
+                    if self.spriteListOffset > len(self.sprites)*30-507:
+                        self.spriteListOffset = len(self.sprites)*30-507
+                        self.spriteListVelocity = 0
+                    if self.spriteListOffset < 0: 
+                        self.spriteListOffset = 0
+                        self.spriteListVelocity = 0
+                    self.spriteListOffset = round(self.spriteListOffset)
+                else:
+                    self.spriteListVelocity = 0
                 if self.editorTab == "v":
                     if key in EDITOR_VISUAL_OFFSET_LEFT:  self.graphOffset -= (self.graphScale+0.000001)
                     if key in EDITOR_VISUAL_OFFSET_RIGHT: self.graphOffset += (self.graphScale+0.000001)
@@ -125,6 +153,10 @@ class Interface:
                     if self.interactableVisualObjects[id][1].getInteractable(self.mx - 23, self.my - 36):
                         self.interacting = id
                         break
+                if self.interactableVisualObjects[id][0] == "es":
+                    if self.interactableVisualObjects[id][1].getInteractable(self.mx - 953, self.my - 36):
+                        self.interacting = id
+                        break
                 if self.interactableVisualObjects[id][0] == "evg":
                     if self.interactableVisualObjects[id][1].type == "point":
                         if self.interactableVisualObjects[id][1].getInteractable(self.mx - 982, self.my - 278):
@@ -143,6 +175,9 @@ class Interface:
             if section == "a": 
                 self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 23, self.my - 36)
                 self.interactableVisualObjects[self.interacting][1].keepInFrame(903,507)
+            if section == "es": 
+                self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 953, self.my - 36)
+                self.interactableVisualObjects[self.interacting][1].keepInFrame(388,507)
             if section == "evg": 
                 self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 982, self.my - 278)
                 self.interactableVisualObjects[self.interacting][1].keepInFrame(337,233)
@@ -187,10 +222,6 @@ class Interface:
             if self.interactableVisualObjects[id][1].type == "orb": 
                 tempPath.append(self.interactableVisualObjects[id][1].positionO.getPosition())
         self.pathVisualObject.tick(img, tempPath)
-
-        bigPath = TEST_PATH_VERY_COOL 
-
-        frame = bigPath[self.ticks%(len(bigPath)-1)]
 
         for sprite in self.sprites:
             frame = sprite.getFullStateAt(self.animationTime)
@@ -241,7 +272,15 @@ class Interface:
         img = FRAME_EDITOR_VISUALS_ARRAY.copy() if self.editorTab=="v" else FRAME_EDITOR_ARRAY.copy()
         if self.editorTab == "s":
             '''Sprites Tab!'''
-            pass
+            i = 0
+            for sprite in self.sprites:
+                placeOver(img, displayText(sprite.getName(), "m"), (15, 15+i*30-self.spriteListOffset))
+                i+=1
+            
+            for id in self.interactableVisualObjects:
+                if self.interactableVisualObjects[id][0] == "es":
+                    self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
+
         if self.editorTab == "v":
             '''Visuals Tab!'''
             if self.selectedSprite != -999:
