@@ -215,9 +215,10 @@ def findStateThroughPath(compact, time):
                 break
         while connections[top+1] == "S":
             top += 1
-            if top+1 > len(connections)-1: break
-        segment = selectiveBezierPathCoords([compact[point*3+1] for point in range(bottom, top)], round((compact[(low+1)*3]-compact[low*3])*RENDER_FPS), low)
-        return protectedBoundary(segment, round((time-compact[(low)*3])*RENDER_FPS), (0,0))
+            if top+1 > len(connections)-1: 
+                break
+        segment = selectiveBezierPathCoords([compact[point*3+1] for point in range(bottom, top)], math.ceil((compact[(top+1)*3]-compact[bottom*3])*RENDER_FPS), bottom)
+        return segment[round((time-compact[bottom*3])*RENDER_FPS)]
 
 def findExtentThroughPath(compact, low):
     '''Returns a list of indexes of points that are how far the connections go, given the compact storage of the path'''

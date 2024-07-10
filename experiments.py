@@ -123,15 +123,17 @@ print(b)
 print(a == b)
 '''
 
+'''
 from subsystems.sprite import iterateThroughPath
 compact = [0.0, (0.0, 0.0), 'S', 1.0, (0.0, 0.0), 'L', 3.2, (338.0, 330.0), 'L', 11.24, (157.0, 21.0), 'L', 12.2, (866.0, 363.0), 'L']
 print(iterateThroughPath(compact, True))
-
 compact = [0.0, (0.0, 0.0), 'L', 1.0, (0.0, 0.0), 'L', 3.2, (338.0, 330.0), 'L', 11.24, (157.0, 21.0), 'L', 12.2, (866.0, 363.0), 'S']
 print(iterateThroughPath(compact, True))
-
 compact = [0.0, (0.0, 0.0), 'S', 1.0, (0.0, 0.0), 'S', 1.84, (4.0, 455.0), 'L', 3.24, (105.0, 47.0), 'S', 9.76, (398.0, 112.0), 'S']
 print(iterateThroughPath(compact))
-
 compact = [0.0, (0.0, 0.0), 'S', 0.0, (64.0, 104.0), 'S', 1.0, (0.0, 0.0), 'S', 5.24, (714.0, 492.0), 'L', 10.12, (792.0, 59.0), 'S']
 print(iterateThroughPath(compact))
+'''
+from subsystems.sprite import findStateThroughPath
+compact = [0.0, (0.0, 0.0), 'S', 0.0, (64.0, 104.0), 'S', 1.0, (0.0, 0.0), 'S', 5.24, (714.0, 492.0), 'L', 10.12, (792.0, 59.0), 'S']
+print(findStateThroughPath(compact, 5.24))

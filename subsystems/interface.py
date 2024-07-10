@@ -55,7 +55,7 @@ class Interface:
             SingleSprite("test"),
         ]
         self.selectedSprite = 0
-        self.selectedProperty = 2
+        self.selectedProperty = 1
         self.previousSelectedProperty = self.selectedProperty
         self.graphScale = 1.0
         self.graphOffset = 0
@@ -97,17 +97,6 @@ class Interface:
                 if self.editorTab == "s":
                     if key in SPRITE_LIST_OFFSET_UP:   self.spriteListVelocity -= 25
                     if key in SPRITE_LIST_OFFSET_DOWN: self.spriteListVelocity += 25
-                    self.spriteListVelocity = self.spriteListVelocity * 0.99999
-                    self.spriteListOffset += self.spriteListVelocity
-                    if self.spriteListOffset > len(self.sprites)*30-507:
-                        self.spriteListOffset = len(self.sprites)*30-507
-                        self.spriteListVelocity = 0
-                    if self.spriteListOffset < 0: 
-                        self.spriteListOffset = 0
-                        self.spriteListVelocity = 0
-                    self.spriteListOffset = round(self.spriteListOffset)
-                else:
-                    self.spriteListVelocity = 0
                 if self.editorTab == "v":
                     if key in EDITOR_VISUAL_OFFSET_LEFT:  self.graphOffset -= (self.graphScale+0.000001)
                     if key in EDITOR_VISUAL_OFFSET_RIGHT: self.graphOffset += (self.graphScale+0.000001)
@@ -140,6 +129,21 @@ class Interface:
         self.timelineScale = 0.001 if self.timelineScale < 0.001 else self.timelineScale
         self.timelineScale = 2000 if 2000 < self.timelineScale else self.timelineScale
         self.timelineOffset = 0 if self.timelineOffset < 0 else self.timelineOffset
+        if self.editorTab == "s":
+            if abs(self.mouseScroll) > 0:
+                self.spriteListVelocity = 0
+                self.spriteListOffset += self.mouseScroll / 5
+            self.spriteListVelocity = self.spriteListVelocity * 0.9
+            self.spriteListOffset += self.spriteListVelocity
+            if self.spriteListOffset > len(self.sprites)*30-507:
+                self.spriteListOffset = len(self.sprites)*30-507
+                self.spriteListVelocity = 0
+            if self.spriteListOffset < 0: 
+                self.spriteListOffset = 0
+                self.spriteListVelocity = 0
+            self.spriteListOffset = round(self.spriteListOffset)
+        else:
+            self.spriteListVelocity = 0
 
         pass
 
@@ -198,6 +202,13 @@ class Interface:
             if (self.selectedProperty == 1) and (self.interactableVisualObjects[previousInteracting][1].type  == "point"):
                 if not(self.interacting == -998):
                     self.interacting = previousInteracting
+
+        if self.editorTab == "s" and self.interacting == -999:
+            if 953<self.mx and 36<self.my and self.mx<1340 and self.my<542:
+                if self.mPressed and mPressed < 3:
+                    target = math.floor(((self.my-36)+self.spriteListOffset-25)/30)
+                    if 0 <= target and target <= len(self.sprites)-1:
+                        self.selectedSprite = target
 
     def getImageAnimation(self):
         '''Animation Interface: `(23,36) to (925,542)`: size `(903,507)`'''
@@ -272,9 +283,10 @@ class Interface:
         img = FRAME_EDITOR_VISUALS_ARRAY.copy() if self.editorTab=="v" else FRAME_EDITOR_ARRAY.copy()
         if self.editorTab == "s":
             '''Sprites Tab!'''
+            placeOver(img, generateColorBox((348,25), hexColorToRGBA(SELECTED_COLOR)), (20, 21+self.selectedSprite*30-self.spriteListOffset))
             i = 0
             for sprite in self.sprites:
-                placeOver(img, displayText(sprite.getName(), "m"), (15, 15+i*30-self.spriteListOffset))
+                placeOver(img, displayText(sprite.getName(), "m"), (25, 25+i*30-self.spriteListOffset))
                 i+=1
             
             for id in self.interactableVisualObjects:
@@ -459,23 +471,15 @@ class Interface:
                     placeOver(img, displayText(f"({self.selectedProperty}) - {PROPERTY_DISPLAY_NAMES[self.selectedProperty-1]} - [P: {len(evgPoints)}, C: {len(evgConnections)}, S: {sum([len(p) for p in pathP])}]", "m"), (170,135), True)
 
                 for id in self.interactableVisualObjects:
-                    if self.interactableVisualObjects[id][0][0] == "e":
+                    if self.interactableVisualObjects[id][0] == "evg":
                         if self.interactableVisualObjects[id][1].type == "connection":
                             self.interactableVisualObjects[id][1].tick(img, self.interacting==id, self.graphOffset, self.graphScale)
                 for id in self.interactableVisualObjects:
-                    if self.interactableVisualObjects[id][0][0] == "e":
+                    if self.interactableVisualObjects[id][0] == "evg":
                         if self.interactableVisualObjects[id][1].type != "connection":
                             self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
                 
                 self.selectedProperty = requestSelectedProperty
-
-                # tempPath = []
-                # for id in self.interactableVisualObjects: 
-                #     if self.interactableVisualObjects[id][1].type == "orb": 
-                #         tempPath.append(self.interactableVisualObjects[id][1].positionO.getPosition())
-                # self.pathVisualObject.tick(img, tempPath)
-
-
                 placeOver(img, FRAME_EDITOR_VISUALS_GRAPH_ARRAY, (0,219))
                 # placeOver(img, PLACEHOLDER_IMAGE_5_ARRAY, ((100-self.graphOffset)*25/(self.graphScale+0.000001)+29,219), True)
         if self.editorTab == "p":
