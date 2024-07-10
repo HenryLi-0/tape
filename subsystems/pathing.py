@@ -137,7 +137,6 @@ def selectiveBezierPathCoords(coords: tuple[list|tuple]|list[list|tuple], steps:
             if lower == i:
                 bezier = bezierCurve(coordsc[i*2],coordsc[i*2+1],coordsc[i*2+2])
                 for t in stepsI: totalPath.append(roundp(bezier(t/steps)))
-        totalPath.append(coordsc[lower])
         return totalPath
     else: return straightPathCoords(coords,steps)
 
