@@ -44,8 +44,8 @@
 
 ### Version Info:
 
-Tape Version: v -999
+Tape Version: v0.0.0-demo
 
-Tape Release: None
+Tape Release: demo
 
 Last Updated: 7/10/2024
