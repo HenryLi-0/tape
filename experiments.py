@@ -134,6 +134,39 @@ print(iterateThroughPath(compact))
 compact = [0.0, (0.0, 0.0), 'S', 0.0, (64.0, 104.0), 'S', 1.0, (0.0, 0.0), 'S', 5.24, (714.0, 492.0), 'L', 10.12, (792.0, 59.0), 'S']
 print(iterateThroughPath(compact))
 '''
+
+'''
 from subsystems.sprite import findStateThroughPath
 compact = [0.0, (0.0, 0.0), 'S', 2.28, (293.0, 329.0), 'S', 4.8, (656.0, 446.0), 'L', 6.64, (629.0, 109.0), 'S', 10.16, (433.0, 110.0), 'S', 12.08, (127.0, 427.0), 'L']
 print(findStateThroughPath(compact,7))
+'''
+
+'''
+class Thing:
+    def __init__(self, id):
+        self.id = id
+
+things = [
+    Thing(9),
+    Thing(5),
+    Thing(3),
+    Thing(2),
+    Thing(1)
+]
+
+print(things)
+save = things[0]
+things.pop(0)
+things.insert(1, save)
+print(things)
+print(things[1].id)
+'''
+
+from PIL import Image
+from settings import *
+images = [PLACEHOLDER_IMAGE_2]
+for i in range(10):
+    images.append(PLACEHOLDER_IMAGE_2)
+
+images[0].save('test.gif', format='gif', append_images=images[1:], save_all=True, duration=10, loop=0)
+

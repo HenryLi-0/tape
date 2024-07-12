@@ -97,6 +97,27 @@ class Interface:
                 if self.editorTab == "s":
                     if key in SPRITE_LIST_OFFSET_UP:   self.spriteListVelocity -= 25
                     if key in SPRITE_LIST_OFFSET_DOWN: self.spriteListVelocity += 25
+                    if key in EDITOR_VISUAL_OFFSET_LEFT:  
+                        if 1 <= self.selectedSprite and self.selectedSprite <= len(self.sprites)-1:
+                            temp = self.sprites[self.selectedSprite]
+                            self.sprites.pop(self.selectedSprite)
+                            self.selectedSprite -= 1
+                            self.sprites.insert(self.selectedSprite, temp)
+                    if key in EDITOR_VISUAL_OFFSET_RIGHT: 
+                        if 0 <= self.selectedSprite and self.selectedSprite <= len(self.sprites)-2:
+                            temp = self.sprites[self.selectedSprite]
+                            self.sprites.pop(self.selectedSprite)
+                            self.selectedSprite += 1
+                            self.sprites.insert(self.selectedSprite, temp)
+                    if key in EDITOR_VISUAL_POINT_CREATE: 
+                        if 953<self.mx and 36<self.my and self.mx<1340 and self.my<542:
+                            target = math.floor(((self.my-36)+self.spriteListOffset-25)/30)
+                            self.sprites.insert(max(0, min(target, len(self.sprites))), SingleSprite(f"New Sprite {len(self.sprites)}"))
+                        else:
+                            self.sprites.insert(len(self.sprites), SingleSprite(f"New Sprite {len(self.sprites)}"))
+                    if key in EDITOR_VISUAL_POINT_DELETE:
+                        if len(self.sprites) > 1:
+                            self.sprites.pop(self.selectedSprite)
                 if self.editorTab == "v":
                     if key in EDITOR_VISUAL_OFFSET_LEFT:  self.graphOffset -= (self.graphScale+0.000001)
                     if key in EDITOR_VISUAL_OFFSET_RIGHT: self.graphOffset += (self.graphScale+0.000001)
