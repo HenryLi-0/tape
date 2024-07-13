@@ -38,6 +38,8 @@ class SingleSprite:
     def __init__(self,name, img = PLACEHOLDER_IMAGE_5_ARRAY):
         self.name = name
         self.images = [
+            numpy.array(img),
+            numpy.array(img),
             numpy.array(img)
         ]
         self.data = {

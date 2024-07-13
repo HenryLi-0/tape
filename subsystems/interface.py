@@ -27,6 +27,12 @@ class Interface:
         i_plusIconActive = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
         placeOver(i_plusIconActive, generateBorderBox((29,29),3, hexColorToRGBA(SELECTED_COLOR)), (0,0))
         placeOver(i_plusIconActive, PLUS_SIGN_ARRAY, (17,17), True)
+        i_trashcabIconIdle = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
+        placeOver(i_trashcabIconIdle, generateBorderBox((29,29),3, hexColorToRGBA(FRAME_COLOR)), (0,0))
+        placeOver(i_trashcabIconIdle, TRASHCAN_ARRAY, (17,17), True)
+        i_trashcabIconActive = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
+        placeOver(i_trashcabIconActive, generateBorderBox((29,29),3, hexColorToRGBA(SELECTED_COLOR)), (0,0))
+        placeOver(i_trashcabIconActive, TRASHCAN_ARRAY, (17,17), True)
 
         '''Interactable Visual Objects'''
         '''
@@ -44,7 +50,8 @@ class Interface:
             self.c.c():["o",ButtonVisualObject("visuals",(134,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
             self.c.c():["o",ButtonVisualObject("project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
 
-            self.c.c():["es", ButtonVisualObject("new sprite", (338,15), i_plusIconIdle, i_plusIconActive)]
+            self.c.c():["es", ButtonVisualObject("new sprite", (338,15), i_plusIconIdle, i_plusIconActive)],
+            self.c.c():["es", ButtonVisualObject("delete sprite", (338,65), i_trashcabIconIdle, i_trashcabIconActive)]
     
         }
         #for i in range(10): self.interactableVisualObjects[self.c.c()] = ["a", OrbVisualObject(f"test{i}")]
@@ -79,7 +86,11 @@ class Interface:
         self.mRising = mPressed==2
         self.fps = fps
         self.ticks += 1 if self.fps==0 else round(RENDER_FPS/self.fps)
-        if self.interactableVisualObjects[self.interacting][1].name == "new sprite" and mPressed < 3: self.sprites.append(SingleSprite(f"New Sprite {len(self.sprites)}"))
+        if self.interactableVisualObjects[self.interacting][1].name == "new sprite" and mPressed < 3: 
+            self.sprites.append(SingleSprite(f"New Sprite {len(self.sprites)}"))
+        if self.interactableVisualObjects[self.interacting][1].name == "delete sprite" and mPressed < 3 and len(self.sprites) > 1: 
+            self.sprites.pop(self.selectedSprite)
+            self.selectedSprite = max(0, min(self.selectedProperty, len(self.sprites)-1))
 
         '''Keyboard and Scroll (graph and timeline)'''
         for key in keyQueue: 
@@ -353,7 +364,7 @@ class Interface:
                 if self.previousEditorTab != "v":
                     self.stringKeyQueue = ""
                 else:
-                    for i in range(1,8):
+                    for i in range(1,8+1):
                         if str(i) in self.stringKeyQueue: requestSelectedProperty = i
                     connectionEdit = ""
                     for keybind in EDITOR_VISUAL_LINEAR_CONNECTION:
@@ -476,12 +487,12 @@ class Interface:
                         x, y = self.interactableVisualObjects[self.interacting][1].positionO.getPosition()
                         x = x*(self.graphScale+0.000001)/25+self.graphOffset
                         y = 100-(y/2.33)                        
-                        placeOver(img, displayText(f"P {i+1}: {(roundf(x,2),roundf(y,2))}", "m"), (95,190), True)
+                        placeOver(img, displayText(f"P {i+1}: {(roundf(x,2),roundf(y,2))}", "m"), (89,190), True)
                     if self.interactableVisualObjects[self.interacting][1].type == "connection":
                         i = evgConnections.index(self.interacting)
-                        if data[i*3+2] == "L": placeOver(img, displayText(f"C {i+1}: Linear", "m"), (95,190), True)
-                        elif data[i*3+2] == "S": placeOver(img, displayText(f"C {i+1}: Smooth", "m"), (95,190), True)
-                        else: placeOver(img, displayText(f"C {i+1}: {data[i*3+2]}", "m"), (95,190), True)
+                        if data[i*3+2] == "L": placeOver(img, displayText(f"C {i+1}: Linear", "m"), (89,190), True)
+                        elif data[i*3+2] == "S": placeOver(img, displayText(f"C {i+1}: Smooth", "m"), (89,190), True)
+                        else: placeOver(img, displayText(f"C {i+1}: {data[i*3+2]}", "m"), (89,190), True)
                         if connectionEdit in ["L", "S"]:
                             data[i*3+2] = connectionEdit
                             self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
@@ -489,7 +500,32 @@ class Interface:
                 evgPoints = listEVGPoints(self.interactableVisualObjects)
                 evgConnections = listEVGConnections(self.interactableVisualObjects)
                 if 1 <= self.selectedProperty and self.selectedProperty <= 8:
-                    placeOver(img, displayText(f"({self.selectedProperty}) - {PROPERTY_DISPLAY_NAMES[self.selectedProperty-1]} - [P: {len(evgPoints)}, C: {len(evgConnections)}, S: {sum([len(p) for p in pathP])}]", "m"), (170,135), True)
+                    placeOver(img, displayText(f"({self.selectedProperty}) - {PROPERTY_DISPLAY_NAMES[self.selectedProperty-1]}", "m"), (89,130), True)
+                    if self.interacting == -999:
+                        placeOver(img, displayText(f"[P: {len(evgPoints)}, C: {len(evgConnections)}, S: {sum([len(p) for p in pathP])}]", "m"), (89,190), True)
+
+
+                '''Apperance Panel'''
+                apperancePanel = generateColorBox((189,210), hexColorToRGBA(BACKGROUND_COLOR))
+                placeOver(apperancePanel, generateBorderBox((183,206),3,hexColorToRGBA(FRAME_COLOR)), (0,0))
+                resizedImgs = [setLimitedSize(spriteImg, 79) for spriteImg in self.sprites[self.selectedSprite].images]
+                yOffset = 6
+                for i in range(len(resizedImgs)):
+                    # each image is 85x85 (including borders)
+                    y, x, temp = resizedImgs[i].shape
+                    imgB = generateColorBox((x+6,y+6),hexColorToRGBA(BACKGROUND_COLOR))
+                    placeOver(imgB, generateBorderBox((x, y), 3, hexColorToRGBA(FRAME_COLOR)), (0,0))
+                    placeOver(imgB, resizedImgs[i], (3,3))
+                    placeOver(apperancePanel, imgB, (90*(i%2)+5, yOffset))
+                    try: yOffset += max(resizedImgs[(i - i % 2)].shape[0], resizedImgs[(i - i % 2 + 1)].shape[0])
+                    except: yOffset += resizedImgs[(i - i % 2)].shape[0]
+                placeOver(img, apperancePanel, (199,0))
+
+                    
+
+
+
+
 
                 for id in self.interactableVisualObjects:
                     if self.interactableVisualObjects[id][0] == "evg":
