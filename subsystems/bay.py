@@ -37,6 +37,7 @@ class CacheManager:
         self.cache[id]=str(imagePath)
         numpy.save(os.path.join("storage", f"{id}.npy"),image)
         self.saveCache()
+        return id
 
     def removeImage(self, id):
         '''Removes an image given its UUID'''

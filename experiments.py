@@ -172,8 +172,7 @@ for i in range(10):
 images[0].save('test.gif', format='gif', append_images=images[1:], save_all=True, duration=10, loop=0)
 '''
 
-from subsystems.render import setLimitedSize
-from settings import LOADING_IMAGE_ARRAY
-from PIL import Image
-
-Image.fromarray(setLimitedSize(LOADING_IMAGE_ARRAY, 250)).show()
+from subsystems.bay import CacheManager
+from settings import PLACEHOLDER_IMAGE_5
+cache = CacheManager()
+cache.importImage("C:/Users/henry/Desktop/Projects/GitHub Repositories/tape/resources/placeholder/placeholder5.png")

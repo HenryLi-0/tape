@@ -10,6 +10,7 @@ from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualOb
 from subsystems.counter import Counter
 from subsystems.pathing import pointAt, roundf, tcoordVelocity
 from subsystems.sprite import *
+from subsystems.bay import CacheManager
 
 class Interface:
     def __init__(self):
@@ -21,6 +22,7 @@ class Interface:
         self.ticks = 0
         self.activity = ""
         self.c = Counter()
+        self.cache = CacheManager()
         '''Generate Icons'''
         i_plusIconIdle = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
         placeOver(i_plusIconIdle, generateBorderBox((29,29),3, hexColorToRGBA(FRAME_COLOR)), (0,0))
@@ -104,8 +106,7 @@ class Interface:
         if self.interactableVisualObjects[self.interacting][1].name == "import image" and mPressed < 3 or (self.editorTab == "v" and 1152<self.mx and 36<self.my and self.mx<1340 and self.my<245 and self.interacting == -999 and sum([(key in EDITOR_VISUAL_POINT_CREATE) for key in keyQueue])> 0): 
             path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
             try: 
-                importImage = numpy.array(Image.open(path).convert("RGBA"))
-                self.sprites[self.selectedSprite].addImage(importImage)
+                self.sprites[self.selectedSprite].addImageUUID(self.cache.importImage(path))
             except:
                 pass
 
@@ -184,7 +185,7 @@ class Interface:
         if self.editorTab == "v" and 1152<self.mx and 36<self.my and self.mx<1340 and self.my<245 and self.interacting == -999:
             if abs(self.mouseScroll) > 0:
                 self.apperancePanelOffset -= self.mouseScroll/10
-                self.apperancePanelOffset = max(0, min(self.apperancePanelOffset, (math.ceil(len(self.sprites[self.selectedSprite].images)/2)-1)*90))
+                self.apperancePanelOffset = max(0, min(self.apperancePanelOffset, (math.ceil(len(self.sprites[self.selectedSprite].imageUUIDs)/2)-1)*90))
         if self.editorTab == "s":
             if abs(self.mouseScroll) > 0:
                 self.spriteListVelocity = 0
@@ -296,7 +297,7 @@ class Interface:
 
         for sprite in self.sprites:
             frame = sprite.getFullStateAt(self.animationTime)
-            placeOver(img, readImgSingleFullState(frame, sprite.images), (frame[0][0],frame[0][1]), True)
+            placeOver(img, readImgSingleFullState(frame, self.cache.getImage(sprite.imageUUIDs[frame[1]]), True), (frame[0][0],frame[0][1]), True)
 
         if self.interacting != -999 and self.interactableVisualObjects[self.interacting][1].type == "point" and self.selectedProperty == 1:
             data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
@@ -358,7 +359,7 @@ class Interface:
             if self.selectedSprite != -999:
                 '''Graph Display'''
                 frame = self.sprites[self.selectedSprite].getFullStateAt(self.animationTime)
-                placeOver(img, setLimitedSize(readImgSingleFullState(frame, self.sprites[self.selectedSprite].getImageAt(self.animationTime), True), 50), (25,25))
+                placeOver(img, setLimitedSize(readImgSingleFullState(frame, self.cache.getImage(self.sprites[self.selectedSprite].getImageUUIDAt(self.animationTime)), True), 50), (25,25))
                 name = self.sprites[self.selectedSprite].getName()
                 if len(name) < 5: size = "l"
                 elif len(name) < 10: size = "m"
@@ -542,16 +543,18 @@ class Interface:
                 '''Apperance Panel'''
                 apperancePanel = generateColorBox((189,210), hexColorToRGBA(BACKGROUND_COLOR))
                 placeOver(apperancePanel, generateBorderBox((183,206),3,hexColorToRGBA(FRAME_COLOR)), (0,0))
-                resizedImgs = [setLimitedSize(spriteImg, 73) for spriteImg in self.sprites[self.selectedSprite].images]
+                resizedImgs = [setLimitedSize(self.cache.getImage(spriteImgUUID), 73) for spriteImgUUID in self.sprites[self.selectedSprite].imageUUIDs]
                 for i in range(len(resizedImgs)):
                     # each image is 85x85 (including borders)
-                    y, x, temp = resizedImgs[i].shape
-                    imgB = generateColorBox((x+12,y+12),hexColorToRGBA(BACKGROUND_COLOR))
-                    placeOver(imgB, generateBorderBox((x, y), 6, hexColorToRGBA(FRAME_COLOR)), (0,0))
-                    placeOver(imgB, resizedImgs[i], (6,6))
-                    placeOver(imgB, displayText(str(i),"m", hexColorToRGBA(BACKGROUND_COLOR), hexColorToRGBA(SELECTED_COLOR)), (7,7))
-                    placeOver(apperancePanel, imgB, (90*(i%2)+6, math.floor(i/2)*90-self.apperancePanelOffset))
-                    if math.floor(i/2)*90-self.apperancePanelOffset > 210: break
+                    xPos = math.floor(i/2)*90-self.apperancePanelOffset
+                    if -100 < xPos and xPos < 210:
+                        y, x, temp = resizedImgs[i].shape
+                        imgB = generateColorBox((x+12,y+12),hexColorToRGBA(BACKGROUND_COLOR))
+                        placeOver(imgB, generateBorderBox((x, y), 6, hexColorToRGBA(FRAME_COLOR)), (0,0))
+                        placeOver(imgB, resizedImgs[i], (6,6))
+                        placeOver(imgB, displayText(str(i),"m", hexColorToRGBA(BACKGROUND_COLOR), hexColorToRGBA(SELECTED_COLOR)), (7,7))
+                        placeOver(apperancePanel, imgB, (90*(i%2)+6, math.floor(i/2)*90-self.apperancePanelOffset))
+                    if xPos > 210: break
                 placeOver(img, apperancePanel, (199,0))
 
                 for id in self.interactableVisualObjects:

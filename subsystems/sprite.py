@@ -35,14 +35,14 @@ class SingleSprite:
     L - linear, straight line
     S - smooth, curved approach, also represents beizer for coordinates
     '''
-    def __init__(self,name, img = PLACEHOLDER_IMAGE_5_ARRAY):
+    def __init__(self,name, imgUUID = "placeholder5"):
         self.name = name
-        self.images = [
-            numpy.array(img)
+        self.imageUUIDs = [
+            imgUUID
         ]
         self.data = {
             "name":name, 
-            "images":self.images, 
+            "images":self.imageUUIDs, 
             "c":[0,(0,0),"L",1,(0,0),"L"],  # Coordinate
             "r":[0,    0,"L",1,    0,"L"],  # Rotation - 0 up CCW
             "a":[0,    0,"L",1,    0,"L"],  # Apperance - 0 = image0
@@ -63,7 +63,7 @@ class SingleSprite:
         '''Generates a state sequence for a given property, given the key'''
         if key == "c": return iterateThroughPath(self.data["c"])
         if key == "p": return mergeCoordRotationPath(iterateThroughPath(self.data["c"]), iterateThroughSingle(self.data["r"]))
-        if key == "a": return [max(0, min(len(self.images)-1, round(item))) for item in iterateThroughSingle(self.data["a"])]
+        if key == "a": return [max(0, min(len(self.imageUUIDs)-1, round(item))) for item in iterateThroughSingle(self.data["a"])]
         if key in "rshtbw" and len(key) == 1: return iterateThroughSingle(self.data[key])
     def getStateAt(self, key, time):
         '''Returns a state of a given property for a given time, given the key and time'''
@@ -71,7 +71,7 @@ class SingleSprite:
         if key == "p":
             cx, cy = findStateThroughPath(self.data["c"], time) 
             return (cx, cy, findStateThroughSingle(self.data["r"], time))
-        if key == "a": return max(0, min(len(self.images)-1, round(findStateThroughSingle(self.data["a"],time))))
+        if key == "a": return max(0, min(len(self.imageUUIDs)-1, round(findStateThroughSingle(self.data["a"],time))))
         if key in "rshtbw" and len(key) == 1: return findStateThroughSingle(self.data[key], time)
     def generateFullSequence(self):
         '''Generates a full state sequence for all properties for the entire duration of importance'''
@@ -104,21 +104,21 @@ class SingleSprite:
             self.getStateAt("b", time),
             self.getStateAt("w", time)
         ]
-    def addImage(self, img):
-        '''Adds an image to the sprite's appearances'''
-        self.images.append(numpy.array(img))
-        self.data["images"] = self.images
-    def removeImage(self, img):
-        '''Removes an image from the sprite's apperances, given the image or index'''
-        if type(img) == numpy.ndarray: 
-            self.images.pop(self.images.index(numpy.array(img)))
+    def addImageUUID(self, imgUUID):
+        '''Adds an image UUID to the sprite's appearances'''
+        self.imageUUIDs.append(imgUUID)
+        self.data["images"] = self.imageUUIDs
+    def removeImageUUID(self, img):
+        '''Removes an image from the sprite's apperances, given the imageUUID or index'''
+        if type(img) == str: 
+            self.imageUUIDs.pop(self.imageUUIDs.index(numpy.array(img)))
         else: 
-            if len(self.images) > 1: self.images.pop(max(0, min(img, len(self.images)-1)))
-        self.data["images"] = self.images
-    def getImageAt(self, time):
+            if len(self.imageUUIDs) > 1: self.imageUUIDs.pop(max(0, min(img, len(self.imageUUIDs)-1)))
+        self.data["images"] = self.imageUUIDs
+    def getImageUUIDAt(self, time):
         '''Returns the array of an image of the sprite at a given time'''
-        try: return self.images[self.getStateAt("a", time)]
-        except: return self.images[0]
+        try: return self.imageUUIDs[self.getStateAt("a", time)]
+        except: return self.imageUUIDs[0]
     def getName(self):
         '''Gets the name of the sprite'''
         return self.name
