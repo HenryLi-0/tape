@@ -109,8 +109,11 @@ class SingleSprite:
         self.images.append(numpy.array(img))
         self.data["images"] = self.images
     def removeImage(self, img):
-        '''Removes an image from the sprite's apperances, given the image'''
-        self.images.pop(self.images.index(numpy.array(img)))
+        '''Removes an image from the sprite's apperances, given the image or index'''
+        if type(img) == numpy.ndarray: 
+            self.images.pop(self.images.index(numpy.array(img)))
+        else: 
+            if len(self.images) > 1: self.images.pop(max(0, min(img, len(self.images)-1)))
         self.data["images"] = self.images
     def getImageAt(self, time):
         '''Returns the array of an image of the sprite at a given time'''

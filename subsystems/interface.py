@@ -60,7 +60,7 @@ class Interface:
 
             self.c.c():["es", ButtonVisualObject("new sprite", (338,15), i_plusIconIdle, i_plusIconActive)],
             self.c.c():["es", ButtonVisualObject("delete sprite", (338,65), i_trashcanIconIdle, i_trashcanIconActive)],
-            self.c.c():["ev", ButtonVisualObject("import image", (338,65), i_importIconIdle, i_importIconActive)]
+            self.c.c():["ev", ButtonVisualObject("import image", (338,161), i_importIconIdle, i_importIconActive)]
     
         }
         #for i in range(10): self.interactableVisualObjects[self.c.c()] = ["a", OrbVisualObject(f"test{i}")]
@@ -79,6 +79,7 @@ class Interface:
         self.timelineOffset = 0
         self.spriteListOffset = 0
         self.spriteListVelocity = 0
+        self.apperancePanelOffset = 0
         self.interacting = -999
         self.editorTab = "p"
         self.previousEditorTab = self.editorTab
@@ -100,7 +101,7 @@ class Interface:
         if self.interactableVisualObjects[self.interacting][1].name == "delete sprite" and mPressed < 3 and len(self.sprites) > 1: 
             self.sprites.pop(self.selectedSprite)
             self.selectedSprite = max(0, min(self.selectedProperty, len(self.sprites)-1))
-        if self.interactableVisualObjects[self.interacting][1].name == "import image" and mPressed < 3: 
+        if self.interactableVisualObjects[self.interacting][1].name == "import image" and mPressed < 3 or (self.editorTab == "v" and 1152<self.mx and 36<self.my and self.mx<1340 and self.my<245 and self.interacting == -999 and sum([(key in EDITOR_VISUAL_POINT_CREATE) for key in keyQueue])> 0): 
             path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
             try: 
                 importImage = numpy.array(Image.open(path).convert("RGBA"))
@@ -148,6 +149,9 @@ class Interface:
                 if self.editorTab == "v":
                     if key in EDITOR_VISUAL_OFFSET_LEFT:  self.graphOffset -= (self.graphScale+0.000001)
                     if key in EDITOR_VISUAL_OFFSET_RIGHT: self.graphOffset += (self.graphScale+0.000001)
+                    if 1152<self.mx and 36<self.my and self.mx<1340 and self.my<245:
+                        if key in EDITOR_VISUAL_POINT_DELETE:
+                            self.sprites[self.selectedSprite].removeImage(math.floor(((self.mx-1152)+2*(self.my-36)-2*self.apperancePanelOffset-6)/90))
                 if key in TIMELINE_OFFSET_LEFT:  self.timelineOffset -= (self.timelineScale+0.000001)
                 if key in TIMELINE_OFFSET_RIGHT: self.timelineOffset += (self.timelineScale+0.000001)
             else:
@@ -177,6 +181,10 @@ class Interface:
         self.timelineScale = 0.001 if self.timelineScale < 0.001 else self.timelineScale
         self.timelineScale = 2000 if 2000 < self.timelineScale else self.timelineScale
         self.timelineOffset = 0 if self.timelineOffset < 0 else self.timelineOffset
+        if self.editorTab == "v" and 1152<self.mx and 36<self.my and self.mx<1340 and self.my<245 and self.interacting == -999:
+            if abs(self.mouseScroll) > 0:
+                self.apperancePanelOffset -= self.mouseScroll/10
+                self.apperancePanelOffset = max(0, min(self.apperancePanelOffset, (math.ceil(len(self.sprites[self.selectedSprite].images)/2)-1)*90))
         if self.editorTab == "s":
             if abs(self.mouseScroll) > 0:
                 self.spriteListVelocity = 0
@@ -397,35 +405,36 @@ class Interface:
                     for keybind in EDITOR_VISUAL_SMOOTH_CONNECTION:
                         if str(keybind) in self.stringKeyQueue: connectionEdit = "S"
 
-                    for keybind in EDITOR_VISUAL_POINT_CREATE:
-                        if str(keybind) in self.stringKeyQueue and self.interacting == -999:
-                            x = (self.mx-982)*(self.graphScale+0.000001)/25+self.graphOffset
-                            y = 100-((self.my-279)/2.33)   
-                            timeStamps = [data[i*3] for i in range(lenData)]
-                            low = -1
-                            for i in range(len(timeStamps)-1):
-                                if timeStamps[i]<=x: low = i
-                                else: break
-                            for item in ["L", (random.randrange(0,903),random.randrange(0,507)) if self.selectedProperty == 1 else y, x]: data.insert((low+1)*3, item)
-                            self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
-                            dataCheck("crashtbw"[self.selectedProperty-1], data)
-                            if self.selectedProperty == 1: 
-                                pathP = iterateThroughPath(data, True)
-                                pathV = [tcoordVelocity(partition) for partition in pathP]
-                            else: 
-                                pathP = iterateThroughSingle(data, True)
-                            lenData = round(len(data)/3)
-                            self.interacting = -999
-                            regen = True                                
-                    for keybind in EDITOR_VISUAL_POINT_DELETE:
-                        if str(keybind) in self.stringKeyQueue and self.interacting != -999:
-                            if self.interactableVisualObjects[self.interacting][1].type == "point":
-                                index = listEVGPoints(self.interactableVisualObjects).index(self.interacting)
-                                for i in range(3): data.pop(index*3)
+                    if 953<self.mx and 255<self.my and self.mx<1340 and self.my<542:
+                        for keybind in EDITOR_VISUAL_POINT_CREATE:
+                            if str(keybind) in self.stringKeyQueue and self.interacting == -999:
+                                x = (self.mx-982)*(self.graphScale+0.000001)/25+self.graphOffset
+                                y = 100-((self.my-279)/2.33)   
+                                timeStamps = [data[i*3] for i in range(lenData)]
+                                low = -1
+                                for i in range(len(timeStamps)-1):
+                                    if timeStamps[i]<=x: low = i
+                                    else: break
+                                for item in ["L", (random.randrange(0,903),random.randrange(0,507)) if self.selectedProperty == 1 else y, x]: data.insert((low+1)*3, item)
                                 self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
+                                dataCheck("crashtbw"[self.selectedProperty-1], data)
+                                if self.selectedProperty == 1: 
+                                    pathP = iterateThroughPath(data, True)
+                                    pathV = [tcoordVelocity(partition) for partition in pathP]
+                                else: 
+                                    pathP = iterateThroughSingle(data, True)
                                 lenData = round(len(data)/3)
                                 self.interacting = -999
-                                regen = True
+                                regen = True                                
+                        for keybind in EDITOR_VISUAL_POINT_DELETE:
+                            if str(keybind) in self.stringKeyQueue and self.interacting != -999:
+                                if self.interactableVisualObjects[self.interacting][1].type == "point":
+                                    index = listEVGPoints(self.interactableVisualObjects).index(self.interacting)
+                                    for i in range(3): data.pop(index*3)
+                                    self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
+                                    lenData = round(len(data)/3)
+                                    self.interacting = -999
+                                    regen = True
                     
                     self.stringKeyQueue = ""
 
@@ -534,7 +543,6 @@ class Interface:
                 apperancePanel = generateColorBox((189,210), hexColorToRGBA(BACKGROUND_COLOR))
                 placeOver(apperancePanel, generateBorderBox((183,206),3,hexColorToRGBA(FRAME_COLOR)), (0,0))
                 resizedImgs = [setLimitedSize(spriteImg, 73) for spriteImg in self.sprites[self.selectedSprite].images]
-                yOffset = 7
                 for i in range(len(resizedImgs)):
                     # each image is 85x85 (including borders)
                     y, x, temp = resizedImgs[i].shape
@@ -542,10 +550,8 @@ class Interface:
                     placeOver(imgB, generateBorderBox((x, y), 6, hexColorToRGBA(FRAME_COLOR)), (0,0))
                     placeOver(imgB, resizedImgs[i], (6,6))
                     placeOver(imgB, displayText(str(i),"m", hexColorToRGBA(BACKGROUND_COLOR), hexColorToRGBA(SELECTED_COLOR)), (7,7))
-                    placeOver(apperancePanel, imgB, (90*(i%2)+6, yOffset))
-                    if i % 2 == 1:
-                        try: yOffset += max(resizedImgs[(i - i % 2)].shape[0], resizedImgs[(i - i % 2 + 1)].shape[0])+6+11
-                        except: yOffset += resizedImgs[(i - i % 2)].shape[0]+6+11
+                    placeOver(apperancePanel, imgB, (90*(i%2)+6, math.floor(i/2)*90-self.apperancePanelOffset))
+                    if math.floor(i/2)*90-self.apperancePanelOffset > 210: break
                 placeOver(img, apperancePanel, (199,0))
 
                 for id in self.interactableVisualObjects:
@@ -570,11 +576,12 @@ class Interface:
             placeOver(img, displayText("Size: 1155 MB (please implement this)", "m"),                               (20,EDITOR_SPACING(3)))
 
             placeOver(img, displayText("Elements:", "m"),                                                           (15,EDITOR_SPACING(5)))
-            placeOver(img, displayText("Sprites: please implement this", "m"),                                      (20,EDITOR_SPACING(6))) 
+            placeOver(img, displayText(f"Sprites: {len(self.sprites)}", "m"),                                       (20,EDITOR_SPACING(6))) 
             placeOver(img, displayText("Folders: please implement this", "m"),                                      (20,EDITOR_SPACING(7))) 
-            placeOver(img, displayText("Paths: please implement this", "m"),                                        (20,EDITOR_SPACING(8))) 
-            placeOver(img, displayText("Total Path Elements: please implement this", "m"),                          (20,EDITOR_SPACING(9))) 
-            placeOver(img, displayText("Total Path Waypoints: please implement this", "m"),                         (20,EDITOR_SPACING(10))) 
+            placeOver(img, displayText("Paths: please implement this", "m"),                                        (20,EDITOR_SPACING(8)))
+            temp = round(sum([len(sprite.getData("c")) for sprite in self.sprites])/3)
+            placeOver(img, displayText(f"Total Path Elements: {temp*2-1}", "m"),                                        (20,EDITOR_SPACING(9))) 
+            placeOver(img, displayText(f"Total Path Waypoints: {temp}", "m"),                                       (20,EDITOR_SPACING(10))) 
             placeOver(img, displayText(f"Interactable Visual Objects: {len(self.interactableVisualObjects)}", "m"), (20,EDITOR_SPACING(11))) 
 
             placeOver(img, displayText("Dates:", "m"),                                                              (15,EDITOR_SPACING(13)))

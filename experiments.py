@@ -162,6 +162,7 @@ print(things)
 print(things[1].id)
 '''
 
+'''
 from PIL import Image
 from settings import *
 images = [PLACEHOLDER_IMAGE_2]
@@ -169,4 +170,10 @@ for i in range(10):
     images.append(PLACEHOLDER_IMAGE_2)
 
 images[0].save('test.gif', format='gif', append_images=images[1:], save_all=True, duration=10, loop=0)
+'''
 
+from subsystems.render import setLimitedSize
+from settings import LOADING_IMAGE_ARRAY
+from PIL import Image
+
+Image.fromarray(setLimitedSize(LOADING_IMAGE_ARRAY, 250)).show()

@@ -107,6 +107,6 @@ def setBlur(img: numpy.ndarray, pixelation):
 
 def setLimitedSize(img: numpy.ndarray, size):
     '''Returns the a copy of the image scaled to fix inside a (size x size) shape'''
-    x, y, temp = img.shape
+    y, x, temp = img.shape
     scaleFactor = size/x if x>y else size/y
     return numpy.array(Image.fromarray(img).resize((max(1, (round(x*scaleFactor))),max(1, round(y*scaleFactor)))))
