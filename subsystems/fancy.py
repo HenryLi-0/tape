@@ -37,3 +37,10 @@ def generateBorderBox(size:list|tuple = (25,25), outlineW:int = 1, color:list|tu
     array[:, :outlineW, :] = color
     array[:, -outlineW:, :] = color
     return array
+
+def generateIcon(img, active = False, size = (29,29)):
+    from subsystems.visuals import placeOver
+    icon = generateColorBox((size[0]+6,size[1]+6),hexColorToRGBA(BACKGROUND_COLOR))
+    placeOver(icon, generateBorderBox(size,3, hexColorToRGBA(SELECTED_COLOR if active else FRAME_COLOR)), (0,0))
+    placeOver(icon, img, (round((size[0]+6)/2),round((size[1]+6)/2)), True)
+    return icon

@@ -123,6 +123,8 @@ GEAR = Image.open(os.path.join("resources", "gear.png")).convert("RGBA")
 GEAR_ARRAY = numpy.array(GEAR)
 PLAY_BUTTON = Image.open(os.path.join("resources", "play.png")).convert("RGBA")
 PLAY_BUTTON_ARRAY = numpy.array(PLAY_BUTTON)
+PAUSE_BUTTON = Image.open(os.path.join("resources", "pause.png")).convert("RGBA")
+PAUSE_BUTTON_ARRAY = numpy.array(PAUSE_BUTTON)
 
 CURSOR_ARROW = Image.open(os.path.join("resources", "cursor_arrow.png")).convert("RGBA")
 CURSOR_ARROW_ARRAY = numpy.array(CURSOR_ARROW)

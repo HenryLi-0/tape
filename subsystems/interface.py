@@ -5,7 +5,7 @@ from PIL import ImageTk, Image
 from tkinter import filedialog
 import time, random
 from subsystems.render import *
-from subsystems.fancy import displayText, generateColorBox, generateBorderBox
+from subsystems.fancy import displayText, generateColorBox, generateBorderBox, generateIcon
 from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject, EditableTextBoxVisualObject, DummyVisualObject, PointVisualObject, PointConnectionVisualObject
 from subsystems.counter import Counter
 from subsystems.pathing import pointAt, roundf, tcoordVelocity
@@ -24,25 +24,14 @@ class Interface:
         self.c = Counter()
         self.cache = CacheManager()
         '''Generate Icons'''
-        i_plusIconIdle = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
-        placeOver(i_plusIconIdle, generateBorderBox((29,29),3, hexColorToRGBA(FRAME_COLOR)), (0,0))
-        placeOver(i_plusIconIdle, PLUS_SIGN_ARRAY, (17,17), True)
-        i_plusIconActive = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
-        placeOver(i_plusIconActive, generateBorderBox((29,29),3, hexColorToRGBA(SELECTED_COLOR)), (0,0))
-        placeOver(i_plusIconActive, PLUS_SIGN_ARRAY, (17,17), True)
-        i_trashcanIconIdle = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
-        placeOver(i_trashcanIconIdle, generateBorderBox((29,29),3, hexColorToRGBA(FRAME_COLOR)), (0,0))
-        placeOver(i_trashcanIconIdle, TRASHCAN_ARRAY, (17,17), True)
-        i_trashcanIconActive = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
-        placeOver(i_trashcanIconActive, generateBorderBox((29,29),3, hexColorToRGBA(SELECTED_COLOR)), (0,0))
-        placeOver(i_trashcanIconActive, TRASHCAN_ARRAY, (17,17), True)
-        i_importIconIdle = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
-        placeOver(i_importIconIdle, generateBorderBox((29,29),3, hexColorToRGBA(FRAME_COLOR)), (0,0))
-        placeOver(i_importIconIdle, IMPORT_ARRAY, (17,17), True)
-        i_importIconActive = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
-        placeOver(i_importIconActive, generateBorderBox((29,29),3, hexColorToRGBA(SELECTED_COLOR)), (0,0))
-        placeOver(i_importIconActive, IMPORT_ARRAY, (17,17), True)
-
+        i_plusIconIdle = generateIcon(PLUS_SIGN_ARRAY, False, (29,29))
+        i_plusIconActive = generateIcon(PLUS_SIGN_ARRAY, True, (29,29))
+        i_trashcanIconIdle = generateIcon(TRASHCAN_ARRAY, False, (29,29))
+        i_trashcanIconActive = generateIcon(TRASHCAN_ARRAY, True, (29,29))
+        i_importIconIdle = generateIcon(IMPORT_ARRAY, False, (29,29))
+        i_importIconActive = generateIcon(IMPORT_ARRAY, True, (29,29))
+        i_playIcon = generateIcon(PLAY_BUTTON_ARRAY, False, (37,37))
+        i_pauseIcon = generateIcon(PAUSE_BUTTON_ARRAY, False, (37,37))
         '''Interactable Visual Objects'''
         '''
         Code:
@@ -62,8 +51,9 @@ class Interface:
 
             self.c.c():["es", ButtonVisualObject("new sprite", (338,15), i_plusIconIdle, i_plusIconActive)],
             self.c.c():["es", ButtonVisualObject("delete sprite", (338,65), i_trashcanIconIdle, i_trashcanIconActive)],
-            self.c.c():["ev", ButtonVisualObject("import image", (338,161), i_importIconIdle, i_importIconActive)]
-    
+            self.c.c():["ev", ButtonVisualObject("import image", (338,161), i_importIconIdle, i_importIconActive)],
+            
+            self.c.c():["t", ButtonVisualObject("play pause button", (0,0), i_playIcon, i_pauseIcon)]
         }
         #for i in range(10): self.interactableVisualObjects[self.c.c()] = ["a", OrbVisualObject(f"test{i}")]
         '''Noninteractable, Adaptive, Visual Objects'''
@@ -87,6 +77,7 @@ class Interface:
         self.previousEditorTab = self.editorTab
         self.stringKeyQueue = ""
         self.animationTime = 0
+        self.animationPlaying = False
         self.mouseScroll = 0 
         pass
 
@@ -97,7 +88,8 @@ class Interface:
         self.mPressed = mPressed > 0
         self.mRising = mPressed==2
         self.fps = fps
-        self.ticks += 1 if self.fps==0 else round(RENDER_FPS/self.fps)
+        self.deltaTicks = 1 if self.fps==0 else round(RENDER_FPS/self.fps)
+        self.ticks += self.deltaTicks
         if self.interactableVisualObjects[self.interacting][1].name == "new sprite" and mPressed < 3: 
             self.sprites.append(SingleSprite(f"New Sprite {len(self.sprites)}"))
         if self.interactableVisualObjects[self.interacting][1].name == "delete sprite" and mPressed < 3 and len(self.sprites) > 1: 
@@ -109,6 +101,10 @@ class Interface:
                 self.sprites[self.selectedSprite].addImageUUID(self.cache.importImage(path))
             except:
                 pass
+        if self.interactableVisualObjects[self.interacting][1].name == "play pause button" and mPressed < 3: 
+            self.animationPlaying = not(self.animationPlaying)
+        if self.animationPlaying:
+            self.animationTime += self.deltaTicks/RENDER_FPS
 
         '''Keyboard and Scroll (graph and timeline)'''
         for key in keyQueue: 
@@ -231,6 +227,10 @@ class Interface:
                         if self.interactableVisualObjects[id][1].getInteractable(self.mx - 982, self.my - 36):
                             self.interacting = id
                             break
+                if self.interactableVisualObjects[id][0] == "t":
+                    if self.interactableVisualObjects[id][1].getInteractable(self.mx - 23, self.my - 558):
+                        self.interacting = id
+                        break
                 if self.interactableVisualObjects[id][0] == "o":
                     if self.interactableVisualObjects[id][1].getInteractable(self.mx - 953, self.my - 558):
                         self.interacting = id
@@ -246,6 +246,9 @@ class Interface:
             if section == "evg": 
                 self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 982, self.my - 278)
                 self.interactableVisualObjects[self.interacting][1].keepInFrame(337,233)
+            if section == "t": 
+                self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 23, self.my - 558)
+                self.interactableVisualObjects[self.interacting][1].keepInFrame(903,123)
             if section == "o": 
                 self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 953, self.my - 558)
                 self.interactableVisualObjects[self.interacting][1].keepInFrame(388,123)
@@ -336,6 +339,13 @@ class Interface:
         pos = (self.animationTime-self.timelineOffset)*25/(self.timelineScale+0.000001) + 47
         if 46 < pos and pos < 896:
             placeOver(img, FRAME_TIMELINE_READER_ARRAY, (max(51,pos), 3))
+
+        for id in self.interactableVisualObjects:
+            if self.interactableVisualObjects[id][0] == "t":
+                if self.interactableVisualObjects[id][1].name == "play pause button":
+                    self.interactableVisualObjects[id][1].tick(img, self.animationPlaying)
+                else:
+                    self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
 
         return arrayToImage(img)
     
