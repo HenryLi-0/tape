@@ -144,5 +144,6 @@ PATH_POINT_IDLE_ARRAY = numpy.array(Image.open(os.path.join("resources", "path_p
 PATH_POINT_SELECTED_ARRAY = numpy.array(Image.open(os.path.join("resources", "path_point_selected.png")).convert("RGBA"))
 PLUS_SIGN_ARRAY = numpy.array(Image.open(os.path.join("resources", "plus.png")).convert("RGBA"))
 TRASHCAN_ARRAY = numpy.array(Image.open(os.path.join("resources", "trashcan.png")).convert("RGBA"))
+IMPORT_ARRAY = numpy.array(Image.open(os.path.join("resources", "import.png")).convert("RGBA"))
 
 PROPERTY_DISPLAY_NAMES = ["Coordinates","Rotational","Apperance","Size","Hue","Transparency","Brightness","Blur"]

@@ -38,8 +38,6 @@ class SingleSprite:
     def __init__(self,name, img = PLACEHOLDER_IMAGE_5_ARRAY):
         self.name = name
         self.images = [
-            numpy.array(img),
-            numpy.array(img),
             numpy.array(img)
         ]
         self.data = {
@@ -246,10 +244,13 @@ def protectedBoundary(sequence, i, empty = 0):
     if len(sequence) == 0: return empty
     return sequence[max(0, min(round(i), len(sequence)-1))]
 
-def readImgSingleFullState(state, images):
+def readImgSingleFullState(state, images, singleImage = False):
     '''Returns an array of the image of the sprite at a given full state in [(x,y,dir), a, s, h, t, b, w] form, given the full state and the set of images'''
-    try: img = images[state[1]].copy()
-    except: img = images[0].copy()
+    if singleImage:
+        img = images
+    else:
+        try: img = images[state[1]].copy()
+        except: img = images[0].copy()
     img = setSize(img, state[2])
     img = setColorEffect(img, state[3])
     img = setTransparency(img, state[4])

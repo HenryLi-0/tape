@@ -2,6 +2,7 @@
 
 from settings import *
 from PIL import ImageTk, Image
+from tkinter import filedialog
 import time, random
 from subsystems.render import *
 from subsystems.fancy import displayText, generateColorBox, generateBorderBox
@@ -27,18 +28,25 @@ class Interface:
         i_plusIconActive = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
         placeOver(i_plusIconActive, generateBorderBox((29,29),3, hexColorToRGBA(SELECTED_COLOR)), (0,0))
         placeOver(i_plusIconActive, PLUS_SIGN_ARRAY, (17,17), True)
-        i_trashcabIconIdle = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
-        placeOver(i_trashcabIconIdle, generateBorderBox((29,29),3, hexColorToRGBA(FRAME_COLOR)), (0,0))
-        placeOver(i_trashcabIconIdle, TRASHCAN_ARRAY, (17,17), True)
-        i_trashcabIconActive = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
-        placeOver(i_trashcabIconActive, generateBorderBox((29,29),3, hexColorToRGBA(SELECTED_COLOR)), (0,0))
-        placeOver(i_trashcabIconActive, TRASHCAN_ARRAY, (17,17), True)
+        i_trashcanIconIdle = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
+        placeOver(i_trashcanIconIdle, generateBorderBox((29,29),3, hexColorToRGBA(FRAME_COLOR)), (0,0))
+        placeOver(i_trashcanIconIdle, TRASHCAN_ARRAY, (17,17), True)
+        i_trashcanIconActive = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
+        placeOver(i_trashcanIconActive, generateBorderBox((29,29),3, hexColorToRGBA(SELECTED_COLOR)), (0,0))
+        placeOver(i_trashcanIconActive, TRASHCAN_ARRAY, (17,17), True)
+        i_importIconIdle = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
+        placeOver(i_importIconIdle, generateBorderBox((29,29),3, hexColorToRGBA(FRAME_COLOR)), (0,0))
+        placeOver(i_importIconIdle, IMPORT_ARRAY, (17,17), True)
+        i_importIconActive = generateColorBox((35,35),hexColorToRGBA(BACKGROUND_COLOR))
+        placeOver(i_importIconActive, generateBorderBox((29,29),3, hexColorToRGBA(SELECTED_COLOR)), (0,0))
+        placeOver(i_importIconActive, IMPORT_ARRAY, (17,17), True)
 
         '''Interactable Visual Objects'''
         '''
         Code:
         a - animation
         es - editor > sprites
+        ev - editor > visuals
         evg - editor > visuals > graph
         o - options
         '''
@@ -51,7 +59,8 @@ class Interface:
             self.c.c():["o",ButtonVisualObject("project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
 
             self.c.c():["es", ButtonVisualObject("new sprite", (338,15), i_plusIconIdle, i_plusIconActive)],
-            self.c.c():["es", ButtonVisualObject("delete sprite", (338,65), i_trashcabIconIdle, i_trashcabIconActive)]
+            self.c.c():["es", ButtonVisualObject("delete sprite", (338,65), i_trashcanIconIdle, i_trashcanIconActive)],
+            self.c.c():["ev", ButtonVisualObject("import image", (338,65), i_importIconIdle, i_importIconActive)]
     
         }
         #for i in range(10): self.interactableVisualObjects[self.c.c()] = ["a", OrbVisualObject(f"test{i}")]
@@ -91,6 +100,13 @@ class Interface:
         if self.interactableVisualObjects[self.interacting][1].name == "delete sprite" and mPressed < 3 and len(self.sprites) > 1: 
             self.sprites.pop(self.selectedSprite)
             self.selectedSprite = max(0, min(self.selectedProperty, len(self.sprites)-1))
+        if self.interactableVisualObjects[self.interacting][1].name == "import image" and mPressed < 3: 
+            path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
+            try: 
+                importImage = numpy.array(Image.open(path).convert("RGBA"))
+                self.sprites[self.selectedSprite].addImage(importImage)
+            except:
+                pass
 
         '''Keyboard and Scroll (graph and timeline)'''
         for key in keyQueue: 
@@ -189,7 +205,11 @@ class Interface:
                     if self.interactableVisualObjects[id][1].getInteractable(self.mx - 23, self.my - 36):
                         self.interacting = id
                         break
-                if self.interactableVisualObjects[id][0] == "es":
+                if self.interactableVisualObjects[id][0] == "es" and self.editorTab == "s":
+                    if self.interactableVisualObjects[id][1].getInteractable(self.mx - 953, self.my - 36):
+                        self.interacting = id
+                        break
+                if self.interactableVisualObjects[id][0] == "ev" and self.editorTab == "v":
                     if self.interactableVisualObjects[id][1].getInteractable(self.mx - 953, self.my - 36):
                         self.interacting = id
                         break
@@ -329,8 +349,13 @@ class Interface:
             '''Visuals Tab!'''
             if self.selectedSprite != -999:
                 '''Graph Display'''
-                placeOver(img, setLimitedSize(self.sprites[self.selectedSprite].getImageAt(self.animationTime), 50), (25,25))
-                placeOver(img, displayText(self.sprites[self.selectedSprite].getName(), "l"), (110,37))
+                frame = self.sprites[self.selectedSprite].getFullStateAt(self.animationTime)
+                placeOver(img, setLimitedSize(readImgSingleFullState(frame, self.sprites[self.selectedSprite].getImageAt(self.animationTime), True), 50), (25,25))
+                name = self.sprites[self.selectedSprite].getName()
+                if len(name) < 5: size = "l"
+                elif len(name) < 10: size = "m"
+                else: size = "s"
+                placeOver(img, displayText(name, size), (110,37))
 
                 startI = round(self.graphOffset/(10**math.floor(math.log(self.graphScale+0.000001,10)+1)))
                 for i in range(startI - 3, startI + 33):
@@ -508,24 +533,20 @@ class Interface:
                 '''Apperance Panel'''
                 apperancePanel = generateColorBox((189,210), hexColorToRGBA(BACKGROUND_COLOR))
                 placeOver(apperancePanel, generateBorderBox((183,206),3,hexColorToRGBA(FRAME_COLOR)), (0,0))
-                resizedImgs = [setLimitedSize(spriteImg, 79) for spriteImg in self.sprites[self.selectedSprite].images]
-                yOffset = 6
+                resizedImgs = [setLimitedSize(spriteImg, 73) for spriteImg in self.sprites[self.selectedSprite].images]
+                yOffset = 7
                 for i in range(len(resizedImgs)):
                     # each image is 85x85 (including borders)
                     y, x, temp = resizedImgs[i].shape
-                    imgB = generateColorBox((x+6,y+6),hexColorToRGBA(BACKGROUND_COLOR))
-                    placeOver(imgB, generateBorderBox((x, y), 3, hexColorToRGBA(FRAME_COLOR)), (0,0))
-                    placeOver(imgB, resizedImgs[i], (3,3))
-                    placeOver(apperancePanel, imgB, (90*(i%2)+5, yOffset))
-                    try: yOffset += max(resizedImgs[(i - i % 2)].shape[0], resizedImgs[(i - i % 2 + 1)].shape[0])
-                    except: yOffset += resizedImgs[(i - i % 2)].shape[0]
+                    imgB = generateColorBox((x+12,y+12),hexColorToRGBA(BACKGROUND_COLOR))
+                    placeOver(imgB, generateBorderBox((x, y), 6, hexColorToRGBA(FRAME_COLOR)), (0,0))
+                    placeOver(imgB, resizedImgs[i], (6,6))
+                    placeOver(imgB, displayText(str(i),"m", hexColorToRGBA(BACKGROUND_COLOR), hexColorToRGBA(SELECTED_COLOR)), (7,7))
+                    placeOver(apperancePanel, imgB, (90*(i%2)+6, yOffset))
+                    if i % 2 == 1:
+                        try: yOffset += max(resizedImgs[(i - i % 2)].shape[0], resizedImgs[(i - i % 2 + 1)].shape[0])+6+11
+                        except: yOffset += resizedImgs[(i - i % 2)].shape[0]+6+11
                 placeOver(img, apperancePanel, (199,0))
-
-                    
-
-
-
-
 
                 for id in self.interactableVisualObjects:
                     if self.interactableVisualObjects[id][0] == "evg":
@@ -535,6 +556,9 @@ class Interface:
                     if self.interactableVisualObjects[id][0] == "evg":
                         if self.interactableVisualObjects[id][1].type != "connection":
                             self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
+                for id in self.interactableVisualObjects:
+                    if self.interactableVisualObjects[id][0] == "ev":
+                        self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
                 
                 self.selectedProperty = requestSelectedProperty
                 placeOver(img, FRAME_EDITOR_VISUALS_GRAPH_ARRAY, (0,219))
