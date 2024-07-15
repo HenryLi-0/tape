@@ -1,7 +1,7 @@
 '''This file contatins functions for managing the cache data storage'''
 
 from PIL import Image
-import os, numpy, uuid, ast
+import os, numpy, uuid, ast, io
 from settings import *
 
 class CacheManager:
@@ -64,6 +64,13 @@ class CacheManager:
                 self.cache.remove(id)
                 self.saveCache()
                 return MISSING_IMAGE_ARRAY.astype("uint8")
+    
+    def getImageRaw(self,id):
+        '''Same functions as getImage(), except returns to .npy binary data'''
+        out = io.BytesIO()
+        img = self.getImage(id)
+        numpy.save(out, img)
+        return out.getvalue()
             
     def getKeys(self):
         '''Returns all UUIDs stored in the cache'''

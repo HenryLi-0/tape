@@ -172,7 +172,24 @@ for i in range(10):
 images[0].save('test.gif', format='gif', append_images=images[1:], save_all=True, duration=10, loop=0)
 '''
 
+'''
 from subsystems.bay import CacheManager
 from settings import PLACEHOLDER_IMAGE_5
 cache = CacheManager()
 cache.importImage("C:/Users/henry/Desktop/Projects/GitHub Repositories/tape/resources/placeholder/placeholder5.png")
+# now, imagine if I were to accidentally paste my API keys here. no, i didn't do that. except for that one repository. oops.
+'''
+
+try:
+    doesThisWork = {
+        "a": {
+            "wait what": {
+                "nesting go brr": {
+                    "hi": "wait this isn't java",
+                    "no": ["it isn't"]
+                }
+            }
+        }
+    }
+    print(doesThisWork)
+except: print("womp womp")

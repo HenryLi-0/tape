@@ -626,6 +626,42 @@ class Interface:
         placeOver(img, displayText("Sprites                  Visuals                  Project", "m"), (193, 31), True)
         placeOver(img, GEAR_ARRAY, (338,80))
         return arrayToImage(img)
+
+    def importProject(self, project, clear = True):
+        '''Import stuffs'''
+        #NOT DONE YET!
+        if clear:
+            self.sprites = []
+        projectData = project[0]
+
+        pass
+
+    def exportProject(self, imageData = True):
+        '''Export stuffs'''
+        export = []
+        #project data
+        projectData = {
+            "project name": "example",
+            "UUID" : "some uuid",
+            "other stats and stuff": "things"
+        }
+        export.append(projectData)
+        #sprite data
+        spriteData = {}
+        for sprite in self.sprites: spriteData[sprite.uuid] = sprite.data
+        export.append(spriteData)
+        #image data
+        if imageData:
+            imageData = {}
+            uuidToGather = []
+            for sprite in self.sprites:
+                for uuid in sprite.imageUUIDs:
+                    uuidToGather.append(uuid)
+            for uuid in uuidToGather:
+                imageData[uuid] = self.cache.getImageRaw(uuid)
+            export.append(imageData)
+
+        return export
     
     def saveState(self):
         pass

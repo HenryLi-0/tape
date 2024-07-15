@@ -1,7 +1,7 @@
 '''The class all about the sprites, which are the manipulatable images that move across the screen.'''
 
 from settings import *
-import numpy, math
+import numpy, math, uuid
 from subsystems.pathing import smoothChangeAt, straightChangeAt, roundf, timelyBezierPathCoords, selectiveBezierPathCoords, straightPathCoords, mergeCoordRotationPath, betweenP
 from subsystems.render import rotateDegHundred, setSize, setColorEffect, setTransparency, setBrightness, setBlur
 from settings import PATH_FLOAT_ACCURACY, RENDER_FPS
@@ -36,12 +36,14 @@ class SingleSprite:
     S - smooth, curved approach, also represents beizer for coordinates
     '''
     def __init__(self,name, imgUUID = "placeholder5"):
+        self.uuid = str(uuid.uuid4())
         self.name = name
         self.imageUUIDs = [
             imgUUID
         ]
         self.data = {
             "name":name, 
+            "uuid":self.uuid,
             "images":self.imageUUIDs, 
             "c":[0,(0,0),"L",1,(0,0),"L"],  # Coordinate
             "r":[0,    0,"L",1,    0,"L"],  # Rotation - 0 up CCW
