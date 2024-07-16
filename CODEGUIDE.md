@@ -9,6 +9,7 @@ where the most important things are
 - `SETTINGS.py` : contains important constants, and some editable settings
 - `README.md` : the readme.md?
 - `CODEGUIDE.md` : idk what to call it, but here's some documentation on what files do
+- `MANUAL.md` : a little instruction manual for default keybinds and things
 
 not really relevant stuff
 - `experiments.py` : not really relevant to stuff yet
@@ -22,7 +23,7 @@ where useful code exists across different files
 - `checks.py` : checks that important resources exist to prevent random crashes
 - `counter.py` : just a counter, but it shockingly important!
 - `fancy.py` : used for fancy rendering stuff (fonts, border boxes)
-- `interface.py` : parts of the tk window (animation, timeline, editor, options)
+- `interface.py` : parts of the tk window (animation, timeline, editor, options). contains a lot of code.
 - `pathing.py` : used to generate paths (idk what to call it) and things related to moving and coordinates
 - `render.py` : things related to rendering and image stuff
 - `visuals.py` : very silly way for buttons and visuals on the screen
@@ -30,7 +31,8 @@ where useful code exists across different files
 
 **other directories in tape/**
 - `tape/resources/` : resources and things used (ex. test images, fonts)
-- `tape/storage/` : planned to be used for storing images the user uploads
+- `tape/storage/` : used for storing images the user uploads
+- `tape/tapes/` : used as a storage space for Tape projects (tapes)!
 - `tape/updatelogs/` : where my silly silly fingers type strange update logs about what i did today (programming and not programming sutff included)
 
 ### Probably something important:

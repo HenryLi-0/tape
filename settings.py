@@ -17,7 +17,7 @@ RENDER_FPS = 30 #This is the rendering FPS, also used for steps per second in pa
 '''Visuals'''
 INTERFACE_FPS = 60 # The interface window will be called every 1/INTERFACE_FPS seconds
 TICK_MS = round((1/INTERFACE_FPS)*1000)
-OCCASIONAL_TICK_MS = 3000 # Highly recommended to keep above 1 second, as it runs processes that do not need updates every tick
+OCCASIONAL_TICK_MS = 5000 # Highly recommended to keep above 1 second, as it runs processes that do not need updates every tick
 
 BACKGROUND_COLOR = "#241530" #Background color
 FRAME_COLOR = "#381f4d" #Borders and Frame color
@@ -40,17 +40,17 @@ EDITOR_VISUAL_KEYBINDS = {
     7 : "B",
     8 : "W"
 }
-EDITOR_VISUAL_LINEAR_CONNECTION = ["Q", "q"]
-EDITOR_VISUAL_SMOOTH_CONNECTION = ["W", "w"]
-EDITOR_VISUAL_POINT_CREATE = ["A", "a"]
-EDITOR_VISUAL_POINT_DELETE = ["S", "s"]
-EDITOR_VISUAL_OFFSET_LEFT = ["Z", "z"]
-EDITOR_VISUAL_OFFSET_RIGHT = ["X", "x"]
-TIMELINE_OFFSET_LEFT = ["Left"]
-TIMELINE_OFFSET_RIGHT = ["Right"]
-ANIMATION_POINT_POSITION_EDIT = ["D", "d"]
-SPRITE_LIST_OFFSET_UP = ["Up"]
-SPRITE_LIST_OFFSET_DOWN = ["Down"]
+KB_EDITOR_VISUAL_LINEAR_CONNECTION = ["Q", "q"]
+KB_EDITOR_VISUAL_SMOOTH_CONNECTION = ["W", "w"]
+KB_CREATE = ["A", "a"]
+KB_DELETE = ["S", "s"]
+KB_EDITOR_VISUAL_OFFSET_LEFT = ["Z", "z"]
+KB_EDITOR_VISUAL_OFFSET_RIGHT = ["X", "x"]
+KB_TIMELINE_OFFSET_LEFT = ["Left"]
+KB_TIMELINE_OFFSET_RIGHT = ["Right"]
+KB_ANIMATION_POINT_POSITION_EDIT = ["D", "d"]
+KB_SPRITE_LIST_OFFSET_UP = ["Up"]
+KB_SPRITE_LIST_OFFSET_DOWN = ["Down"]
 
 '''Constants - DO NOT CHANGE!!!'''
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 
