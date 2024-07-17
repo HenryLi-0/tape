@@ -27,7 +27,10 @@ TIMELINE_COLOR = "#6d3999" #Timeline color
 hexColorToRGBA = lambda hexcolor: tuple(int(hexcolor[i:i+2], 16) for i in (1, 3, 5)) + (255,)
 
 '''Saving'''
-
+import os
+PATH_SAVE_DEFAULT = os.path.join("tapes")
+EXPORT_IMAGE_DATA = True
+CLEAR_ON_OPEN = True
 
 '''Keybinds'''
 EDITOR_VISUAL_KEYBINDS = {
@@ -56,7 +59,10 @@ KB_SPRITE_LIST_OFFSET_DOWN = ["Down"]
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 
    Editing certain constants will break things! You have been warned!'''
 from PIL import Image, ImageFont
-import os, numpy
+import numpy
+
+# Version
+VERSION = "v0.0.1"
 
 # Imagery
 LOADING_IMAGE = Image.open(os.path.join("resources", "loading.png")).convert("RGBA") # 1366x697, Solid, Loading Screen
@@ -71,6 +77,7 @@ PLACEHOLDER_IMAGE_4 = Image.open(os.path.join("resources", "placeholder", "place
 PLACEHOLDER_IMAGE_4_ARRAY = numpy.array(PLACEHOLDER_IMAGE_4)
 PLACEHOLDER_IMAGE_5 = Image.open(os.path.join("resources", "placeholder", "placeholder5.png")).convert("RGBA")  # 32x32, Solid Background [rainbow]
 PLACEHOLDER_IMAGE_5_ARRAY = numpy.array(PLACEHOLDER_IMAGE_5)
+MISSING_IMAGE_PATH = os.path.join("resources", "missing.png")
 MISSING_IMAGE = Image.open(os.path.join("resources", "missing.png")).convert("RGBA")
 MISSING_IMAGE_ARRAY = numpy.array(MISSING_IMAGE)
 
@@ -147,5 +154,7 @@ PATH_POINT_SELECTED_ARRAY = numpy.array(Image.open(os.path.join("resources", "pa
 PLUS_SIGN_ARRAY = numpy.array(Image.open(os.path.join("resources", "plus.png")).convert("RGBA"))
 TRASHCAN_ARRAY = numpy.array(Image.open(os.path.join("resources", "trashcan.png")).convert("RGBA"))
 IMPORT_ARRAY = numpy.array(Image.open(os.path.join("resources", "import.png")).convert("RGBA"))
+SAVE_ICON_ARRAY = numpy.array(Image.open(os.path.join("resources", "save.png")).convert("RGBA"))
+LOAD_ICON_ARRAY = numpy.array(Image.open(os.path.join("resources", "load.png")).convert("RGBA"))
 
 PROPERTY_DISPLAY_NAMES = ["Coordinates","Rotational","Apperance","Size","Hue","Transparency","Brightness","Blur"]

@@ -30,7 +30,7 @@ class CacheManager:
             with open(os.path.join("storage", "cache.txt"), "x") as f:
                 f.write({})
 
-    def importImage(self,imagePath):   
+    def importImage(self,imagePath):
         '''Imports an image given the path'''     
         image = numpy.array(Image.open(imagePath).convert("RGBA"))
         id = str(uuid.uuid4())
@@ -64,6 +64,11 @@ class CacheManager:
                 self.cache.remove(id)
                 self.saveCache()
                 return MISSING_IMAGE_ARRAY.astype("uint8")
+            
+    def getPath(self, id):
+        '''Returns the path of a given ID, returns the missing image path if it doesn't exist'''
+        if id in self.cache: return self.cache[id]
+        else: return MISSING_IMAGE_PATH
     
     def getImageRaw(self,id):
         '''Same functions as getImage(), except returns to .npy binary data'''
@@ -71,6 +76,17 @@ class CacheManager:
         img = self.getImage(id)
         numpy.save(out, img)
         return out.getvalue()
+    
+    def importIDRawImage(self, id, path, raw):
+        '''If the ID doesn't exist yet, the raw image is imported with given ID'''
+        if not(id in self.getKeys()):
+            binary = io.BytesIO(raw)
+            image = numpy.load(binary)
+            self.cache[id]=str(path)
+            numpy.save(os.path.join("storage", f"{id}.npy"),image)
+            self.saveCache()
+            return True
+        return False
             
     def getKeys(self):
         '''Returns all UUIDs stored in the cache'''

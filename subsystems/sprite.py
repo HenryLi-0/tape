@@ -127,6 +127,13 @@ class SingleSprite:
     def setName(self, name):
         '''Sets the name of the sprite'''
         self.name = name
+        self.data["name"] = name
+    def fullDataImport(self, data):
+        '''Imports all the sprite data'''
+        self.data = data
+        self.name = self.data["name"]
+        self.uuid = self.data["uuid"]
+        self.imageUUIDs = self.data["images"]
 
 def dataCheck(key, data):
     '''Modifies the original given data with all checked values (rounding and connections)'''
@@ -209,7 +216,7 @@ def findStateThroughPath(compact, time):
         if timeStamps[i]<=time: low = i
         else: break
     if connections[low] == "L":
-        timeC = (time-compact[low*3])/(compact[(low+1)*3]-compact[low*3])
+        timeC = round((time-compact[low*3])/(compact[(low+1)*3]-compact[low*3]+0.000001))
         timeC = max(0, min(timeC, 1))
         cx, cy = betweenP(compact[low*3+1], compact[(low+1)*3+1])(timeC)
         return (roundf(cx, PATH_FLOAT_ACCURACY), roundf(cy, PATH_FLOAT_ACCURACY))

@@ -3,7 +3,7 @@
 from settings import *
 from PIL import ImageTk, Image
 from tkinter import filedialog
-import time, random
+import time, random, ast
 from subsystems.render import *
 from subsystems.fancy import displayText, generateColorBox, generateBorderBox, generateIcon
 from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject, EditableTextBoxVisualObject, DummyVisualObject, PointVisualObject, PointConnectionVisualObject
@@ -32,6 +32,10 @@ class Interface:
         i_importIconActive = generateIcon(IMPORT_ARRAY, True, (29,29))
         i_playIcon = generateIcon(PLAY_BUTTON_ARRAY, False, (37,37))
         i_pauseIcon = generateIcon(PAUSE_BUTTON_ARRAY, False, (37,37))
+        i_saveIconIdle = generateIcon(SAVE_ICON_ARRAY, False, (37,37))
+        i_saveIconActive = generateIcon(SAVE_ICON_ARRAY, True, (37,37))
+        i_loadIconIdle = generateIcon(LOAD_ICON_ARRAY, False, (37,37))
+        i_loadIconActive = generateIcon(LOAD_ICON_ARRAY, True, (37,37))
         '''Interactable Visual Objects'''
         '''
         Code:
@@ -53,7 +57,9 @@ class Interface:
             self.c.c():["es", ButtonVisualObject("delete sprite", (338,65), i_trashcanIconIdle, i_trashcanIconActive)],
             self.c.c():["ev", ButtonVisualObject("import image", (338,161), i_importIconIdle, i_importIconActive)],
             
-            self.c.c():["t", ButtonVisualObject("play pause button", (0,0), i_playIcon, i_pauseIcon)]
+            self.c.c():["t", ButtonVisualObject("play pause button", (0,0), i_playIcon, i_pauseIcon)],
+            self.c.c():["t", ButtonVisualObject("save button", (0,40), i_saveIconIdle, i_saveIconActive)],
+            self.c.c():["t", ButtonVisualObject("load button", (0,80), i_loadIconIdle, i_loadIconActive)]
         }
         #for i in range(10): self.interactableVisualObjects[self.c.c()] = ["a", OrbVisualObject(f"test{i}")]
         '''Noninteractable, Adaptive, Visual Objects'''
@@ -79,6 +85,8 @@ class Interface:
         self.animationTime = 0
         self.animationPlaying = False
         self.mouseScroll = 0 
+
+        self.projectUUID = str(uuid.uuid4())
         pass
 
     def tick(self,mx,my,mPressed,fps,keyQueue,mouseScroll):
@@ -105,6 +113,10 @@ class Interface:
             self.animationPlaying = not(self.animationPlaying)
         if self.animationPlaying:
             self.animationTime += self.deltaTicks/RENDER_FPS
+        if self.interactableVisualObjects[self.interacting][1].name == "save button" and mPressed < 3: 
+            self.exportProject(EXPORT_IMAGE_DATA)
+        if self.interactableVisualObjects[self.interacting][1].name == "load button" and mPressed < 3: 
+            self.importProject(CLEAR_ON_OPEN)
 
         '''Keyboard and Scroll (graph and timeline)'''
         for key in keyQueue: 
@@ -627,22 +639,44 @@ class Interface:
         placeOver(img, GEAR_ARRAY, (338,80))
         return arrayToImage(img)
 
-    def importProject(self, project, clear = True):
+    def importProject(self, clear = True):
         '''Import stuffs'''
-        #NOT DONE YET!
+        path = filedialog.askopenfilename(initialdir=PATH_SAVE_DEFAULT, defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
+        with open(path, "r") as f:
+            file = f.read()
+            project = ast.literal_eval(file)
+            f.close()
+
         if clear:
             self.sprites = []
         projectData = project[0]
+        self.projectUUID = projectData["UUID"]
 
+        spriteData = project[1]
+        for uuid in list(spriteData.keys()):
+            temp = SingleSprite("Imported Sprite")
+            temp.fullDataImport(spriteData[uuid])
+            self.sprites.append(temp)
+
+        if len(spriteData) == 2:
+            pass
+        else: 
+            # contains image data
+            imageData = project[2]
+            for uuid in list(imageData.keys()):
+                self.cache.importIDRawImage(uuid, imageData[uuid][0], imageData[uuid][1])
+        
         pass
 
-    def exportProject(self, imageData = True):
+    def exportProject(self, saveImageData = True):
         '''Export stuffs'''
+        path = filedialog.asksaveasfilename(initialdir=PATH_SAVE_DEFAULT, defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
         export = []
         #project data
         projectData = {
             "project name": "example",
-            "UUID" : "some uuid",
+            "version" : VERSION,
+            "UUID" : self.projectUUID,
             "other stats and stuff": "things"
         }
         export.append(projectData)
@@ -651,15 +685,19 @@ class Interface:
         for sprite in self.sprites: spriteData[sprite.uuid] = sprite.data
         export.append(spriteData)
         #image data
-        if imageData:
+        if saveImageData:
             imageData = {}
             uuidToGather = []
             for sprite in self.sprites:
                 for uuid in sprite.imageUUIDs:
                     uuidToGather.append(uuid)
             for uuid in uuidToGather:
-                imageData[uuid] = self.cache.getImageRaw(uuid)
+                imageData[uuid] = [self.cache.getPath(uuid), self.cache.getImageRaw(uuid)]
             export.append(imageData)
+
+        with open(path, "w") as f:
+            f.write(str(export))
+            f.close()
 
         return export
     

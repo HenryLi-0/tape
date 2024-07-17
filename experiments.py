@@ -180,6 +180,7 @@ cache.importImage("C:/Users/henry/Desktop/Projects/GitHub Repositories/tape/reso
 # now, imagine if I were to accidentally paste my API keys here. no, i didn't do that. except for that one repository. oops.
 '''
 
+'''
 try:
     doesThisWork = {
         "a": {
@@ -193,3 +194,11 @@ try:
     }
     print(doesThisWork)
 except: print("womp womp")
+'''
+
+dictionary = {
+    "a": 0,
+    "b": 1 
+}
+
+print("0" in dictionary)
