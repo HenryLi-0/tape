@@ -642,64 +642,77 @@ class Interface:
     def importProject(self, clear = True):
         '''Import stuffs'''
         path = filedialog.askopenfilename(initialdir=PATH_SAVE_DEFAULT, defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
-        with open(path, "r") as f:
-            file = f.read()
-            project = ast.literal_eval(file)
-            f.close()
-
-        if clear:
-            self.sprites = []
-        projectData = project[0]
-        self.projectUUID = projectData["UUID"]
-
-        spriteData = project[1]
-        for uuid in list(spriteData.keys()):
-            temp = SingleSprite("Imported Sprite")
-            temp.fullDataImport(spriteData[uuid])
-            self.sprites.append(temp)
-
-        if len(spriteData) == 2:
-            pass
-        else: 
-            # contains image data
-            imageData = project[2]
-            for uuid in list(imageData.keys()):
-                self.cache.importIDRawImage(uuid, imageData[uuid][0], imageData[uuid][1])
-        
-        pass
+        if path != "":
+            with open(path, "r") as f:
+                file = f.read()
+                project = ast.literal_eval(file)
+                f.close()
+            #project data
+            if clear:
+                self.sprites = []
+            projectData = project[0]
+            self.projectUUID = projectData["UUID"]
+            #sprite data
+            spriteData = project[1]
+            for uuid in list(spriteData.keys()):
+                temp = SingleSprite("Imported Sprite")
+                temp.fullDataImport(spriteData[uuid])
+                self.sprites.append(temp)
+            #image data
+            if len(spriteData) == 2:
+                pass
+            else: 
+                #contains image data
+                imageData = project[2]
+                for uuid in list(imageData.keys()):
+                    self.cache.importIDRawImage(uuid, imageData[uuid][0], imageData[uuid][1])
+            #reset
+            self.selectedSprite = 0
+            self.selectedProperty = 1
+            self.previousSelectedProperty = self.selectedProperty
+            self.graphScale = 1.0
+            self.graphOffset = 0
+            self.timelineScale = 1.0
+            self.timelineOffset = 0
+            self.spriteListOffset = 0
+            self.interacting = -999
+            self.editorTab = "p"
+            self.previousEditorTab = self.editorTab
+            self.animationTime = 0
+            self.animationPlaying = False
+            
 
     def exportProject(self, saveImageData = True):
         '''Export stuffs'''
         path = filedialog.asksaveasfilename(initialdir=PATH_SAVE_DEFAULT, defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
-        export = []
-        #project data
-        projectData = {
-            "project name": "example",
-            "version" : VERSION,
-            "UUID" : self.projectUUID,
-            "other stats and stuff": "things"
-        }
-        export.append(projectData)
-        #sprite data
-        spriteData = {}
-        for sprite in self.sprites: spriteData[sprite.uuid] = sprite.data
-        export.append(spriteData)
-        #image data
-        if saveImageData:
-            imageData = {}
-            uuidToGather = []
-            for sprite in self.sprites:
-                for uuid in sprite.imageUUIDs:
-                    uuidToGather.append(uuid)
-            for uuid in uuidToGather:
-                imageData[uuid] = [self.cache.getPath(uuid), self.cache.getImageRaw(uuid)]
-            export.append(imageData)
-
-        with open(path, "w") as f:
-            f.write(str(export))
-            f.close()
-
-        return export
+        if path != "":
+            export = []
+            #project data
+            projectData = {
+                "project name": "example",
+                "version" : VERSION,
+                "UUID" : self.projectUUID,
+                "other stats and stuff": "things"
+            }
+            export.append(projectData)
+            #sprite data
+            spriteData = {}
+            for sprite in self.sprites: spriteData[sprite.uuid] = sprite.data
+            export.append(spriteData)
+            #image data
+            if saveImageData:
+                imageData = {}
+                uuidToGather = []
+                for sprite in self.sprites:
+                    for uuid in sprite.imageUUIDs:
+                        uuidToGather.append(uuid)
+                for uuid in uuidToGather:
+                    imageData[uuid] = [self.cache.getPath(uuid), self.cache.getImageRaw(uuid)]
+                export.append(imageData)
+            #write to file
+            with open(path, "w") as f:
+                f.write(str(export))
+                f.close()
     
     def saveState(self):
         pass

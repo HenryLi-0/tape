@@ -61,8 +61,10 @@ class CacheManager:
                 return numpy.load(os.path.join("storage",f"{id}.npy")).astype("uint8")
             except:
                 print(f"Recreation unsuccesful, removing {id} from cache")
-                self.cache.remove(id)
-                self.saveCache()
+                try:
+                    self.cache.pop(id)
+                    self.saveCache()
+                except: pass
                 return MISSING_IMAGE_ARRAY.astype("uint8")
             
     def getPath(self, id):
@@ -78,15 +80,12 @@ class CacheManager:
         return out.getvalue()
     
     def importIDRawImage(self, id, path, raw):
-        '''If the ID doesn't exist yet, the raw image is imported with given ID'''
-        if not(id in self.getKeys()):
-            binary = io.BytesIO(raw)
-            image = numpy.load(binary)
-            self.cache[id]=str(path)
-            numpy.save(os.path.join("storage", f"{id}.npy"),image)
-            self.saveCache()
-            return True
-        return False
+        '''The raw image is imported with given ID, even if it already exists'''
+        binary = io.BytesIO(raw)
+        image = numpy.load(binary)
+        self.cache[id] = path
+        numpy.save(os.path.join("storage", f"{id}.npy"), image)
+        self.saveCache()
             
     def getKeys(self):
         '''Returns all UUIDs stored in the cache'''
