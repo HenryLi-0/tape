@@ -3,7 +3,7 @@
 from settings import *
 from PIL import ImageTk, Image
 from tkinter import filedialog
-import time, random, ast
+import time, random, ast, cv2
 from subsystems.render import *
 from subsystems.fancy import displayText, generateColorBox, generateBorderBox, generateIcon
 from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject, EditableTextBoxVisualObject, DummyVisualObject, PointVisualObject, PointConnectionVisualObject
@@ -36,6 +36,8 @@ class Interface:
         i_saveIconActive = generateIcon(SAVE_ICON_ARRAY, True, (37,37))
         i_loadIconIdle = generateIcon(LOAD_ICON_ARRAY, False, (37,37))
         i_loadIconActive = generateIcon(LOAD_ICON_ARRAY, True, (37,37))
+        i_exportGIFIcon = generateIcon(RENDER_GIF_ICON_ARRAY, False, (37,37), SPECIAL_COLOR)
+        i_exportMP4Icon = generateIcon(RENDER_MP4_ICON_ARRAY, False, (37,37), SPECIAL_COLOR)
         '''Interactable Visual Objects'''
         '''
         Code:
@@ -43,6 +45,7 @@ class Interface:
         es - editor > sprites
         ev - editor > visuals
         evg - editor > visuals > graph
+        ep - editor > project
         o - options
         '''
         self.interactableVisualObjects = {
@@ -56,7 +59,9 @@ class Interface:
             self.c.c():["es", ButtonVisualObject("new sprite", (338,15), i_plusIconIdle, i_plusIconActive)],
             self.c.c():["es", ButtonVisualObject("delete sprite", (338,65), i_trashcanIconIdle, i_trashcanIconActive)],
             self.c.c():["ev", ButtonVisualObject("import image", (338,161), i_importIconIdle, i_importIconActive)],
-            
+            self.c.c():["ep", ButtonVisualObject("export gif", (7,457), i_exportGIFIcon, i_exportGIFIcon)],
+            self.c.c():["ep", ButtonVisualObject("export mp4", (57,457), i_exportMP4Icon, i_exportMP4Icon)],
+
             self.c.c():["t", ButtonVisualObject("play pause button", (0,0), i_playIcon, i_pauseIcon)],
             self.c.c():["t", ButtonVisualObject("save button", (0,40), i_saveIconIdle, i_saveIconActive)],
             self.c.c():["t", ButtonVisualObject("load button", (0,80), i_loadIconIdle, i_loadIconActive)]
@@ -117,6 +122,10 @@ class Interface:
             self.exportProject(EXPORT_IMAGE_DATA)
         if self.interactableVisualObjects[self.interacting][1].name == "load button" and mPressed < 3: 
             self.importProject(CLEAR_ON_OPEN)
+        if self.interactableVisualObjects[self.interacting][1].name == "export gif" and mPressed < 3: 
+            pass
+        if self.interactableVisualObjects[self.interacting][1].name == "export mp4" and mPressed < 3: 
+            pass
 
         '''Keyboard and Scroll (graph and timeline)'''
         for key in keyQueue: 
@@ -230,6 +239,10 @@ class Interface:
                     if self.interactableVisualObjects[id][1].getInteractable(self.mx - 953, self.my - 36):
                         self.interacting = id
                         break
+                if self.interactableVisualObjects[id][0] == "ep" and self.editorTab == "p":
+                    if self.interactableVisualObjects[id][1].getInteractable(self.mx - 953, self.my - 36):
+                        self.interacting = id
+                        break
                 if self.interactableVisualObjects[id][0] == "evg":
                     if self.interactableVisualObjects[id][1].type == "point":
                         if self.interactableVisualObjects[id][1].getInteractable(self.mx - 982, self.my - 278):
@@ -252,7 +265,7 @@ class Interface:
             if section == "a": 
                 self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 23, self.my - 36)
                 self.interactableVisualObjects[self.interacting][1].keepInFrame(903,507)
-            if section == "es": 
+            if section == "es" or section == "ep": 
                 self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 953, self.my - 36)
                 self.interactableVisualObjects[self.interacting][1].keepInFrame(388,507)
             if section == "evg": 
@@ -616,6 +629,10 @@ class Interface:
             placeOver(img, displayText("Current Version: ", "m"),                                                   (20,EDITOR_SPACING(17)))  
             placeOver(img, displayText("Time Spent: ", "m"),                                                        (20,EDITOR_SPACING(18))) 
 
+            for id in self.interactableVisualObjects:
+                    if self.interactableVisualObjects[id][0] == "ep":
+                        self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
+
         return arrayToImage(img)
     
     def getImageOptions(self):
@@ -713,6 +730,18 @@ class Interface:
             with open(path, "w") as f:
                 f.write(str(export))
                 f.close()
+
+    def renderMP4():
+        path = filedialog.asksaveasfilename(initialdir=PATH_SAVE_DEFAULT, defaultextension=".mp4", filetypes=[("MP4", "*.mp4")])
+        if path != "":
+            bg = generateColorBox((903,507), (0,0,0,0))
+            y, x = (903,507)
+            video = cv2.VideoWriter(path, cv2.VideoWriter_fourcc(*'mp4v'), RENDER_FPS, (x, y))
+            for i in range(idk * RENDER_FPS):
+                video.write(cv2.cvtColor(image, cv2.COLOR_RGBA2RGB))
+
+            video.release()    
+
     
     def saveState(self):
         pass

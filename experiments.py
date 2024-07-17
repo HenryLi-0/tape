@@ -195,10 +195,3 @@ try:
     print(doesThisWork)
 except: print("womp womp")
 '''
-
-dictionary = {
-    "a": 0,
-    "b": 1 
-}
-
-print("0" in dictionary)

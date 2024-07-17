@@ -23,6 +23,7 @@ BACKGROUND_COLOR = "#241530" #Background color
 FRAME_COLOR = "#381f4d" #Borders and Frame color
 SELECTED_COLOR = "#9e6cc9" #Selected Element color
 TIMELINE_COLOR = "#6d3999" #Timeline color
+SPECIAL_COLOR = "#ab570e" #Special color
 
 hexColorToRGBA = lambda hexcolor: tuple(int(hexcolor[i:i+2], 16) for i in (1, 3, 5)) + (255,)
 
@@ -156,5 +157,7 @@ TRASHCAN_ARRAY = numpy.array(Image.open(os.path.join("resources", "trashcan.png"
 IMPORT_ARRAY = numpy.array(Image.open(os.path.join("resources", "import.png")).convert("RGBA"))
 SAVE_ICON_ARRAY = numpy.array(Image.open(os.path.join("resources", "save.png")).convert("RGBA"))
 LOAD_ICON_ARRAY = numpy.array(Image.open(os.path.join("resources", "load.png")).convert("RGBA"))
+RENDER_GIF_ICON_ARRAY = numpy.array(Image.open(os.path.join("resources", "render_gif.png")).convert("RGBA"))
+RENDER_MP4_ICON_ARRAY = numpy.array(Image.open(os.path.join("resources", "render_mp4.png")).convert("RGBA"))
 
 PROPERTY_DISPLAY_NAMES = ["Coordinates","Rotational","Apperance","Size","Hue","Transparency","Brightness","Blur"]
