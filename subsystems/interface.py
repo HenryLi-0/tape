@@ -36,8 +36,10 @@ class Interface:
         i_saveIconActive = generateIcon(SAVE_ICON_ARRAY, True, (37,37))
         i_loadIconIdle = generateIcon(LOAD_ICON_ARRAY, False, (37,37))
         i_loadIconActive = generateIcon(LOAD_ICON_ARRAY, True, (37,37))
-        i_exportGIFIcon = generateIcon(RENDER_GIF_ICON_ARRAY, False, (37,37), SPECIAL_COLOR)
-        i_exportMP4Icon = generateIcon(RENDER_MP4_ICON_ARRAY, False, (37,37), SPECIAL_COLOR)
+        i_exportGIFIconIdle = generateIcon(RENDER_GIF_ICON_ARRAY, False, (37,37), SPECIAL_COLOR)
+        i_exportGIFIconActive = generateIcon(RENDER_GIF_ICON_ARRAY, True, (37,37), SELECTED_SPECIAL_COLOR)
+        i_exportMP4IconIdle = generateIcon(RENDER_MP4_ICON_ARRAY, False, (37,37), SPECIAL_COLOR)
+        i_exportMP4IconActive = generateIcon(RENDER_MP4_ICON_ARRAY, True, (37,37), SELECTED_SPECIAL_COLOR)
         '''Interactable Visual Objects'''
         '''
         Code:
@@ -59,8 +61,8 @@ class Interface:
             self.c.c():["es", ButtonVisualObject("new sprite", (338,15), i_plusIconIdle, i_plusIconActive)],
             self.c.c():["es", ButtonVisualObject("delete sprite", (338,65), i_trashcanIconIdle, i_trashcanIconActive)],
             self.c.c():["ev", ButtonVisualObject("import image", (338,161), i_importIconIdle, i_importIconActive)],
-            self.c.c():["ep", ButtonVisualObject("export gif", (7,457), i_exportGIFIcon, i_exportGIFIcon)],
-            self.c.c():["ep", ButtonVisualObject("export mp4", (57,457), i_exportMP4Icon, i_exportMP4Icon)],
+            self.c.c():["ep", ButtonVisualObject("export gif", (7,457), i_exportGIFIconIdle, i_exportGIFIconActive)],
+            self.c.c():["ep", ButtonVisualObject("export mp4", (57,457), i_exportMP4IconIdle, i_exportMP4IconActive)],
 
             self.c.c():["t", ButtonVisualObject("play pause button", (0,0), i_playIcon, i_pauseIcon)],
             self.c.c():["t", ButtonVisualObject("save button", (0,40), i_saveIconIdle, i_saveIconActive)],
@@ -123,9 +125,9 @@ class Interface:
         if self.interactableVisualObjects[self.interacting][1].name == "load button" and mPressed < 3: 
             self.importProject(CLEAR_ON_OPEN)
         if self.interactableVisualObjects[self.interacting][1].name == "export gif" and mPressed < 3: 
-            pass
+            self.renderGIF()
         if self.interactableVisualObjects[self.interacting][1].name == "export mp4" and mPressed < 3: 
-            pass
+            self.renderMP4()
 
         '''Keyboard and Scroll (graph and timeline)'''
         for key in keyQueue: 
@@ -631,7 +633,7 @@ class Interface:
 
             for id in self.interactableVisualObjects:
                     if self.interactableVisualObjects[id][0] == "ep":
-                        self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
+                        self.interactableVisualObjects[id][1].tick(img, self.interacting==id or self.interactableVisualObjects[id][1].getInteractable(self.mx - 953, self.my - 36))
 
         return arrayToImage(img)
     
@@ -731,15 +733,43 @@ class Interface:
                 f.write(str(export))
                 f.close()
 
-    def renderMP4():
+    def renderGIF(self):
+        path = filedialog.asksaveasfilename(initialdir=PATH_SAVE_DEFAULT, defaultextension=".gif", filetypes=[("GIF", "*.gif")])
+        if path != "":
+            farthest = 0
+            for sprite in self.sprites:
+                for prop in ["c","r","a","s","t","b","w"]:
+                    data = sprite.getData(prop)
+                    for i in range(round(len(data)/3)):
+                        if data[i*3] > farthest: farthest = data[i*3]
+            bg = generateColorBox((903,507), (0,0,0,255))
+            images = []
+            for i in range(math.ceil(farthest * RENDER_FPS)):
+                img = bg.copy()
+                for sprite in self.sprites:
+                    frame = sprite.getFullStateAt(i/RENDER_FPS)
+                    placeOver(img, readImgSingleFullState(frame, self.cache.getImage(sprite.imageUUIDs[frame[1]]), True), (frame[0][0],frame[0][1]), True)
+                images.append(Image.fromarray(img))  
+            images[0].save(path, format='gif', append_images=images[1:], save_all=True, duration=1000/RENDER_FPS, loop=0)
+        
+    def renderMP4(self):
         path = filedialog.asksaveasfilename(initialdir=PATH_SAVE_DEFAULT, defaultextension=".mp4", filetypes=[("MP4", "*.mp4")])
         if path != "":
-            bg = generateColorBox((903,507), (0,0,0,0))
-            y, x = (903,507)
+            farthest = 0
+            for sprite in self.sprites:
+                for prop in ["c","r","a","s","t","b","w"]:
+                    data = sprite.getData(prop)
+                    for i in range(round(len(data)/3)):
+                        if data[i*3] > farthest: farthest = data[i*3]
+            bg = generateColorBox((903,507), (0,0,0,255))
+            y, x = bg.shape[:2]
             video = cv2.VideoWriter(path, cv2.VideoWriter_fourcc(*'mp4v'), RENDER_FPS, (x, y))
-            for i in range(idk * RENDER_FPS):
-                video.write(cv2.cvtColor(image, cv2.COLOR_RGBA2RGB))
-
+            for i in range(math.ceil(farthest * RENDER_FPS)):
+                img = bg.copy()
+                for sprite in self.sprites:
+                    frame = sprite.getFullStateAt(i/RENDER_FPS)
+                    placeOver(img, readImgSingleFullState(frame, self.cache.getImage(sprite.imageUUIDs[frame[1]]), True), (frame[0][0],frame[0][1]), True)
+                video.write(cv2.cvtColor(img[:,:,:3], cv2.COLOR_RGB2BGR))
             video.release()    
 
     
