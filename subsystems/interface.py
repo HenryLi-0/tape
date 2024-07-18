@@ -227,7 +227,7 @@ class Interface:
         previousInteracting = self.interacting
         if not(self.mPressed):
             self.interacting = -999
-        if self.interacting == -999 and self.mPressed:
+        if self.interacting == -999 and self.mPressed and self.mRising:
             for id in self.interactableVisualObjects:
                 if self.interactableVisualObjects[id][0] == "a":
                     if self.interactableVisualObjects[id][1].getInteractable(self.mx - 23, self.my - 36):

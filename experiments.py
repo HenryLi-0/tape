@@ -196,6 +196,7 @@ try:
 except: print("womp womp")
 '''
 
-from subsystems.sprite import iterateThroughPath
-compact = [0.0, (0.0, 0.0), 'S', 1.0, (0.0, 0.0), 'L', 3.2, (338.0, 330.0), 'L']
+from subsystems.sprite import iterateThroughPath, findStateThroughPath
+compact = [0.0, (0.0, 0.0), 'L', 1.0, (20.0, 0.0), 'L', 3.2, (338.0, 330.0), 'L']
 print(iterateThroughPath(compact, True))
+print(findStateThroughPath(compact, 0.5))
