@@ -686,6 +686,10 @@ class Interface:
                 self.sprites = []
             projectData = project[0]
             self.projectName = projectData["project name"]
+            for id in self.interactableVisualObjects:
+                if self.interactableVisualObjects[id][1].name == "project name":
+                    self.interactableVisualObjects[id][1].updateText(self.projectName)
+                    break
             self.projectUUID = projectData["UUID"]
             self.projectCreatedOn = projectData["created on"]
             self.projectLastSaved = projectData["last saved"]
@@ -718,7 +722,6 @@ class Interface:
             self.animationTime = 0
             self.animationPlaying = False
             
-
     def exportProject(self, saveImageData = True):
         '''Export stuffs'''
         path = filedialog.asksaveasfilename(initialdir=PATH_SAVE_DEFAULT, defaultextension=".tape", filetypes=[("Tape", "*.tape"), ("All files", "*.*")])
@@ -795,7 +798,6 @@ class Interface:
                 video.write(cv2.cvtColor(img[:,:,:3], cv2.COLOR_RGB2BGR))
             video.release()    
 
-    
     def saveState(self):
         pass
 

@@ -75,6 +75,7 @@ class Window:
     def windowOccasionalProcesses(self):
         '''window processes that happen less frequently (once every 3 seconds)'''
         print("windowOccaionalProcess")
+        self.window.title(f"Tape - Editing: {self.interface.projectName}")
         print(self.getFPS())
         self.window.after(OCCASIONAL_TICK_MS, self.windowOccasionalProcesses)
 
