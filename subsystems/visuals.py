@@ -166,11 +166,10 @@ class EditableTextBoxVisualObject:
         self.name = name
         self.txt = startTxt
         self.txtImg = displayText(self.txt, "m")
-        self.positionO = RectangularPositionalBox((max(self.txtImg.shape[1]+3,10),max(self.txtImg.shape[0],23)), pos[0]-3, pos[1]-3)
+        self.positionO = RectangularPositionalBox((max(self.txtImg.shape[1],10),max(self.txtImg.shape[0],23)), pos[0], pos[1])
     def tick(self, window, active):
-        placeOver(window, generateColorBox(addP(self.positionO.getBBOX(), (5,3)), hexColorToRGBA(BACKGROUND_COLOR)), self.positionO.getPosition())
-        placeOver(window, generateBorderBox(self.positionO.getBBOX(), 3, hexColorToRGBA(SELECTED_COLOR) if active else hexColorToRGBA(FRAME_COLOR)), self.positionO.getPosition())
-        placeOver(window, self.txtImg, addP(self.positionO.getPosition(),(5,3)), False)
+        placeOver(window, generateColorBox(self.positionO.getBBOX(), hexColorToRGBA(FRAME_COLOR) if active else hexColorToRGBA(BACKGROUND_COLOR)), self.positionO.getPosition())
+        placeOver(window, self.txtImg, self.positionO.getPosition(), False)
     def updateText(self, txt):
         if self.txt!=txt:
             self.txt = txt

@@ -29,10 +29,13 @@ SELECTED_SPECIAL_COLOR = "#db6d0d" #Selected special color
 hexColorToRGBA = lambda hexcolor: tuple(int(hexcolor[i:i+2], 16) for i in (1, 3, 5)) + (255,)
 
 '''Saving'''
-import os
+import os, time
 PATH_SAVE_DEFAULT = os.path.join("tapes")
 EXPORT_IMAGE_DATA = True
 CLEAR_ON_OPEN = True
+
+FORMAT_TIME = lambda x: time.strftime("%I:%M:%S %p %m/%d/%Y", time.localtime(x))
+DEFAULT_PROJECT_NAME = "Untitled Project"
 
 '''Keybinds'''
 EDITOR_VISUAL_KEYBINDS = {

@@ -195,8 +195,20 @@ try:
     print(doesThisWork)
 except: print("womp womp")
 '''
-
+'''
 from subsystems.sprite import iterateThroughPath, findStateThroughPath
 compact = [0.0, (0.0, 0.0), 'L', 1.0, (20.0, 0.0), 'L', 3.2, (338.0, 330.0), 'L']
 print(iterateThroughPath(compact, True))
 print(findStateThroughPath(compact, 0.5))
+'''
+'''
+import os, math
+size = os.path.getsize("tapes/imagine this works.tape")
+unitPower = math.floor(math.log(size, 1000))
+unit = ["B", "KB", "MB", "GB", "TB", "PB", "units"][unitPower]
+print(f"{size/(1000^unitPower)} {unit}")
+'''
+import time
+time.time()
+
+print(time.strftime("%I:%M:%S %p %m/%d/%Y", time.localtime(time.time())))

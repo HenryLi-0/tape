@@ -63,6 +63,7 @@ class Interface:
             self.c.c():["ev", ButtonVisualObject("import image", (338,161), i_importIconIdle, i_importIconActive)],
             self.c.c():["ep", ButtonVisualObject("export gif", (7,457), i_exportGIFIconIdle, i_exportGIFIconActive)],
             self.c.c():["ep", ButtonVisualObject("export mp4", (57,457), i_exportMP4IconIdle, i_exportMP4IconActive)],
+            self.c.c():["ep", EditableTextBoxVisualObject("project name", (72,52), DEFAULT_PROJECT_NAME)],
 
             self.c.c():["t", ButtonVisualObject("play pause button", (0,0), i_playIcon, i_pauseIcon)],
             self.c.c():["t", ButtonVisualObject("save button", (0,40), i_saveIconIdle, i_saveIconActive)],
@@ -94,6 +95,11 @@ class Interface:
         self.mouseScroll = 0 
 
         self.projectUUID = str(uuid.uuid4())
+        self.projectName = DEFAULT_PROJECT_NAME
+        self.projectCreatedOn = round(time.time())
+        self.projectLastSaved = round(time.time())
+        self.projectVersionCreated = VERSION
+        self.projectPath = os.path.join("tapes", "temp.tape")
         pass
 
     def tick(self,mx,my,mPressed,fps,keyQueue,mouseScroll):
@@ -612,28 +618,36 @@ class Interface:
         if self.editorTab == "p":
             '''About Project Tab!'''
             placeOver(img, displayText("Project:", "m"),                                                            (15,EDITOR_SPACING(1))) 
-            placeOver(img, displayText("Name: please implement this", "m"),                                         (20,EDITOR_SPACING(2)))
-            placeOver(img, displayText("Size: 1155 MB (please implement this)", "m"),                               (20,EDITOR_SPACING(3)))
+            placeOver(img, displayText("Name:", "m"),                                                               (20,EDITOR_SPACING(2)))
+            try:
+                size = os.path.getsize(self.projectPath)
+                unitPower = math.floor(math.log(size, 1000))
+                unit = ["B", "KB", "MB", "GB", "TB", "PB", "units"][unitPower]
+                placeOver(img, displayText(f"Size: {roundf(size/(1000^unitPower),2)} {unit}", "m"),                 (20,EDITOR_SPACING(3)))
+            except:
+                placeOver(img, displayText(f"Size: 0 B", "m"),                                                      (20,EDITOR_SPACING(3)))
 
             placeOver(img, displayText("Elements:", "m"),                                                           (15,EDITOR_SPACING(5)))
             placeOver(img, displayText(f"Sprites: {len(self.sprites)}", "m"),                                       (20,EDITOR_SPACING(6))) 
             placeOver(img, displayText("Folders: please implement this", "m"),                                      (20,EDITOR_SPACING(7))) 
-            placeOver(img, displayText("Paths: please implement this", "m"),                                        (20,EDITOR_SPACING(8)))
+            placeOver(img, displayText(f"Total Apperances: {sum(len(s.imageUUIDs) for s in self.sprites)}", "m"),   (20,EDITOR_SPACING(8)))
             temp = round(sum([len(sprite.getData("c")) for sprite in self.sprites])/3)
-            placeOver(img, displayText(f"Total Path Elements: {temp*2-1}", "m"),                                        (20,EDITOR_SPACING(9))) 
+            placeOver(img, displayText(f"Total Path Elements: {temp*2-1}", "m"),                                    (20,EDITOR_SPACING(9))) 
             placeOver(img, displayText(f"Total Path Waypoints: {temp}", "m"),                                       (20,EDITOR_SPACING(10))) 
             placeOver(img, displayText(f"Interactable Visual Objects: {len(self.interactableVisualObjects)}", "m"), (20,EDITOR_SPACING(11))) 
 
             placeOver(img, displayText("Dates:", "m"),                                                              (15,EDITOR_SPACING(13)))
-            placeOver(img, displayText("Created On: ", "m"),                                                        (20,EDITOR_SPACING(14)))  
-            placeOver(img, displayText("Last Saved: ", "m"),                                                        (20,EDITOR_SPACING(15)))  
-            placeOver(img, displayText("Version Created: ", "m"),                                                   (20,EDITOR_SPACING(16)))  
-            placeOver(img, displayText("Current Version: ", "m"),                                                   (20,EDITOR_SPACING(17)))  
+            placeOver(img, displayText(f"Created On: {FORMAT_TIME(self.projectCreatedOn)}", "m"),                                                        (20,EDITOR_SPACING(14)))  
+            placeOver(img, displayText(f"Last Saved: {FORMAT_TIME(self.projectLastSaved)}", "m"),                                                        (20,EDITOR_SPACING(15)))  
+            placeOver(img, displayText(f"Version Created: {self.projectVersionCreated}", "m"),                      (20,EDITOR_SPACING(16)))  
+            placeOver(img, displayText(f"Current Version: {VERSION}", "m"),                                         (20,EDITOR_SPACING(17)))  
             placeOver(img, displayText("Time Spent: ", "m"),                                                        (20,EDITOR_SPACING(18))) 
 
             for id in self.interactableVisualObjects:
                     if self.interactableVisualObjects[id][0] == "ep":
                         self.interactableVisualObjects[id][1].tick(img, self.interacting==id or self.interactableVisualObjects[id][1].getInteractable(self.mx - 953, self.my - 36))
+                        if self.interactableVisualObjects[id][1].name == "project name":
+                            self.projectName = self.interactableVisualObjects[id][1].txt
 
         return arrayToImage(img)
     
@@ -660,8 +674,9 @@ class Interface:
 
     def importProject(self, clear = True):
         '''Import stuffs'''
-        path = filedialog.askopenfilename(initialdir=PATH_SAVE_DEFAULT, defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
+        path = filedialog.askopenfilename(initialdir=PATH_SAVE_DEFAULT, defaultextension=".tape", filetypes=[("Tape", "*.tape"), ("All files", "*.*")])
         if path != "":
+            self.projectPath = path
             with open(path, "r") as f:
                 file = f.read()
                 project = ast.literal_eval(file)
@@ -670,7 +685,10 @@ class Interface:
             if clear:
                 self.sprites = []
             projectData = project[0]
+            self.projectName = projectData["project name"]
             self.projectUUID = projectData["UUID"]
+            self.projectCreatedOn = projectData["created on"]
+            self.projectLastSaved = projectData["last saved"]
             #sprite data
             spriteData = project[1]
             for uuid in list(spriteData.keys()):
@@ -703,15 +721,20 @@ class Interface:
 
     def exportProject(self, saveImageData = True):
         '''Export stuffs'''
-        path = filedialog.asksaveasfilename(initialdir=PATH_SAVE_DEFAULT, defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*.*")])
+        path = filedialog.asksaveasfilename(initialdir=PATH_SAVE_DEFAULT, defaultextension=".tape", filetypes=[("Tape", "*.tape"), ("All files", "*.*")])
         if path != "":
+            self.projectPath = path
+            self.projectLastSaved = round(time.time())
             export = []
             #project data
             projectData = {
-                "project name": "example",
+                "project name": self.projectName,
                 "version" : VERSION,
                 "UUID" : self.projectUUID,
-                "other stats and stuff": "things"
+                "created on": self.projectCreatedOn,
+                "version created": self.projectVersionCreated,
+                "last saved": round(time.time()),
+                "time spent": ""
             }
             export.append(projectData)
             #sprite data
