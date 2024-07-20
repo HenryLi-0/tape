@@ -35,3 +35,4 @@ Ok, time to get started!
 ### Modules Used (that dont come with python):
 - numpy
 - PIL (Pillow)
+- cv2 (openCV2)

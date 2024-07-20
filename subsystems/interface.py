@@ -40,6 +40,8 @@ class Interface:
         i_exportGIFIconActive = generateIcon(RENDER_GIF_ICON_ARRAY, True, (37,37), SELECTED_SPECIAL_COLOR)
         i_exportMP4IconIdle = generateIcon(RENDER_MP4_ICON_ARRAY, False, (37,37), SPECIAL_COLOR)
         i_exportMP4IconActive = generateIcon(RENDER_MP4_ICON_ARRAY, True, (37,37), SELECTED_SPECIAL_COLOR)
+        i_settingsIconIdle = generateIcon(GEAR_ARRAY, False, (52,52))
+        i_settingsIconActive = generateIcon(GEAR_ARRAY, True, (52,52))
         '''Interactable Visual Objects'''
         '''
         Code:
@@ -57,10 +59,12 @@ class Interface:
             self.c.c():["o",ButtonVisualObject("sprites",(7,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
             self.c.c():["o",ButtonVisualObject("visuals",(134,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
             self.c.c():["o",ButtonVisualObject("project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
+            self.c.c():["o",ButtonVisualObject("settings",(323,65),i_settingsIconIdle,i_settingsIconActive)],
 
             self.c.c():["es", ButtonVisualObject("new sprite", (338,15), i_plusIconIdle, i_plusIconActive)],
             self.c.c():["es", ButtonVisualObject("delete sprite", (338,65), i_trashcanIconIdle, i_trashcanIconActive)],
             self.c.c():["ev", ButtonVisualObject("import image", (338,161), i_importIconIdle, i_importIconActive)],
+            self.c.c():["ev", EditableTextBoxVisualObject("sprite name", (0,0), "Sprite Name")],
             self.c.c():["ep", ButtonVisualObject("export gif", (7,457), i_exportGIFIconIdle, i_exportGIFIconActive)],
             self.c.c():["ep", ButtonVisualObject("export mp4", (57,457), i_exportMP4IconIdle, i_exportMP4IconActive)],
             self.c.c():["ep", EditableTextBoxVisualObject("project name", (72,52), DEFAULT_PROJECT_NAME)],
@@ -134,6 +138,8 @@ class Interface:
             self.renderGIF()
         if self.interactableVisualObjects[self.interacting][1].name == "export mp4" and mPressed < 3: 
             self.renderMP4()
+        if self.interactableVisualObjects[self.interacting][1].name == "settings" and mPressed < 3: 
+            os.startfile(os.path.join("settings.py"))
 
         '''Keyboard and Scroll (graph and timeline)'''
         for key in keyQueue: 
@@ -486,6 +492,10 @@ class Interface:
                 evgPoints = listEVGPoints(self.interactableVisualObjects)
                 evgConnections = listEVGConnections(self.interactableVisualObjects)
                 if self.previousEditorTab != "v" or self.selectedProperty != self.previousSelectedProperty or regen:
+                    for id in self.interactableVisualObjects:
+                        if self.interactableVisualObjects[id][1].name == "sprite name":
+                            self.interactableVisualObjects[id][1].updateText(self.sprites[self.selectedSprite].name)
+                            break
                     self.graphLastCheck = self.ticks
                     if len(evgPoints) > lenData:
                         for i in range(len(evgPoints)-lenData): self.interactableVisualObjects.pop(evgPoints[i])
@@ -517,7 +527,6 @@ class Interface:
                     else:
                         for i in range(len(evgConnections)): self.interactableVisualObjects[evgConnections[i]][1].setPathData(pathP[i])
                 else:
-
                     if self.selectedProperty == 1:
                         if self.interactableVisualObjects[self.interacting][1].type == "point":
                             self.interacting = self.interacting
@@ -604,17 +613,20 @@ class Interface:
                     if self.interactableVisualObjects[id][0] == "evg":
                         if self.interactableVisualObjects[id][1].type == "connection":
                             self.interactableVisualObjects[id][1].tick(img, self.interacting==id, self.graphOffset, self.graphScale)
-                for id in self.interactableVisualObjects:
                     if self.interactableVisualObjects[id][0] == "evg":
                         if self.interactableVisualObjects[id][1].type != "connection":
                             self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
-                for id in self.interactableVisualObjects:
                     if self.interactableVisualObjects[id][0] == "ev":
                         self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
                 
                 self.selectedProperty = requestSelectedProperty
                 placeOver(img, FRAME_EDITOR_VISUALS_GRAPH_ARRAY, (0,219))
                 # placeOver(img, PLACEHOLDER_IMAGE_5_ARRAY, ((100-self.graphOffset)*25/(self.graphScale+0.000001)+29,219), True)
+            for id in self.interactableVisualObjects:
+                if self.interactableVisualObjects[id][0] == "ev":
+                    self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
+                    if self.interactableVisualObjects[id][1].name == "sprite name":
+                        self.sprites[self.selectedSprite].name = self.interactableVisualObjects[id][1].txt
         if self.editorTab == "p":
             '''About Project Tab!'''
             placeOver(img, displayText("Project:", "m"),                                                            (15,EDITOR_SPACING(1))) 
@@ -644,10 +656,10 @@ class Interface:
             placeOver(img, displayText("Time Spent: ", "m"),                                                        (20,EDITOR_SPACING(18))) 
 
             for id in self.interactableVisualObjects:
-                    if self.interactableVisualObjects[id][0] == "ep":
-                        self.interactableVisualObjects[id][1].tick(img, self.interacting==id or self.interactableVisualObjects[id][1].getInteractable(self.mx - 953, self.my - 36))
-                        if self.interactableVisualObjects[id][1].name == "project name":
-                            self.projectName = self.interactableVisualObjects[id][1].txt
+                if self.interactableVisualObjects[id][0] == "ep":
+                    self.interactableVisualObjects[id][1].tick(img, self.interacting==id or self.interactableVisualObjects[id][1].getInteractable(self.mx - 953, self.my - 36))
+                    if self.interactableVisualObjects[id][1].name == "project name":
+                        self.projectName = self.interactableVisualObjects[id][1].txt
 
         return arrayToImage(img)
     
@@ -659,8 +671,8 @@ class Interface:
 
         for id in self.interactableVisualObjects:
             if self.interactableVisualObjects[id][0] == "o":
-                if self.interacting==id: self.editorTab = self.interactableVisualObjects[id][1].name[0]
-                self.interactableVisualObjects[id][1].tick(img, self.interacting==id or self.editorTab==self.interactableVisualObjects[id][1].name[0])
+                if self.interacting==id and self.interactableVisualObjects[id][1].name in ["sprites", "visuals", "project"]: self.editorTab = self.interactableVisualObjects[id][1].name[0]
+                self.interactableVisualObjects[id][1].tick(img, self.interacting==id or (self.editorTab==self.interactableVisualObjects[id][1].name[0] and self.interactableVisualObjects[id][1].name in ["sprites", "visuals", "project"]))
 
         if 23 <= self.mx and self.mx <= 925 and 36 <= self.my and self.my <= 542:
             placeOver(img, displayText(f"rx: {self.mx-23}", "l"), (20,83)) 
@@ -669,7 +681,6 @@ class Interface:
             placeOver(img, displayText(f" x: {self.mx}", "l", colorTXT=(155,155,155,255)), (20,83)) 
             placeOver(img, displayText(f" y: {self.my}", "l", colorTXT=(155,155,155,255)), (120,83))
         placeOver(img, displayText("Sprites                  Visuals                  Project", "m"), (193, 31), True)
-        placeOver(img, GEAR_ARRAY, (338,80))
         return arrayToImage(img)
 
     def importProject(self, clear = True):
@@ -706,7 +717,8 @@ class Interface:
                 #contains image data
                 imageData = project[2]
                 for uuid in list(imageData.keys()):
-                    self.cache.importIDRawImage(uuid, imageData[uuid][0], imageData[uuid][1])
+                    try: self.cache.importIDRawImage(uuid, imageData[uuid][0], imageData[uuid][1])
+                    except: pass
             #reset
             self.selectedSprite = 0
             self.selectedProperty = 1

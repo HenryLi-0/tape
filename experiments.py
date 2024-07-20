@@ -208,7 +208,10 @@ unitPower = math.floor(math.log(size, 1000))
 unit = ["B", "KB", "MB", "GB", "TB", "PB", "units"][unitPower]
 print(f"{size/(1000^unitPower)} {unit}")
 '''
+'''
 import time
 time.time()
-
 print(time.strftime("%I:%M:%S %p %m/%d/%Y", time.localtime(time.time())))
+'''
+import os
+os.startfile(os.path.join("settings.py"))
