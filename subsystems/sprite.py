@@ -1,9 +1,10 @@
 '''The class all about the sprites, which are the manipulatable images that move across the screen.'''
 
 from settings import *
-import numpy, math
+import numpy, math, uuid
 from subsystems.pathing import smoothChangeAt, straightChangeAt, roundf, timelyBezierPathCoords, selectiveBezierPathCoords, straightPathCoords, mergeCoordRotationPath, betweenP
 from subsystems.render import rotateDegHundred, setSize, setColorEffect, setTransparency, setBrightness, setBlur
+from subsystems.fancy import generatePastelDark
 from settings import PATH_FLOAT_ACCURACY, RENDER_FPS
 
 class SingleSprite:
@@ -35,14 +36,18 @@ class SingleSprite:
     L - linear, straight line
     S - smooth, curved approach, also represents beizer for coordinates
     '''
-    def __init__(self,name, img = PLACEHOLDER_IMAGE_5_ARRAY):
+    def __init__(self,name, imgUUID = "placeholder5"):
+        self.uuid = str(uuid.uuid4())
         self.name = name
-        self.images = [
-            numpy.array(img)
+        self.color = generatePastelDark()
+        self.imageUUIDs = [
+            imgUUID
         ]
         self.data = {
             "name":name, 
-            "images":self.images, 
+            "uuid":self.uuid,
+            "color":self.color,
+            "images":self.imageUUIDs, 
             "c":[0,(0,0),"L",1,(0,0),"L"],  # Coordinate
             "r":[0,    0,"L",1,    0,"L"],  # Rotation - 0 up CCW
             "a":[0,    0,"L",1,    0,"L"],  # Apperance - 0 = image0
@@ -63,7 +68,7 @@ class SingleSprite:
         '''Generates a state sequence for a given property, given the key'''
         if key == "c": return iterateThroughPath(self.data["c"])
         if key == "p": return mergeCoordRotationPath(iterateThroughPath(self.data["c"]), iterateThroughSingle(self.data["r"]))
-        if key == "a": return [max(0, min(len(self.images)-1, round(item))) for item in iterateThroughSingle(self.data["a"])]
+        if key == "a": return [max(0, min(len(self.imageUUIDs)-1, round(item))) for item in iterateThroughSingle(self.data["a"])]
         if key in "rshtbw" and len(key) == 1: return iterateThroughSingle(self.data[key])
     def getStateAt(self, key, time):
         '''Returns a state of a given property for a given time, given the key and time'''
@@ -71,7 +76,7 @@ class SingleSprite:
         if key == "p":
             cx, cy = findStateThroughPath(self.data["c"], time) 
             return (cx, cy, findStateThroughSingle(self.data["r"], time))
-        if key == "a": return max(0, min(len(self.images)-1, round(findStateThroughSingle(self.data["a"],time))))
+        if key == "a": return max(0, min(len(self.imageUUIDs)-1, round(findStateThroughSingle(self.data["a"],time))))
         if key in "rshtbw" and len(key) == 1: return findStateThroughSingle(self.data[key], time)
     def generateFullSequence(self):
         '''Generates a full state sequence for all properties for the entire duration of importance'''
@@ -104,24 +109,42 @@ class SingleSprite:
             self.getStateAt("b", time),
             self.getStateAt("w", time)
         ]
-    def addImage(self, img):
-        '''Adds an image to the sprite's appearances'''
-        self.images.append(numpy.array(img))
-        self.data["images"] = self.images
-    def removeImage(self, img):
-        '''Removes an image from the sprite's apperances, given the image'''
-        self.images.pop(self.images.index(numpy.array(img)))
-        self.data["images"] = self.images
-    def getImageAt(self, time):
+    def addImageUUID(self, imgUUID):
+        '''Adds an image UUID to the sprite's appearances'''
+        self.imageUUIDs.append(imgUUID)
+        self.data["images"] = self.imageUUIDs
+    def removeImageUUID(self, img):
+        '''Removes an image from the sprite's apperances, given the imageUUID or index'''
+        if type(img) == str: 
+            self.imageUUIDs.pop(self.imageUUIDs.index(numpy.array(img)))
+        else: 
+            if len(self.imageUUIDs) > 1: self.imageUUIDs.pop(max(0, min(img, len(self.imageUUIDs)-1)))
+        self.data["images"] = self.imageUUIDs
+    def getImageUUIDAt(self, time):
         '''Returns the array of an image of the sprite at a given time'''
-        try: return self.images[self.getStateAt("a", time)]
-        except: return self.images[0]
+        try: return self.imageUUIDs[self.getStateAt("a", time)]
+        except: return self.imageUUIDs[0]
     def getName(self):
         '''Gets the name of the sprite'''
         return self.name
     def setName(self, name):
         '''Sets the name of the sprite'''
         self.name = name
+        self.data["name"] = name
+    def getColor(self):
+        '''Gets the color of the sprite'''
+        return self.color
+    def setColor(self, color):
+        '''Sets the color of the sprite'''
+        self.color = color
+        self.data["color"] = color
+    def fullDataImport(self, data):
+        '''Imports all the sprite data'''
+        self.data = data
+        self.name = self.data["name"]
+        self.uuid = self.data["uuid"]
+        self.color = self.data["color"]
+        self.imageUUIDs = self.data["images"]
 
 def dataCheck(key, data):
     '''Modifies the original given data with all checked values (rounding and connections)'''
@@ -204,7 +227,7 @@ def findStateThroughPath(compact, time):
         if timeStamps[i]<=time: low = i
         else: break
     if connections[low] == "L":
-        timeC = (time-compact[low*3])/(compact[(low+1)*3]-compact[low*3])
+        timeC = (time-compact[low*3])/(compact[(low+1)*3]-compact[low*3]+0.000001)
         timeC = max(0, min(timeC, 1))
         cx, cy = betweenP(compact[low*3+1], compact[(low+1)*3+1])(timeC)
         return (roundf(cx, PATH_FLOAT_ACCURACY), roundf(cy, PATH_FLOAT_ACCURACY))
@@ -244,10 +267,13 @@ def protectedBoundary(sequence, i, empty = 0):
     if len(sequence) == 0: return empty
     return sequence[max(0, min(round(i), len(sequence)-1))]
 
-def readImgSingleFullState(state, images):
+def readImgSingleFullState(state, images, singleImage = False):
     '''Returns an array of the image of the sprite at a given full state in [(x,y,dir), a, s, h, t, b, w] form, given the full state and the set of images'''
-    try: img = images[state[1]].copy()
-    except: img = images[0].copy()
+    if singleImage:
+        img = images
+    else:
+        try: img = images[state[1]].copy()
+        except: img = images[0].copy()
     img = setSize(img, state[2])
     img = setColorEffect(img, state[3])
     img = setTransparency(img, state[4])
