@@ -67,7 +67,7 @@ from PIL import Image, ImageFont
 import numpy
 
 # Version
-VERSION = "v0.1.0"
+VERSION = "v1.0.0"
 
 # Imagery
 LOADING_IMAGE = Image.open(os.path.join("resources", "loading.png")).convert("RGBA") # 1366x697, Solid, Loading Screen
