@@ -104,6 +104,7 @@ class Interface:
         self.projectLastSaved = round(time.time())
         self.projectVersionCreated = VERSION
         self.projectPath = os.path.join("tapes", "temp.tape")
+        self.projectStartTime = round(time.time())
         pass
 
     def tick(self,mx,my,mPressed,fps,keyQueue,mouseScroll):
@@ -320,13 +321,12 @@ class Interface:
         rmy = self.my - 36
         img = FRAME_ANIMATION_ARRAY.copy()
 
-        placeOver(img, displayText(f"FPS: {self.fps}", "m"), (55,15))
-        placeOver(img, displayText(f"Relative (animation) Mouse Position: ({self.mx-23}, {self.my-36})", "m"), (455,55))
-        placeOver(img, displayText(f"Mouse Pressed: {self.mPressed}", "m", colorTXT = (0,255,0,255) if self.mPressed else (255,0,0,255)), (55,55))
-        placeOver(img, displayText(f"Rising Edge: {self.mRising}", "m", colorTXT = (0,255,0,255) if self.mRising else (255,0,0,255)), (55,95))
-        placeOver(img, displayText(f"Interacting With Element: {self.interacting}", "m"), (455,15))
-        placeOver(img, displayText(f"stringKeyQueue: {self.stringKeyQueue}", "m"), (455,95))
-
+        # placeOver(img, displayText(f"FPS: {self.fps}", "m"), (55,15))
+        # placeOver(img, displayText(f"Relative (animation) Mouse Position: ({self.mx-23}, {self.my-36})", "m"), (455,55))
+        # placeOver(img, displayText(f"Mouse Pressed: {self.mPressed}", "m", colorTXT = (0,255,0,255) if self.mPressed else (255,0,0,255)), (55,55))
+        # placeOver(img, displayText(f"Rising Edge: {self.mRising}", "m", colorTXT = (0,255,0,255) if self.mRising else (255,0,0,255)), (55,95))
+        # placeOver(img, displayText(f"Interacting With Element: {self.interacting}", "m"), (455,15))
+        # placeOver(img, displayText(f"stringKeyQueue: {self.stringKeyQueue}", "m"), (455,95))
 
         for id in self.interactableVisualObjects:
             if self.interactableVisualObjects[id][0] == "a":
@@ -354,7 +354,6 @@ class Interface:
             for id in [evgP[index] for index in extent]:
                 placeOver(img, ORB_SELECTED_ARRAY if id==self.interacting else ORB_IDLE_ARRAY, self.interactableVisualObjects[id][1].pointData, True)
                 
-
         return arrayToImage(img)
     
     def getImageTimeline(self):
@@ -439,15 +438,15 @@ class Interface:
                     if pos > 362: break
                     if pos > 29: 
                         placeOver(img, FRAME_EDITOR_VISUALS_GRAPH_BAR_ARRAY, (pos, 242))
-                        time = roundf((i*(10**math.floor(math.log(self.graphScale+0.000001,10)+1))),2)
-                        if time >= 1:
-                            if time < 3600:
-                                time = "{:02}:{:02}".format(math.floor(time/60), roundf(time%60,2))
+                        displayTime = roundf((i*(10**math.floor(math.log(self.graphScale+0.000001,10)+1))),2)
+                        if displayTime >= 1:
+                            if displayTime < 3600:
+                                displayTime = "{:02}:{:02}".format(math.floor(displayTime/60), roundf(displayTime%60,2))
                             else:
-                                time = "{:02}:{:02}:{:02}".format(math.floor(time/3600), math.floor((time-3600*math.floor(time/3600))/60), roundf(time%60,2))
+                                displayTime = "{:02}:{:02}:{:02}".format(math.floor(displayTime/3600), math.floor((displayTime-3600*math.floor(time/3600))/60), roundf(displayTime%60,2))
                         else:
-                            time = str(time)
-                        placeOver(img, displayText(time, "s"), (pos,492), True)
+                            displayTime = str(displayTime)
+                        placeOver(img, displayText(displayTime, "s"), (pos,492), True)
                 
                 '''Get Data and Stuff'''
                 data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
@@ -666,11 +665,15 @@ class Interface:
             placeOver(img, displayText(f"Interactable Visual Objects: {len(self.interactableVisualObjects)}", "m"), (20,EDITOR_SPACING(11))) 
 
             placeOver(img, displayText("Dates:", "m"),                                                              (15,EDITOR_SPACING(13)))
-            placeOver(img, displayText(f"Created On: {FORMAT_TIME(self.projectCreatedOn)}", "m"),                                                        (20,EDITOR_SPACING(14)))  
-            placeOver(img, displayText(f"Last Saved: {FORMAT_TIME(self.projectLastSaved)}", "m"),                                                        (20,EDITOR_SPACING(15)))  
+            placeOver(img, displayText(f"Created On: {FORMAT_TIME(self.projectCreatedOn)}", "m"),                   (20,EDITOR_SPACING(14)))  
+            placeOver(img, displayText(f"Last Saved: {FORMAT_TIME(self.projectLastSaved)}", "m"),                   (20,EDITOR_SPACING(15)))  
             placeOver(img, displayText(f"Version Created: {self.projectVersionCreated}", "m"),                      (20,EDITOR_SPACING(16)))  
-            placeOver(img, displayText(f"Current Version: {VERSION}", "m"),                                         (20,EDITOR_SPACING(17)))  
-            placeOver(img, displayText("Time Spent: ", "m"),                                                        (20,EDITOR_SPACING(18))) 
+            placeOver(img, displayText(f"Current Version: {VERSION}", "m"),                                         (20,EDITOR_SPACING(17))) 
+            temp = round(time.time() - self.projectStartTime)
+            formated=f"{math.floor(temp%60)}s"
+            if temp >= 60: formated=f"{math.floor((temp-3600*math.floor(temp/3600))/60)}m "+formated
+            if temp >= 3600: formated=f"{math.floor(temp/3600)}h "+formated
+            placeOver(img, displayText(f"Time Spent: {formated}", "m"),                                             (20,EDITOR_SPACING(18))) 
 
             for id in self.interactableVisualObjects:
                 if self.interactableVisualObjects[id][0] == "ep":
@@ -692,11 +695,13 @@ class Interface:
                 self.interactableVisualObjects[id][1].tick(img, self.interacting==id or (self.editorTab==self.interactableVisualObjects[id][1].name[0] and self.interactableVisualObjects[id][1].name in ["sprites", "visuals", "project"]))
 
         if 23 <= self.mx and self.mx <= 925 and 36 <= self.my and self.my <= 542:
-            placeOver(img, displayText(f"rx: {self.mx-23}", "l"), (20,83)) 
-            placeOver(img, displayText(f"ry: {self.my-36}", "l"), (120,83))
+            placeOver(img, displayText(f"rx: {self.mx-23}", "m"), (20,73)) 
+            placeOver(img, displayText(f"ry: {self.my-36}", "m"), (80,73))
         else:            
-            placeOver(img, displayText(f" x: {self.mx}", "l", colorTXT=(155,155,155,255)), (20,83)) 
-            placeOver(img, displayText(f" y: {self.my}", "l", colorTXT=(155,155,155,255)), (120,83))
+            placeOver(img, displayText(f"x: {self.mx}", "m", colorTXT=(155,155,155,255)), (20,73)) 
+            placeOver(img, displayText(f"y: {self.my}", "m", colorTXT=(155,155,155,255)), (80,73))
+        placeOver(img, displayText(f"FPS: {self.fps}", "m", colorTXT=(155,155,155,255)), (20,95))
+        placeOver(img, displayText(f"Interacting: {self.interacting}", "m", colorTXT= (225,225,225,255) if self.mPressed else (155,155,155,255)), (80,95))
         placeOver(img, displayText("Sprites                  Visuals                  Project", "m"), (193, 31), True)
         return arrayToImage(img)
 
@@ -721,6 +726,7 @@ class Interface:
             self.projectUUID = projectData["UUID"]
             self.projectCreatedOn = projectData["created on"]
             self.projectLastSaved = projectData["last saved"]
+            self.projectStartTime = round(time.time() - projectData["time spent"])
             #sprite data
             spriteData = project[1]
             for uuid in list(spriteData.keys()):
@@ -766,7 +772,7 @@ class Interface:
                 "created on": self.projectCreatedOn,
                 "version created": self.projectVersionCreated,
                 "last saved": round(time.time()),
-                "time spent": ""
+                "time spent": round(time.time() - self.projectStartTime)
             }
             export.append(projectData)
             #sprite data
