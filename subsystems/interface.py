@@ -374,7 +374,25 @@ class Interface:
                 else:
                     time = str(time)
                 placeOver(img, displayText(time, "s"), (pos,15), True)
-        
+
+        '''Fancy Sprite Timelines'''
+        yOffset = 25
+        for sprite in self.sprites:
+            lowest = 999
+            farthest = 0
+            for prop in ["c","r","a","s","t","b","w"]:
+                data = sprite.getData(prop)
+                for i in range(round(len(data)/3)):
+                    if data[i*3] < lowest: lowest = data[i*3]
+                    if data[i*3] > farthest: farthest = data[i*3]
+            lowest=(lowest-self.timelineOffset)*25/(self.timelineScale+0.000001) + 47
+            farthest=(farthest-self.timelineOffset)*25/(self.timelineScale+0.000001) + 47
+            lowest=max(47,min(round(lowest), 558))
+            farthest=max(47,min(round(farthest), 558))
+            placeOver(img, generateColorBox((farthest-lowest, 5), hexColorToRGBA(SPECIAL_COLOR)), (lowest, yOffset))
+            yOffset += 7
+
+        '''Timeline Bar'''
         pos = (self.animationTime-self.timelineOffset)*25/(self.timelineScale+0.000001) + 47
         if 46 < pos and pos < 896:
             placeOver(img, FRAME_TIMELINE_READER_ARRAY, (max(51,pos), 3))
