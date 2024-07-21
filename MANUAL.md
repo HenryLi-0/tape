@@ -89,6 +89,6 @@
 
 ### Version Info:
 
-Tape Version: v0.1.0
+Tape Version: v1.0.0
 
 Last Updated: 7/21/2024
