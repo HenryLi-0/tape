@@ -1,12 +1,10 @@
-# Tape
+![](</tape_banner.png>)
 
-An Overly Unnecessary Editor To Animate An Image To Move Across Your Screen.
+# Tape
 
 ## Note:
 
-Tape (yes, it stand for something silly) is still under development and is planned to have a (hopefully) test release before the end of July (if not july, hopefully by the end of august...)! Unfortunately, contributions are not being accepted until it has an actual ready release (i plan on changing a lot of code and do frequently get ideas at 1 AM) and is suitable for testing. However, don't hesitate to report any bugs! 
-
-(Note: As of June 2024, it will likely be broken half the time and everything is currently a bit of a mess...)
+Tape just had its first real release! There'll probably be tons of bugs, so create an issue if you find any!
 
 ## Goal:
 
@@ -20,17 +18,9 @@ One option is clearly better here, you decide which... (clearly the second one) 
 
 Ok, time to get started!
 
-### A couple things to do:
+### Getting Started:
 
-- Smooth Paths
-- Simple Rotation (not moving)
-- Paths with Rotation (moving)
-- Particles (explode, confetti, and other effects)
-- Simple GUI (options, timing, etc.) (probably block/node based)
-- Simple GUI (for paths) (bezier points, path editor)
-- Fancy GUI (graphs, lines, etc.)
-- Some silly logo
-- this is a really silly idea
+First, make sure you have all the neccesary python modules to run this! (Any modules that don't come with python are listed below!) Then, download the latest release from the releases tab, and run `main.py`! Check `MANUAL.md` for a longer user manual on how to use this, and check `CODEGUIDE.md` if you're interested in where to find code!
 
 ### Modules Used (that dont come with python):
 - numpy
