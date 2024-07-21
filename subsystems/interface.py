@@ -5,7 +5,7 @@ from PIL import ImageTk, Image
 from tkinter import filedialog
 import time, random, ast, cv2
 from subsystems.render import *
-from subsystems.fancy import displayText, generateColorBox, generateBorderBox, generateIcon
+from subsystems.fancy import displayText, generateColorBox, generateBorderBox, generateIcon, translatePastelLight
 from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject, EditableTextBoxVisualObject, DummyVisualObject, PointVisualObject, PointConnectionVisualObject
 from subsystems.counter import Counter
 from subsystems.pathing import pointAt, roundf, tcoordVelocity
@@ -64,7 +64,7 @@ class Interface:
             self.c.c():["es", ButtonVisualObject("new sprite", (338,15), i_plusIconIdle, i_plusIconActive)],
             self.c.c():["es", ButtonVisualObject("delete sprite", (338,65), i_trashcanIconIdle, i_trashcanIconActive)],
             self.c.c():["ev", ButtonVisualObject("import image", (338,161), i_importIconIdle, i_importIconActive)],
-            self.c.c():["ev", EditableTextBoxVisualObject("sprite name", (100,41), "Sprite Name")],
+            self.c.c():["ev", EditableTextBoxVisualObject("sprite name", (80,41), "Sprite Name")],
             self.c.c():["ep", ButtonVisualObject("export gif", (7,457), i_exportGIFIconIdle, i_exportGIFIconActive)],
             self.c.c():["ep", ButtonVisualObject("export mp4", (57,457), i_exportMP4IconIdle, i_exportMP4IconActive)],
             self.c.c():["ep", EditableTextBoxVisualObject("project name", (72,52), DEFAULT_PROJECT_NAME)],
@@ -78,7 +78,7 @@ class Interface:
         self.pathVisualObject = PathVisualObject(self.c.c(), "path")
         '''Sprites'''
         self.sprites = [
-            SingleSprite("test"),
+            SingleSprite("Sprite"),
         ]
         self.selectedSprite = 0
         self.selectedProperty = 1
@@ -172,12 +172,13 @@ class Interface:
                     if key in KB_CREATE: 
                         if 953<self.mx and 36<self.my and self.mx<1340 and self.my<542:
                             target = math.floor(((self.my-36)+self.spriteListOffset-25)/30)
-                            self.sprites.insert(max(0, min(target, len(self.sprites))), SingleSprite(f"New Sprite {len(self.sprites)}"))
+                            self.sprites.insert(max(0, min(target, len(self.sprites))), SingleSprite(f"Sprite {len(self.sprites)}"))
                         else:
-                            self.sprites.insert(len(self.sprites), SingleSprite(f"New Sprite {len(self.sprites)}"))
+                            self.sprites.insert(len(self.sprites), SingleSprite(f"Sprite {len(self.sprites)}"))
                     if key in KB_DELETE:
                         if len(self.sprites) > 1:
                             self.sprites.pop(self.selectedSprite)
+                    self.selectedSprite = max(0,min(self.selectedSprite, len(self.sprites)-1))
                 if self.editorTab == "v":
                     if key in KB_EDITOR_VISUAL_OFFSET_LEFT:  self.graphOffset -= (self.graphScale+0.000001)
                     if key in KB_EDITOR_VISUAL_OFFSET_RIGHT: self.graphOffset += (self.graphScale+0.000001)
@@ -376,21 +377,25 @@ class Interface:
                 placeOver(img, displayText(time, "s"), (pos,15), True)
 
         '''Fancy Sprite Timelines'''
+        barHeight = max(2, min(round(95/len(self.sprites))-2,10))
         yOffset = 25
-        for sprite in self.sprites:
+        i=0
+        for i in range(len(self.sprites)):
             lowest = 999
             farthest = 0
             for prop in ["c","r","a","s","t","b","w"]:
-                data = sprite.getData(prop)
-                for i in range(round(len(data)/3)):
-                    if data[i*3] < lowest: lowest = data[i*3]
-                    if data[i*3] > farthest: farthest = data[i*3]
+                data = self.sprites[i].getData(prop)
+                for ie in range(round(len(data)/3)):
+                    if data[ie*3] < lowest: lowest = data[ie*3]
+                    if data[ie*3] > farthest: farthest = data[ie*3]
             lowest=(lowest-self.timelineOffset)*25/(self.timelineScale+0.000001) + 47
             farthest=(farthest-self.timelineOffset)*25/(self.timelineScale+0.000001) + 47
-            lowest=max(47,min(round(lowest), 558))
-            farthest=max(47,min(round(farthest), 558))
-            placeOver(img, generateColorBox((farthest-lowest, 5), hexColorToRGBA(SPECIAL_COLOR)), (lowest, yOffset))
-            yOffset += 7
+            lowest=max(50,min(round(lowest), 922))
+            farthest=max(50,min(round(farthest), 922))
+            if i==self.selectedSprite: placeOver(img, generateColorBox((922,barHeight), hexColorToRGBA(FRAME_COLOR)), (50, yOffset))
+            placeOver(img, generateColorBox((farthest-lowest, barHeight), translatePastelLight(self.sprites[i].getColor()) if i==self.selectedSprite else self.sprites[i].getColor()), (lowest, yOffset))
+            yOffset += barHeight+2
+            if yOffset > 119: break
 
         '''Timeline Bar'''
         pos = (self.animationTime-self.timelineOffset)*25/(self.timelineScale+0.000001) + 47
@@ -426,7 +431,7 @@ class Interface:
             if self.selectedSprite != -999:
                 '''Graph Display'''
                 frame = self.sprites[self.selectedSprite].getFullStateAt(self.animationTime)
-                placeOver(img, setLimitedSize(readImgSingleFullState(frame, self.cache.getImage(self.sprites[self.selectedSprite].getImageUUIDAt(self.animationTime)), True), 50), (25,25))
+                placeOver(img, setLimitedSize(readImgSingleFullState(frame, self.cache.getImage(self.sprites[self.selectedSprite].getImageUUIDAt(self.animationTime)), True), 50), (15,25))
 
                 startI = round(self.graphOffset/(10**math.floor(math.log(self.graphScale+0.000001,10)+1)))
                 for i in range(startI - 3, startI + 33):

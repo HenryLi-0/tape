@@ -4,6 +4,7 @@ from settings import *
 import numpy, math, uuid
 from subsystems.pathing import smoothChangeAt, straightChangeAt, roundf, timelyBezierPathCoords, selectiveBezierPathCoords, straightPathCoords, mergeCoordRotationPath, betweenP
 from subsystems.render import rotateDegHundred, setSize, setColorEffect, setTransparency, setBrightness, setBlur
+from subsystems.fancy import generatePastelDark
 from settings import PATH_FLOAT_ACCURACY, RENDER_FPS
 
 class SingleSprite:
@@ -38,12 +39,14 @@ class SingleSprite:
     def __init__(self,name, imgUUID = "placeholder5"):
         self.uuid = str(uuid.uuid4())
         self.name = name
+        self.color = generatePastelDark()
         self.imageUUIDs = [
             imgUUID
         ]
         self.data = {
             "name":name, 
             "uuid":self.uuid,
+            "color":self.color,
             "images":self.imageUUIDs, 
             "c":[0,(0,0),"L",1,(0,0),"L"],  # Coordinate
             "r":[0,    0,"L",1,    0,"L"],  # Rotation - 0 up CCW
@@ -128,11 +131,19 @@ class SingleSprite:
         '''Sets the name of the sprite'''
         self.name = name
         self.data["name"] = name
+    def getColor(self):
+        '''Gets the color of the sprite'''
+        return self.color
+    def setColor(self, color):
+        '''Sets the color of the sprite'''
+        self.color = color
+        self.data["color"] = color
     def fullDataImport(self, data):
         '''Imports all the sprite data'''
         self.data = data
         self.name = self.data["name"]
         self.uuid = self.data["uuid"]
+        self.color = self.data["color"]
         self.imageUUIDs = self.data["images"]
 
 def dataCheck(key, data):

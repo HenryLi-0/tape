@@ -213,5 +213,11 @@ import time
 time.time()
 print(time.strftime("%I:%M:%S %p %m/%d/%Y", time.localtime(time.time())))
 '''
+'''
 import os
 os.startfile(os.path.join("settings.py"))
+'''
+from subsystems.fancy import generatePastelDark, translatePastelLight
+x=generatePastelDark()
+print(x)
+print(translatePastelLight(x))

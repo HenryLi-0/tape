@@ -1,7 +1,7 @@
 '''This file contains functions related to fancy rendering'''
 
 from PIL import Image, ImageDraw
-import numpy
+import numpy, random, colorsys
 from settings import *
 
 def displayText(text: str, size, colorBG:tuple|list = (0,0,0,0), colorTXT:tuple|list = (255,255,255,255), bold = False):
@@ -39,9 +39,26 @@ def generateBorderBox(size:list|tuple = (25,25), outlineW:int = 1, color:list|tu
     return array
 
 def generateIcon(img, active = False, size = (29,29), color = ""):
+    '''Generates an icon image given an image, active section, image size (no outline), and an optional overriding outline color'''
     from subsystems.visuals import placeOver
     icon = generateColorBox((size[0]+6,size[1]+6),hexColorToRGBA(BACKGROUND_COLOR))
     if color == "": placeOver(icon, generateBorderBox(size,3, hexColorToRGBA(SELECTED_COLOR if active else FRAME_COLOR)), (0,0))
     else: placeOver(icon, generateBorderBox(size,3, hexColorToRGBA(color)), (0,0))
     placeOver(icon, img, (round((size[0]+6)/2),round((size[1]+6)/2)), True)
     return icon
+
+def generatePastelDark():
+    '''Randomly generates a dark pastel color'''
+    color = [100]
+    color.insert(random.randrange(0,len(color)), random.randrange(100,200))
+    color.insert(random.randrange(0,len(color)), random.randrange(100,200))
+    color.append(255)
+    return color
+
+def translatePastelLight(color):
+    '''Translate a dark pastel color to a light pastel color, given the color in RGBA form'''
+    colorC = color[0:3]
+    colorC = list(colorsys.rgb_to_hsv(colorC[0]/255,colorC[1]/255,colorC[2]/255))
+    colorC[2] = 0.9
+    colorC = colorsys.hsv_to_rgb(colorC[0],colorC[1],colorC[2])
+    return [round(colorC[0]*255), round(colorC[1]*255), round(colorC[2]*255), color[3]]
