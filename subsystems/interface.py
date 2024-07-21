@@ -64,7 +64,7 @@ class Interface:
             self.c.c():["es", ButtonVisualObject("new sprite", (338,15), i_plusIconIdle, i_plusIconActive)],
             self.c.c():["es", ButtonVisualObject("delete sprite", (338,65), i_trashcanIconIdle, i_trashcanIconActive)],
             self.c.c():["ev", ButtonVisualObject("import image", (338,161), i_importIconIdle, i_importIconActive)],
-            self.c.c():["ev", EditableTextBoxVisualObject("sprite name", (0,0), "Sprite Name")],
+            self.c.c():["ev", EditableTextBoxVisualObject("sprite name", (100,41), "Sprite Name")],
             self.c.c():["ep", ButtonVisualObject("export gif", (7,457), i_exportGIFIconIdle, i_exportGIFIconActive)],
             self.c.c():["ep", ButtonVisualObject("export mp4", (57,457), i_exportMP4IconIdle, i_exportMP4IconActive)],
             self.c.c():["ep", EditableTextBoxVisualObject("project name", (72,52), DEFAULT_PROJECT_NAME)],
@@ -409,11 +409,6 @@ class Interface:
                 '''Graph Display'''
                 frame = self.sprites[self.selectedSprite].getFullStateAt(self.animationTime)
                 placeOver(img, setLimitedSize(readImgSingleFullState(frame, self.cache.getImage(self.sprites[self.selectedSprite].getImageUUIDAt(self.animationTime)), True), 50), (25,25))
-                name = self.sprites[self.selectedSprite].getName()
-                if len(name) < 5: size = "l"
-                elif len(name) < 10: size = "m"
-                else: size = "s"
-                placeOver(img, displayText(name, size), (110,37))
 
                 startI = round(self.graphOffset/(10**math.floor(math.log(self.graphScale+0.000001,10)+1)))
                 for i in range(startI - 3, startI + 33):
@@ -485,17 +480,18 @@ class Interface:
                                     lenData = round(len(data)/3)
                                     self.interacting = -999
                                     regen = True
-                    
-                    self.stringKeyQueue = ""
+                    if not(self.interactableVisualObjects[self.interacting][1].type == "textbox"):
+                        self.stringKeyQueue = ""
 
                 '''Graph Points and Editing'''
                 evgPoints = listEVGPoints(self.interactableVisualObjects)
                 evgConnections = listEVGConnections(self.interactableVisualObjects)
-                if self.previousEditorTab != "v" or self.selectedProperty != self.previousSelectedProperty or regen:
+                if self.previousEditorTab != "v" or self.selectedProperty != self.previousSelectedProperty:
                     for id in self.interactableVisualObjects:
                         if self.interactableVisualObjects[id][1].name == "sprite name":
                             self.interactableVisualObjects[id][1].updateText(self.sprites[self.selectedSprite].name)
                             break
+                if self.previousEditorTab != "v" or self.selectedProperty != self.previousSelectedProperty or regen:
                     self.graphLastCheck = self.ticks
                     if len(evgPoints) > lenData:
                         for i in range(len(evgPoints)-lenData): self.interactableVisualObjects.pop(evgPoints[i])
@@ -609,24 +605,22 @@ class Interface:
                     if xPos > 210: break
                 placeOver(img, apperancePanel, (199,0))
 
-                for id in self.interactableVisualObjects:
-                    if self.interactableVisualObjects[id][0] == "evg":
-                        if self.interactableVisualObjects[id][1].type == "connection":
-                            self.interactableVisualObjects[id][1].tick(img, self.interacting==id, self.graphOffset, self.graphScale)
-                    if self.interactableVisualObjects[id][0] == "evg":
-                        if self.interactableVisualObjects[id][1].type != "connection":
-                            self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
-                    if self.interactableVisualObjects[id][0] == "ev":
-                        self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
-                
                 self.selectedProperty = requestSelectedProperty
                 placeOver(img, FRAME_EDITOR_VISUALS_GRAPH_ARRAY, (0,219))
                 # placeOver(img, PLACEHOLDER_IMAGE_5_ARRAY, ((100-self.graphOffset)*25/(self.graphScale+0.000001)+29,219), True)
+
             for id in self.interactableVisualObjects:
+                if self.interactableVisualObjects[id][0] == "evg":
+                    if self.interactableVisualObjects[id][1].type == "connection":
+                        self.interactableVisualObjects[id][1].tick(img, self.interacting==id, self.graphOffset, self.graphScale)
+                if self.interactableVisualObjects[id][0] == "evg":
+                    if self.interactableVisualObjects[id][1].type != "connection":
+                        self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
                 if self.interactableVisualObjects[id][0] == "ev":
                     self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
                     if self.interactableVisualObjects[id][1].name == "sprite name":
                         self.sprites[self.selectedSprite].name = self.interactableVisualObjects[id][1].txt
+
         if self.editorTab == "p":
             '''About Project Tab!'''
             placeOver(img, displayText("Project:", "m"),                                                            (15,EDITOR_SPACING(1))) 
