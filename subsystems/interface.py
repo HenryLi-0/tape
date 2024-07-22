@@ -185,7 +185,7 @@ class Interface:
                     if key in KB_EDITOR_VISUAL_OFFSET_RIGHT: self.graphOffset += (self.graphScale+0.000001)
                     if 1152<self.mx and 36<self.my and self.mx<1340 and self.my<245:
                         if key in KB_DELETE:
-                            self.sprites[self.selectedSprite].removeImage(math.floor(((self.mx-1152)+2*(self.my-36)-2*self.apperancePanelOffset-6)/90))
+                            self.sprites[self.selectedSprite].removeImageUUID(math.floor(((self.mx-1152)+2*(self.my-36)-2*self.apperancePanelOffset-6)/90))
                 if key in KB_TIMELINE_OFFSET_LEFT:  self.timelineOffset -= (self.timelineScale+0.000001)
                 if key in KB_TIMELINE_OFFSET_RIGHT: self.timelineOffset += (self.timelineScale+0.000001)
             else:
