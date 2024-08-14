@@ -3,7 +3,7 @@
 import time, numpy, random, math
 from subsystems.pathing import bezierPathCoords, straightPathCoords, addP, subtractP, mergeCoordRotationPath, pointNextCoordRotationPath, roundf
 from subsystems.render import placeOver
-from subsystems.fancy import displayText, generateColorBox, generateBorderBox
+from subsystems.fancy import displayText, generateColorBox, generateIcon
 from settings import *
 
 class VisualManager:
@@ -133,9 +133,9 @@ class OrbVisualObject:
         placeOver(window, displayText(self.name, "m"), self.positionO.getPosition(), True)
     def updatePos(self, rmx, rmy):
         self.positionO.setPosition((rmx, rmy))
-    def keepInFrame(self, maxX, maxY):
+    def keepInFrame(self, minX, minY, maxX, maxY):
         pos = self.positionO.getPosition()
-        if pos[0] < 0 or maxX < pos[0] or pos[1] < 0 or maxY < pos[1]:
+        if pos[0] < minX or maxX < pos[0] or pos[1] < minY or maxY < pos[1]:
             self.positionO.setPosition((max(0,min(pos[0],maxX)), max(0,min(pos[1],maxY))))
     def getInteractable(self, rmx, rmy):
         return self.positionO.getInteract(rmx, rmy)
@@ -152,35 +152,51 @@ class ButtonVisualObject:
         placeOver(window, self.img2 if active else self.img, self.positionO.getPosition(), False)
     def updatePos(self, rmx, rmy):
         pass
-    def keepInFrame(self, maxX, maxY):
+    def keepInFrame(self, minX, minY, maxX, maxY):
         pos = self.positionO.getPosition()
-        if pos[0] < 0 or maxX < pos[0] or pos[1] < 0 or maxY < pos[1]:
+        if pos[0] < minX or maxX < pos[0] or pos[1] < minY or maxY < pos[1]:
             self.positionO.setPosition((max(0,min(pos[0],maxX)), max(0,min(pos[1],maxY))))
     def getInteractable(self,rmx,rmy):
         return self.positionO.getInteract(rmx, rmy)
     
 class EditableTextBoxVisualObject:
     '''An editable text box.'''
-    def __init__(self, name, pos:tuple|list, startTxt= ""):
+    def __init__(self, name, pos:tuple|list, startTxt= "", intOnly = False):
         self.type = "textbox"
         self.name = name
-        self.txt = startTxt
+        self.txt = str(startTxt)
         self.txtImg = displayText(self.txt, "m")
+        self.intOnly = intOnly
         self.positionO = RectangularPositionalBox((max(self.txtImg.shape[1],10),max(self.txtImg.shape[0],23)), pos[0], pos[1])
-    def tick(self, window, active):
-        placeOver(window, generateColorBox(self.positionO.getBBOX(), hexColorToRGBA(FRAME_COLOR) if active else hexColorToRGBA(BACKGROUND_COLOR)), self.positionO.getPosition())
-        placeOver(window, self.txtImg, self.positionO.getPosition(), False)
+        self.underlineIdle = generateColorBox((self.positionO.getBBOX()[0],3), FRAME_COLOR_RGBA)
+        self.underlineActive = generateColorBox((self.positionO.getBBOX()[0],3), SELECTED_COLOR_RGBA)
+    def tick(self, img, active):
+        temp = generateColorBox(addP(self.positionO.getBBOX(), (0,3)), FRAME_COLOR_RGBA if active else BACKGROUND_COLOR_RGBA)
+        placeOver(temp, self.underlineActive if active else self.underlineIdle, (0, self.positionO.getBBOX()[1]))
+        placeOver(img, temp, self.positionO.getPosition())
+        placeOver(img, self.txtImg, self.positionO.getPosition(), False)
     def updateText(self, txt):
-        if self.txt!=txt:
-            self.txt = txt
+        if self.txt!=str(txt):
+            self.txt = str(txt)
+            if self.intOnly:
+                if txt == "" or len(str(txt)) == 0:
+                    self.txt = "0"
+                else:
+                    temp = list(str(txt))
+                    for item in temp:
+                        if item not in "0123456789":
+                            while item in temp: temp.remove(item)
+                        self.txt = "".join(temp)
             self.txtImg = displayText(self.txt, "m")
             self.positionO.setBBOX((max(self.txtImg.shape[1]+3,10),max(self.txtImg.shape[0],23)))
+            self.underlineIdle = generateColorBox((self.positionO.getBBOX()[0],3), FRAME_COLOR_RGBA)
+            self.underlineActive = generateColorBox((self.positionO.getBBOX()[0],3), SELECTED_COLOR_RGBA)
     def updatePos(self, rmx, rmy):
         pass
-    def keepInFrame(self, maxX, maxY):
+    def keepInFrame(self, minX, minY, maxX, maxY):
         pos = self.positionO.getPosition()
-        if pos[0] < 0 or maxX < pos[0] or pos[1] < 0 or maxY < pos[1]:
-            self.positionO.setPosition((max(0,min(pos[0],maxX)), max(0,min(pos[1],maxY))))
+        if pos[0] < minX or maxX < pos[0] or pos[1] < minY or maxY < pos[1]:
+            self.positionO.setPosition((max(minX,min(pos[0],maxX)), max(minY,min(pos[1],maxY))))
     def getInteractable(self,rmx,rmy):
         return self.positionO.getInteract(rmx, rmy)
     
@@ -194,7 +210,7 @@ class DummyVisualObject:
         pass
     def updatePos(self, rmx, rmy):
         pass
-    def keepInFrame(self, maxX, maxY):
+    def keepInFrame(self, minX, minY, maxX, maxY):
         pass
     def getInteractable(self,rmx,rmy):
         return False
@@ -220,9 +236,9 @@ class PointVisualObject:
         self.positionO.setPosition((rmx, rmy))
     def setPointData(self, data):
         self.pointData = data
-    def keepInFrame(self, maxX, maxY):
+    def keepInFrame(self, minX, minY, maxX, maxY):
         pos = self.positionO.getPosition()
-        if pos[0] < 0 or maxX < pos[0] or pos[1] < 0 or maxY < pos[1]:
+        if pos[0] < minX or maxX < pos[0] or pos[1] < minY or maxY < pos[1]:
             self.positionO.setPosition((round(max(0,min(pos[0],maxX))), round(max(0,min(pos[1],maxY)))))
     def getInteractable(self, rmx, rmy):
         return self.positionO.getInteract(rmx, rmy)
@@ -254,9 +270,56 @@ class PointConnectionVisualObject:
         a = ((pointA[0]-graphOffset)*25/(graphScale+0.000001), 243)
         b = ((pointB[0]-graphOffset)*25/(graphScale+0.000001), 475)
         self.positionO.setRegion(a,b)
-    def keepInFrame(self, maxX, maxY):
+    def keepInFrame(self, minX, minY, maxX, maxY):
         pos = self.positionO.getPosition()
-        if pos[0] < 0 or maxX < pos[0] or pos[1] < 0 or maxY < pos[1]:
+        if pos[0] < minX or maxX < pos[0] or pos[1] < minY or maxY < pos[1]:
             self.positionO.setPosition((round(max(0,min(pos[0],maxX))), round(max(0,min(pos[1],maxY)))))
     def getInteractable(self, rmx, rmy):
+        return self.positionO.getInteract(rmx, rmy)
+    
+class IconVisualObject:
+    '''An icon, basically a fancy button.'''
+    # generateIcon(img, active = False, size = (29,29), color = "")
+    def __init__(self, name, pos:tuple|list, icon:numpy.ndarray, size:tuple|list = (29,29)):
+        self.type = "icon"
+        self.name = name
+        self.img = generateIcon(icon, False, size)
+        self.img2 = generateIcon(icon, True, size)
+        self.positionO = RectangularPositionalBox((self.img.shape[1],self.img.shape[0]), pos[0], pos[1])
+    def tick(self, img, active):
+        placeOver(img, self.img2 if active else self.img, self.positionO.getPosition(), False)
+        if active: placeOver(img, displayText(self.name, "s", (0,0,0,200)), self.positionO.getPosition(), False)
+    def updatePos(self, rmx, rmy):
+        pass
+    def keepInFrame(self, minX, minY, maxX, maxY):
+        pos = self.positionO.getPosition()
+        if pos[0] < minX or maxX < pos[0] or pos[1] < minY or maxY < pos[1]:
+            self.positionO.setPosition((max(minX,min(pos[0],maxX)), max(minY,min(pos[1],maxY))))
+    def getInteractable(self,rmx,rmy):
+        return self.positionO.getInteract(rmx, rmy)
+    
+class TextButtonPushVisualObject:
+    '''A button, but it has text! and it resets itself after some ticks!'''
+    def __init__(self, name, text:numpy.ndarray, pos:tuple|list, time = 60):
+        self.type = "button"
+        self.name = name
+        temp = displayText(str(text), "m")
+        self.img = generateIcon(temp, False, (temp.shape[1],temp.shape[0]))
+        self.img2 = generateIcon(temp, True, (temp.shape[1],temp.shape[0]))
+        self.positionO = RectangularPositionalBox((self.img.shape[1],self.img.shape[0]), pos[0], pos[1])
+        self.lastPressed = 9999999
+        self.state = False
+        self.time = time
+    def tick(self, img, active):
+        if active: self.lastPressed = 0
+        else: self.lastPressed += 1
+        self.state = (self.time > self.lastPressed)
+        placeOver(img, self.img2 if self.state else self.img, self.positionO.getPosition(), False)
+    def updatePos(self, rmx, rmy):
+        pass
+    def keepInFrame(self, minX, minY, maxX, maxY):
+        pos = self.positionO.getPosition()
+        if pos[0] < minX or maxX < pos[0] or pos[1] < minY or maxY < pos[1]:
+            self.positionO.setPosition((max(minX,min(pos[0],maxX)), max(minY,min(pos[1],maxY))))
+    def getInteractable(self,rmx,rmy):
         return self.positionO.getInteract(rmx, rmy)

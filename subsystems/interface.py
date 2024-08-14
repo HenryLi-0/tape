@@ -260,7 +260,7 @@ class Interface:
         pass
 
         '''Interacting With...'''
-        previousInteracting = self.interacting
+        self.previousInteracting = self.interacting
         if not(self.mPressed):
             self.interacting = -999
         if self.interacting == -999 and self.mPressed and self.mRising:
@@ -302,33 +302,34 @@ class Interface:
             section = self.interactableVisualObjects[self.interacting][0]
             if section == "a": 
                 self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 23, self.my - 36)
-                self.interactableVisualObjects[self.interacting][1].keepInFrame(903,507)
+                self.interactableVisualObjects[self.interacting][1].keepInFrame(0,0,903,507)
             if section == "es" or section == "ep": 
                 self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 953, self.my - 36)
-                self.interactableVisualObjects[self.interacting][1].keepInFrame(388,507)
+                self.interactableVisualObjects[self.interacting][1].keepInFrame(0,0,388,507)
             if section == "evg": 
                 self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 982, self.my - 278)
-                self.interactableVisualObjects[self.interacting][1].keepInFrame(337,233)
+                self.interactableVisualObjects[self.interacting][1].keepInFrame(0,0,337,233)
             if section == "t": 
                 self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 23, self.my - 558)
-                self.interactableVisualObjects[self.interacting][1].keepInFrame(903,123)
+                self.interactableVisualObjects[self.interacting][1].keepInFrame(0,0,903,123)
             if section == "o": 
                 self.interactableVisualObjects[self.interacting][1].updatePos(self.mx - 953, self.my - 558)
-                self.interactableVisualObjects[self.interacting][1].keepInFrame(388,123)
-        if ((self.mPressed)) and (previousInteracting == -999) and (self.interacting != -999) and (self.interactableVisualObjects[self.interacting][1].type  == "textbox"): 
+                self.interactableVisualObjects[self.interacting][1].keepInFrame(0,0,388,123)
+        if ((self.mPressed)) and (self.previousInteracting == -999) and (self.interacting != -999) and (self.interactableVisualObjects[self.interacting][1].type  == "textbox"): 
             self.stringKeyQueue = self.interactableVisualObjects[self.interacting][1].txt
         if (self.interacting != -999) and (self.interactableVisualObjects[self.interacting][1].type  == "textbox"):
             self.interactableVisualObjects[self.interacting][1].updateText(self.stringKeyQueue)
-        if (previousInteracting != -999) and (previousInteracting != -998):
-            if (self.interactableVisualObjects[previousInteracting][1].type  == "textbox"):
+        if (self.previousInteracting != -999) and (self.previousInteracting != -998):
+            if (self.interactableVisualObjects[self.previousInteracting][1].type  == "textbox"):
                 if not(self.interacting == -998):
-                    self.interacting = previousInteracting
+                    self.interacting = self.previousInteracting
                     self.interactableVisualObjects[self.interacting][1].updateText(self.stringKeyQueue)
                 else:
-                    self.interactableVisualObjects[previousInteracting][1].updateText(self.stringKeyQueue)
-            if (self.selectedProperty == 1) and (self.interactableVisualObjects[previousInteracting][1].type  == "point"):
+                    self.interactableVisualObjects[self.previousInteracting][1].updateText(self.stringKeyQueue)
+            
+            if (self.selectedProperty == 1) and (self.interactableVisualObjects[self.previousInteracting][1].type  == "point"):
                 if not(self.interacting == -998):
-                    self.interacting = previousInteracting
+                    self.interacting = self.previousInteracting
 
         if self.editorTab == "s" and self.interacting == -999:
             if 953<self.mx and 36<self.my and self.mx<1340 and self.my<542:
