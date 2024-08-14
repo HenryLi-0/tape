@@ -38,6 +38,7 @@ FORMAT_TIME = lambda x: time.strftime("%I:%M:%S %p %m/%d/%Y", time.localtime(x))
 DEFAULT_PROJECT_NAME = "Untitled Project"
 
 '''Keybinds'''
+KB_IGNORE = ["Win_L"]
 KB_EV_PROPERTY = {
     1 : "C",
     2 : "R",
@@ -48,17 +49,17 @@ KB_EV_PROPERTY = {
     7 : "B",
     8 : "W"
 }
-KB_CREATE = ["A", "a"]
-KB_DELETE = ["S", "s"]
-KB_EV_LINEAR_CONNECTION = ["Q", "q"]
-KB_EV_SMOOTH_CONNECTION = ["W", "w"]
-KB_EV_OFFSET_LEFT = ["Z", "z"]
-KB_EV_OFFSET_RIGHT = ["X", "x"]
-KB_T_OFFSET_LEFT = ["Left"]
-KB_T_OFFSET_RIGHT = ["Right"]
-KB_A_POINT_POSITION_EDIT = ["D", "d"]
-KB_S_LIST_OFFSET_UP = ["Up"]
-KB_S_LIST_OFFSET_DOWN = ["Down"]
+KB_CREATE                = lambda keys: (len(keys) == 1) and ("A" in keys or "a" in keys)
+KB_DELETE                = lambda keys: (len(keys) == 1) and ("S" in keys or "s" in keys)
+KB_EV_LINEAR_CONNECTION  = lambda keys: (len(keys) == 1) and ("Q" in keys or "q" in keys)
+KB_EV_SMOOTH_CONNECTION  = lambda keys: (len(keys) == 1) and ("W" in keys or "w" in keys)
+KB_EV_OFFSET_LEFT        = lambda keys: (len(keys) == 1) and ("Z" in keys or "z" in keys)
+KB_EV_OFFSET_RIGHT       = lambda keys: (len(keys) == 1) and ("X" in keys or "x" in keys)
+KB_A_POINT_POSITION_EDIT = lambda keys: (len(keys) == 1) and ("D" in keys or "d" in keys)
+KB_T_OFFSET_LEFT         = lambda keys: (len(keys) == 1) and ("Left"  in keys)
+KB_T_OFFSET_RIGHT        = lambda keys: (len(keys) == 1) and ("Right" in keys)
+KB_S_LIST_OFFSET_UP      = lambda keys: (len(keys) == 1) and ("Up"    in keys)
+KB_S_LIST_OFFSET_DOWN    = lambda keys: (len(keys) == 1) and ("Down"  in keys)
 
 '''Constants - DO NOT CHANGE!!!'''
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 

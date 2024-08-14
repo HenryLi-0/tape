@@ -112,6 +112,7 @@ class Interface:
         '''Entire Screen: `(0,0) to (1365,697)`: size `(1366,698)`'''
         self.mx = mx if (0<=mx and mx<=1365) and (0<=my and my<=697) else self.mx 
         self.my = my if (0<=mx and mx<=1365) and (0<=my and my<=697) else self.my
+        self.keyQueue = keyQueue
         self.mPressed = mPressed > 0
         self.mRising = mPressed==2
         self.fps = fps
@@ -122,7 +123,7 @@ class Interface:
         if self.interactableVisualObjects[self.interacting][1].name == "delete sprite" and mPressed < 3 and len(self.sprites) > 1: 
             self.sprites.pop(self.selectedSprite)
             self.selectedSprite = max(0, min(self.selectedProperty, len(self.sprites)-1))
-        if self.interactableVisualObjects[self.interacting][1].name == "import image" and mPressed < 3 or (self.editorTab == "v" and 1152<self.mx and 36<self.my and self.mx<1340 and self.my<245 and self.interacting == -999 and sum([(key in KB_CREATE) for key in keyQueue])> 0): 
+        if self.interactableVisualObjects[self.interacting][1].name == "import image" and mPressed < 3 or (self.editorTab == "v" and 1152<self.mx and 36<self.my and self.mx<1340 and self.my<245 and self.interacting == -999 and KB_CREATE(self.keyQueue)): 
             path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
             try: 
                 self.sprites[self.selectedSprite].addImageUUID(self.cache.importImage(path))
@@ -157,42 +158,62 @@ class Interface:
                     break
             if self.interacting == -999:
                 if self.editorTab == "s":
-                    if key in KB_S_LIST_OFFSET_UP:   self.spriteListVelocity -= 25
-                    if key in KB_S_LIST_OFFSET_DOWN: self.spriteListVelocity += 25
-                    if key in KB_EV_OFFSET_LEFT:  
+                    '''SPRITES EDITOR TAB'''
+                    if KB_S_LIST_OFFSET_UP(self.keyQueue):
+                        '''SCROLL UP IN SPRITE LIST'''
+                        self.spriteListVelocity -= 25
+                    if KB_S_LIST_OFFSET_DOWN(self.keyQueue):
+                        '''SCROLL DOWN IN SPRITE LIST'''
+                        self.spriteListVelocity += 25
+                    if KB_EV_OFFSET_LEFT(self.keyQueue):  
+                        '''MOVE SPRITE UP IN LIST'''
                         if 1 <= self.selectedSprite and self.selectedSprite <= len(self.sprites)-1:
                             temp = self.sprites[self.selectedSprite]
                             self.sprites.pop(self.selectedSprite)
                             self.selectedSprite -= 1
                             self.sprites.insert(self.selectedSprite, temp)
-                    if key in KB_EV_OFFSET_RIGHT: 
+                    if KB_EV_OFFSET_RIGHT(self.keyQueue): 
+                        '''MOVE SPRITE DOWN IN LIST'''
                         if 0 <= self.selectedSprite and self.selectedSprite <= len(self.sprites)-2:
                             temp = self.sprites[self.selectedSprite]
                             self.sprites.pop(self.selectedSprite)
                             self.selectedSprite += 1
                             self.sprites.insert(self.selectedSprite, temp)
-                    if key in KB_CREATE: 
+                    if KB_CREATE(self.keyQueue): 
+                        '''CREATE SPRITE'''
                         if 953<self.mx and 36<self.my and self.mx<1340 and self.my<542:
                             target = math.floor(((self.my-36)+self.spriteListOffset-25)/30)
                             self.sprites.insert(max(0, min(target, len(self.sprites))), SingleSprite(f"Sprite {len(self.sprites)}"))
                         else:
                             self.sprites.insert(len(self.sprites), SingleSprite(f"Sprite {len(self.sprites)}"))
-                    if key in KB_DELETE:
+                    if KB_DELETE(self.keyQueue):
+                        '''DELETE SPRITE'''
                         if len(self.sprites) > 1:
                             self.sprites.pop(self.selectedSprite)
                     self.selectedSprite = max(0,min(self.selectedSprite, len(self.sprites)-1))
                 if self.editorTab == "v":
-                    if key in KB_EV_OFFSET_LEFT:  self.graphOffset -= (self.graphScale+0.000001)
-                    if key in KB_EV_OFFSET_RIGHT: self.graphOffset += (self.graphScale+0.000001)
+                    '''VISUAL EDITOR TAB'''
+                    if KB_EV_OFFSET_LEFT(self.keyQueue):
+                        '''MOVE GRAPH TIMELINE LEFT'''
+                        self.graphOffset -= (self.graphScale+0.000001)
+                    if KB_EV_OFFSET_RIGHT(self.keyQueue):
+                        '''MOVE GRAPH TIMELINE RIGHT'''
+                        self.graphOffset += (self.graphScale+0.000001)
                     if 1152<self.mx and 36<self.my and self.mx<1340 and self.my<245:
-                        if key in KB_DELETE:
+                        '''DELETE IMAGE'''
+                        if KB_DELETE(self.keyQueue):
                             self.sprites[self.selectedSprite].removeImageUUID(math.floor(((self.mx-1152)+2*(self.my-36)-2*self.apperancePanelOffset-6)/90))
-                if key in KB_T_OFFSET_LEFT:  self.timelineOffset -= (self.timelineScale+0.000001)
-                if key in KB_T_OFFSET_RIGHT: self.timelineOffset += (self.timelineScale+0.000001)
+                if KB_T_OFFSET_LEFT(self.keyQueue):
+                    '''MOVE TIMELINE LEFT'''
+                    self.timelineOffset -= (self.timelineScale+0.000001)
+                if KB_T_OFFSET_RIGHT(self.keyQueue):
+                    '''MOVE TIMELINE RIGHT'''
+                    self.timelineOffset += (self.timelineScale+0.000001)
             else:
                 if self.selectedProperty == 1 and self.editorTab == "v":
                     if self.interactableVisualObjects[self.interacting][1].type == "point":
-                        if key in KB_A_POINT_POSITION_EDIT:
+                        if KB_A_POINT_POSITION_EDIT(self.keyQueue):
+                            '''MOVE SELECTED POINT POINT TO MOUSE POSITION'''
                             self.interactableVisualObjects[self.interacting][1].setPointData((self.mx-23, self.my-36))
                             
         self.mouseScroll = mouseScroll
@@ -468,14 +489,12 @@ class Interface:
                     for i in range(1,8+1):
                         if str(i) in self.stringKeyQueue: requestSelectedProperty = i
                     connectionEdit = ""
-                    for keybind in KB_EV_LINEAR_CONNECTION:
-                        if str(keybind) in self.stringKeyQueue: connectionEdit = "L"
-                    for keybind in KB_EV_SMOOTH_CONNECTION:
-                        if str(keybind) in self.stringKeyQueue: connectionEdit = "S"
+                    if KB_EV_LINEAR_CONNECTION(self.keyQueue): connectionEdit = "L"
+                    if KB_EV_SMOOTH_CONNECTION(self.keyQueue): connectionEdit = "S"
 
                     if 953<self.mx and 255<self.my and self.mx<1340 and self.my<542:
-                        for keybind in KB_CREATE:
-                            if str(keybind) in self.stringKeyQueue and self.interacting == -999:
+                        if KB_CREATE(self.keyQueue):
+                            if self.interacting == -999:
                                 x = (self.mx-982)*(self.graphScale+0.000001)/25+self.graphOffset
                                 y = 100-((self.my-279)/2.33)   
                                 timeStamps = [data[i*3] for i in range(lenData)]
@@ -494,8 +513,8 @@ class Interface:
                                 lenData = round(len(data)/3)
                                 self.interacting = -999
                                 regen = True                                
-                        for keybind in KB_DELETE:
-                            if str(keybind) in self.stringKeyQueue and self.interacting != -999:
+                        if KB_DELETE(self.keyQueue):
+                            if self.interacting != -999:
                                 if self.interactableVisualObjects[self.interacting][1].type == "point":
                                     index = listEVGPoints(self.interactableVisualObjects).index(self.interacting)
                                     for i in range(3): data.pop(index*3)
