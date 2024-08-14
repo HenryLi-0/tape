@@ -36,3 +36,10 @@ class LabelWrapper:
     def show(self):
         self.section.place(x = self.position[0], y = self.position[1])
         self.shown = True
+
+def followInstructions(size, bg, instructions):
+    blank = generateColorBox(size, hexColorToRGBA(bg))
+    if type(instructions) == list:
+        for instruction in instructions:
+            placeOver(blank, instruction[0], instruction[1])
+    return blank

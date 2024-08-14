@@ -84,6 +84,16 @@ class Interface:
         self.selectedSprite = 0
         self.selectedProperty = 1
         self.previousSelectedProperty = self.selectedProperty
+        self.interacting = -999
+        self.editorTab = "p"
+        self.previousEditorTab = self.editorTab
+        self.stringKeyQueue = ""
+        self.previousKeyQueue = []
+        self.animationTime = 0
+        self.animationPlaying = False
+        self.mouseScroll = 0 
+        self.keybindLastUpdate = time.time()
+        '''Timelines'''
         self.graphScale = 1.0
         self.graphOffset = 0
         self.timelineScale = 1.0
@@ -91,14 +101,7 @@ class Interface:
         self.spriteListOffset = 0
         self.spriteListVelocity = 0
         self.apperancePanelOffset = 0
-        self.interacting = -999
-        self.editorTab = "p"
-        self.previousEditorTab = self.editorTab
-        self.stringKeyQueue = ""
-        self.animationTime = 0
-        self.animationPlaying = False
-        self.mouseScroll = 0 
-
+        '''Project'''
         self.projectUUID = str(uuid.uuid4())
         self.projectName = DEFAULT_PROJECT_NAME
         self.projectCreatedOn = round(time.time())
@@ -123,7 +126,9 @@ class Interface:
         if self.interactableVisualObjects[self.interacting][1].name == "delete sprite" and mPressed < 3 and len(self.sprites) > 1: 
             self.sprites.pop(self.selectedSprite)
             self.selectedSprite = max(0, min(self.selectedProperty, len(self.sprites)-1))
-        if self.interactableVisualObjects[self.interacting][1].name == "import image" and mPressed < 3 or (self.editorTab == "v" and 1152<self.mx and 36<self.my and self.mx<1340 and self.my<245 and self.interacting == -999 and KB_CREATE(self.keyQueue)): 
+        if self.interactableVisualObjects[self.interacting][1].name == "import image" and mPressed < 3 or (self.editorTab == "v" and 1152<self.mx and 36<self.my and self.mx<1340 and self.my<245 and self.interacting == -999 and KB_CREATE(self.keyQueue) and (time.time() - self.keybindLastUpdate > KEYBIND_DIFFERENCE)): 
+            if (time.time() - self.keybindLastUpdate > KEYBIND_DIFFERENCE):
+                self.keybindLastUpdate = time.time()
             path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
             try: 
                 self.sprites[self.selectedSprite].addImageUUID(self.cache.importImage(path))
@@ -144,77 +149,90 @@ class Interface:
         if self.interactableVisualObjects[self.interacting][1].name == "settings" and mPressed < 3: 
             os.startfile(os.path.join("settings.py"))
 
-        '''Keyboard and Scroll (graph and timeline)'''
+        '''Keyboard'''
         for key in keyQueue: 
-            if key in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789":
-                self.stringKeyQueue+=key
-            else:
-                if key=="space":
-                    self.stringKeyQueue+=" "
-                if key=="BackSpace":
-                    self.stringKeyQueue=self.stringKeyQueue[0:-1]
-                if key=="Return" or key=="Control_L":
-                    self.interacting = -998
-                    break
-            if self.interacting == -999:
-                if self.editorTab == "s":
-                    '''SPRITES EDITOR TAB'''
-                    if KB_S_LIST_OFFSET_UP(self.keyQueue):
-                        '''SCROLL UP IN SPRITE LIST'''
-                        self.spriteListVelocity -= 25
-                    if KB_S_LIST_OFFSET_DOWN(self.keyQueue):
-                        '''SCROLL DOWN IN SPRITE LIST'''
-                        self.spriteListVelocity += 25
-                    if KB_EV_OFFSET_LEFT(self.keyQueue):  
-                        '''MOVE SPRITE UP IN LIST'''
-                        if 1 <= self.selectedSprite and self.selectedSprite <= len(self.sprites)-1:
-                            temp = self.sprites[self.selectedSprite]
-                            self.sprites.pop(self.selectedSprite)
-                            self.selectedSprite -= 1
-                            self.sprites.insert(self.selectedSprite, temp)
-                    if KB_EV_OFFSET_RIGHT(self.keyQueue): 
-                        '''MOVE SPRITE DOWN IN LIST'''
-                        if 0 <= self.selectedSprite and self.selectedSprite <= len(self.sprites)-2:
-                            temp = self.sprites[self.selectedSprite]
-                            self.sprites.pop(self.selectedSprite)
-                            self.selectedSprite += 1
-                            self.sprites.insert(self.selectedSprite, temp)
-                    if KB_CREATE(self.keyQueue): 
-                        '''CREATE SPRITE'''
-                        if 953<self.mx and 36<self.my and self.mx<1340 and self.my<542:
-                            target = math.floor(((self.my-36)+self.spriteListOffset-25)/30)
-                            self.sprites.insert(max(0, min(target, len(self.sprites))), SingleSprite(f"Sprite {len(self.sprites)}"))
-                        else:
-                            self.sprites.insert(len(self.sprites), SingleSprite(f"Sprite {len(self.sprites)}"))
+            if not key in self.previousKeyQueue:
+                if key in "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789":
+                    self.stringKeyQueue+=key
+                else:
+                    if key=="space":
+                        self.stringKeyQueue+=" "
+                    if key=="BackSpace":
+                        self.stringKeyQueue=self.stringKeyQueue[0:-1]
+                    if key=="Return" or key=="Control_L":
+                        self.interacting = -998
+                        break
+        self.previousKeyQueue = self.keyQueue.copy()
+        if self.interacting == -999 and (time.time() - self.keybindLastUpdate > KEYBIND_DIFFERENCE):
+            if self.editorTab == "s":
+                '''SPRITES EDITOR TAB'''
+                if KB_S_LIST_OFFSET_UP(self.keyQueue):
+                    '''SCROLL UP IN SPRITE LIST'''
+                    self.keybindLastUpdate = time.time()
+                    self.spriteListVelocity -= 25
+                if KB_S_LIST_OFFSET_DOWN(self.keyQueue):
+                    '''SCROLL DOWN IN SPRITE LIST'''
+                    self.keybindLastUpdate = time.time()
+                    self.spriteListVelocity += 25
+                if KB_EV_OFFSET_LEFT(self.keyQueue):  
+                    '''MOVE SPRITE UP IN LIST'''
+                    self.keybindLastUpdate = time.time()
+                    if 1 <= self.selectedSprite and self.selectedSprite <= len(self.sprites)-1:
+                        temp = self.sprites[self.selectedSprite]
+                        self.sprites.pop(self.selectedSprite)
+                        self.selectedSprite -= 1
+                        self.sprites.insert(self.selectedSprite, temp)
+                if KB_EV_OFFSET_RIGHT(self.keyQueue): 
+                    '''MOVE SPRITE DOWN IN LIST'''
+                    self.keybindLastUpdate = time.time()
+                    if 0 <= self.selectedSprite and self.selectedSprite <= len(self.sprites)-2:
+                        temp = self.sprites[self.selectedSprite]
+                        self.sprites.pop(self.selectedSprite)
+                        self.selectedSprite += 1
+                        self.sprites.insert(self.selectedSprite, temp)
+                if KB_CREATE(self.keyQueue): 
+                    '''CREATE SPRITE'''
+                    self.keybindLastUpdate = time.time()
+                    if 953<self.mx and 36<self.my and self.mx<1340 and self.my<542:
+                        target = math.floor(((self.my-36)+self.spriteListOffset-25)/30)
+                        self.sprites.insert(max(0, min(target, len(self.sprites))), SingleSprite(f"Sprite {len(self.sprites)}"))
+                    else:
+                        self.sprites.insert(len(self.sprites), SingleSprite(f"Sprite {len(self.sprites)}"))
+                if KB_DELETE(self.keyQueue):
+                    '''DELETE SPRITE'''
+                    self.keybindLastUpdate = time.time()
+                    if len(self.sprites) > 1:
+                        self.sprites.pop(self.selectedSprite)
+                self.selectedSprite = max(0,min(self.selectedSprite, len(self.sprites)-1))
+            if self.editorTab == "v":
+                '''VISUAL EDITOR TAB'''
+                if KB_EV_OFFSET_LEFT(self.keyQueue):
+                    '''MOVE GRAPH TIMELINE LEFT'''
+                    self.keybindLastUpdate = time.time()
+                    self.graphOffset -= (self.graphScale+0.000001)
+                if KB_EV_OFFSET_RIGHT(self.keyQueue):
+                    '''MOVE GRAPH TIMELINE RIGHT'''
+                    self.keybindLastUpdate = time.time()
+                    self.graphOffset += (self.graphScale+0.000001)
+                if 1152<self.mx and 36<self.my and self.mx<1340 and self.my<245:
                     if KB_DELETE(self.keyQueue):
-                        '''DELETE SPRITE'''
-                        if len(self.sprites) > 1:
-                            self.sprites.pop(self.selectedSprite)
-                    self.selectedSprite = max(0,min(self.selectedSprite, len(self.sprites)-1))
-                if self.editorTab == "v":
-                    '''VISUAL EDITOR TAB'''
-                    if KB_EV_OFFSET_LEFT(self.keyQueue):
-                        '''MOVE GRAPH TIMELINE LEFT'''
-                        self.graphOffset -= (self.graphScale+0.000001)
-                    if KB_EV_OFFSET_RIGHT(self.keyQueue):
-                        '''MOVE GRAPH TIMELINE RIGHT'''
-                        self.graphOffset += (self.graphScale+0.000001)
-                    if 1152<self.mx and 36<self.my and self.mx<1340 and self.my<245:
                         '''DELETE IMAGE'''
-                        if KB_DELETE(self.keyQueue):
-                            self.sprites[self.selectedSprite].removeImageUUID(math.floor(((self.mx-1152)+2*(self.my-36)-2*self.apperancePanelOffset-6)/90))
-                if KB_T_OFFSET_LEFT(self.keyQueue):
-                    '''MOVE TIMELINE LEFT'''
-                    self.timelineOffset -= (self.timelineScale+0.000001)
-                if KB_T_OFFSET_RIGHT(self.keyQueue):
-                    '''MOVE TIMELINE RIGHT'''
-                    self.timelineOffset += (self.timelineScale+0.000001)
-            else:
-                if self.selectedProperty == 1 and self.editorTab == "v":
-                    if self.interactableVisualObjects[self.interacting][1].type == "point":
-                        if KB_A_POINT_POSITION_EDIT(self.keyQueue):
-                            '''MOVE SELECTED POINT POINT TO MOUSE POSITION'''
-                            self.interactableVisualObjects[self.interacting][1].setPointData((self.mx-23, self.my-36))
+                        self.keybindLastUpdate = time.time()
+                        self.sprites[self.selectedSprite].removeImageUUID(math.floor(((self.mx-1152)+2*(self.my-36)-2*self.apperancePanelOffset-6)/90))
+            if KB_T_OFFSET_LEFT(self.keyQueue):
+                '''MOVE TIMELINE LEFT'''
+                self.keybindLastUpdate = time.time()
+                self.timelineOffset -= (self.timelineScale+0.000001)
+            if KB_T_OFFSET_RIGHT(self.keyQueue):
+                '''MOVE TIMELINE RIGHT'''
+                self.keybindLastUpdate = time.time()
+                self.timelineOffset += (self.timelineScale+0.000001)
+        else:
+            if self.selectedProperty == 1 and self.editorTab == "v":
+                if self.interactableVisualObjects[self.interacting][1].type == "point":
+                    if KB_A_POINT_POSITION_EDIT(self.keyQueue):
+                        '''MOVE SELECTED POINT POINT TO MOUSE POSITION'''
+                        self.interactableVisualObjects[self.interacting][1].setPointData((self.mx-23, self.my-36))
                             
         self.mouseScroll = mouseScroll
         if self.editorTab == "v" and 955<self.mx and 257<self.my and self.mx<1336 and self.my<537 and self.interacting == -999:
@@ -338,11 +356,11 @@ class Interface:
                     if 0 <= target and target <= len(self.sprites)-1:
                         self.selectedSprite = target
 
-    def getImageAnimation(self):
+    def getImageAnimation(self, im):
         '''Animation Interface: `(23,36) to (925,542)`: size `(903,507)`'''
         rmx = self.mx - 23
         rmy = self.my - 36
-        img = FRAME_ANIMATION_ARRAY.copy()
+        img = im.copy()
 
         # placeOver(img, displayText(f"FPS: {self.fps}", "m"), (55,15))
         # placeOver(img, displayText(f"Relative (animation) Mouse Position: ({self.mx-23}, {self.my-36})", "m"), (455,55))
@@ -379,9 +397,9 @@ class Interface:
                 
         return img
     
-    def getImageTimeline(self):
+    def getImageTimeline(self, im):
         '''Timeline Interface: `(23,558) to (925,680)`: size `(903,123)`'''
-        img = FRAME_TIMELINE_ARRAY.copy()
+        img = im.copy()
         startI = round(self.timelineOffset/(10**math.floor(math.log(self.timelineScale+0.000001,10)+1)))
         for i in range(startI - 3, startI + 33):
             pos = 48 + ((i*(10**math.floor(math.log(self.timelineScale+0.000001,10)+1)))-self.timelineOffset)*(1/(self.timelineScale+0.000001))*25
@@ -433,9 +451,9 @@ class Interface:
 
         return img
     
-    def getImageEditor(self):
+    def getImageEditor(self, im):
         '''Editor Interface: `(953,36) to (1340,542)`: size `(388,507)`'''
-        img = FRAME_EDITOR_VISUALS_ARRAY.copy() if self.editorTab=="v" else FRAME_EDITOR_ARRAY.copy()
+        img = im.copy()
         if self.editorTab == "s":
             '''Sprites Tab!'''
             placeOver(img, generateColorBox((348,25), hexColorToRGBA(SELECTED_COLOR)), (20, 21+self.selectedSprite*30-self.spriteListOffset))
@@ -490,39 +508,46 @@ class Interface:
                     for i in range(1,8+1):
                         if str(i) in self.stringKeyQueue: requestSelectedProperty = i
                     connectionEdit = ""
-                    if KB_EV_LINEAR_CONNECTION(self.keyQueue): connectionEdit = "L"
-                    if KB_EV_SMOOTH_CONNECTION(self.keyQueue): connectionEdit = "S"
+                    if (time.time() - self.keybindLastUpdate > KEYBIND_DIFFERENCE):
+                        if KB_EV_LINEAR_CONNECTION(self.keyQueue): 
+                            self.keybindLastUpdate = time.time()
+                            connectionEdit = "L"
+                        if KB_EV_SMOOTH_CONNECTION(self.keyQueue): 
+                            self.keybindLastUpdate = time.time()
+                            connectionEdit = "S"
 
-                    if 953<self.mx and 255<self.my and self.mx<1340 and self.my<542:
-                        if KB_CREATE(self.keyQueue):
-                            if self.interacting == -999:
-                                x = (self.mx-982)*(self.graphScale+0.000001)/25+self.graphOffset
-                                y = 100-((self.my-279)/2.33)   
-                                timeStamps = [data[i*3] for i in range(lenData)]
-                                low = -1
-                                for i in range(len(timeStamps)-1):
-                                    if timeStamps[i]<=x: low = i
-                                    else: break
-                                for item in ["L", (random.randrange(0,903),random.randrange(0,507)) if self.selectedProperty == 1 else y, x]: data.insert((low+1)*3, item)
-                                self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
-                                dataCheck("crashtbw"[self.selectedProperty-1], data)
-                                if self.selectedProperty == 1: 
-                                    pathP = iterateThroughPath(data, True)
-                                    pathV = [tcoordVelocity(partition) for partition in pathP]
-                                else: 
-                                    pathP = iterateThroughSingle(data, True)
-                                lenData = round(len(data)/3)
-                                self.interacting = -999
-                                regen = True                                
-                        if KB_DELETE(self.keyQueue):
-                            if self.interacting != -999:
-                                if self.interactableVisualObjects[self.interacting][1].type == "point":
-                                    index = listEVGPoints(self.interactableVisualObjects).index(self.interacting)
-                                    for i in range(3): data.pop(index*3)
+                        if 953<self.mx and 255<self.my and self.mx<1340 and self.my<542:
+                            if KB_CREATE(self.keyQueue):
+                                self.keybindLastUpdate = time.time()
+                                if self.interacting == -999:
+                                    x = (self.mx-982)*(self.graphScale+0.000001)/25+self.graphOffset
+                                    y = 100-((self.my-279)/2.33)   
+                                    timeStamps = [data[i*3] for i in range(lenData)]
+                                    low = -1
+                                    for i in range(len(timeStamps)-1):
+                                        if timeStamps[i]<=x: low = i
+                                        else: break
+                                    for item in ["L", (random.randrange(0,903),random.randrange(0,507)) if self.selectedProperty == 1 else y, x]: data.insert((low+1)*3, item)
                                     self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
+                                    dataCheck("crashtbw"[self.selectedProperty-1], data)
+                                    if self.selectedProperty == 1: 
+                                        pathP = iterateThroughPath(data, True)
+                                        pathV = [tcoordVelocity(partition) for partition in pathP]
+                                    else: 
+                                        pathP = iterateThroughSingle(data, True)
                                     lenData = round(len(data)/3)
                                     self.interacting = -999
-                                    regen = True
+                                    regen = True                                
+                            if KB_DELETE(self.keyQueue):
+                                self.keybindLastUpdate = time.time()
+                                if self.interacting != -999:
+                                    if self.interactableVisualObjects[self.interacting][1].type == "point":
+                                        index = listEVGPoints(self.interactableVisualObjects).index(self.interacting)
+                                        for i in range(3): data.pop(index*3)
+                                        self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
+                                        lenData = round(len(data)/3)
+                                        self.interacting = -999
+                                        regen = True
                     if not(self.interactableVisualObjects[self.interacting][1].type == "textbox"):
                         self.stringKeyQueue = ""
 
@@ -704,9 +729,9 @@ class Interface:
 
         return img
     
-    def getImageOptions(self):
+    def getImageOptions(self, im):
         '''Options Interface: `(953,558) to (1340,680)`: size `(388,123)`'''
-        img = FRAME_OPTIONS_ARRAY.copy()
+        img = im.copy()
         
         self.previousEditorTab = self.editorTab 
 
