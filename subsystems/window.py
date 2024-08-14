@@ -5,6 +5,8 @@ import tkinter as tk
 from PIL import ImageTk, Image
 import time, math
 from subsystems.interface import Interface
+from subsystems.label import LabelWrapper
+from subsystems.render import arrayToImage
 from settings import *
 
 class Window:
@@ -24,14 +26,10 @@ class Window:
 
         '''load test image'''
         testImage = ImageTk.PhotoImage(PLACEHOLDER_IMAGE)
-        self.w_animation = tk.Label(self.window, image = testImage, highlightthickness=0, bd=0)
-        self.w_animation.grid(column=0,row=1, padx=(23,27), pady=(36,15))
-        self.w_timeline = tk.Label(self.window, image = testImage, highlightthickness=0, bd=0)
-        self.w_timeline.grid(column=0,row=2, padx=(23,27), pady=(0,0))
-        self.w_editor = tk.Label(self.window, image = testImage, highlightthickness=0, bd=0)
-        self.w_editor.grid(column=1,row=1, padx=(0,0), pady=(36,15))
-        self.w_options = tk.Label(self.window, image = testImage, highlightthickness=0, bd=0)
-        self.w_options.grid(column=1,row=2, padx=(0,0), pady=(0,0))
+        self.w_animation = LabelWrapper(self.window, ( 903, 507), (  23,  36), (  23,  36), BACKGROUND_COLOR)
+        self.w_timeline  = LabelWrapper(self.window, ( 903, 123), (  23, 558), (  23, 558), BACKGROUND_COLOR)
+        self.w_editor    = LabelWrapper(self.window, ( 388, 507), ( 953,  36), ( 953,  36), BACKGROUND_COLOR)
+        self.w_options   = LabelWrapper(self.window, ( 388, 123), ( 953, 558), ( 953, 558), BACKGROUND_COLOR)
 
         '''start interface'''
         self.interface = Interface()
@@ -49,18 +47,11 @@ class Window:
         self.interface.tick(mx,my,self.mPressed, self.fps, self.keyQueue, self.mouseScroll)
         self.keyQueue = []
         self.mouseScroll = 0
-        img = ImageTk.PhotoImage(self.interface.getImageAnimation())
-        self.w_animation.configure(image = img)
-        self.w_animation.image=img
-        img = ImageTk.PhotoImage(self.interface.getImageTimeline())
-        self.w_timeline.configure(image = img)
-        self.w_timeline.image = img
-        img = ImageTk.PhotoImage(self.interface.getImageEditor())
-        self.w_editor.configure(image = img)
-        self.w_editor.image = img
-        img = ImageTk.PhotoImage(self.interface.getImageOptions())
-        self.w_options.configure(image = img)
-        self.w_options.image = img
+        self.w_animation.update(arrayToImage(self.interface.getImageAnimation()))
+        self.w_timeline .update(arrayToImage(self.interface.getImageTimeline()))
+        self.w_editor   .update(arrayToImage(self.interface.getImageEditor()))
+        self.w_options  .update(arrayToImage(self.interface.getImageOptions()))
+
         self.window.after(TICK_MS, self.windowProcesses)
 
         self.fpsCounter +=1
