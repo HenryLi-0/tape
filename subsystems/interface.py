@@ -5,11 +5,12 @@ from PIL import ImageTk, Image
 from tkinter import filedialog
 import time, random, ast, cv2
 from subsystems.render import *
-from subsystems.fancy import displayText, generateColorBox, generateBorderBox, generateIcon, translatePastelLight
-from subsystems.visuals import OrbVisualObject, PathVisualObject, ButtonVisualObject, EditableTextBoxVisualObject, DummyVisualObject, PointVisualObject, PointConnectionVisualObject
+from subsystems.fancy import *
+from subsystems.visuals import *
 from subsystems.counter import Counter
 from subsystems.pathing import pointAt, roundf, tcoordVelocity
 from subsystems.sprite import *
+from subsystems.simplefancy import *
 from subsystems.bay import CacheManager
 
 class Interface:
