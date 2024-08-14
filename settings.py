@@ -19,6 +19,8 @@ INTERFACE_FPS = 60 # The interface window will be called every 1/INTERFACE_FPS s
 TICK_MS = 1 #round((1/INTERFACE_FPS)*1000)
 OCCASIONAL_TICK_MS = 5000 # Highly recommended to keep above 1 second, as it runs processes that do not need updates every tick
 
+KEYBIND_DIFFERENCE = 0.2 # Minimum allowed differance in time between keybinds
+
 hexColorToRGBA = lambda hexcolor: tuple(int(hexcolor[i:i+2], 16) for i in (1, 3, 5)) + (255,)
 
 BACKGROUND_COLOR = "#241530" #Background color
@@ -120,6 +122,11 @@ D_FRAME_EDITOR_VISUALS_GRAPH_BAR_PATH = os.path.join("resources", "themed", "fra
 D_FRAME_OPTIONS_PATH = os.path.join("resources", "themed", "frame_options.png")
 D_FRAME_OPTIONS_BUTTON_PATH = os.path.join("resources", "themed", "frame_options_button.png")
 
+FRAME_ANIMATION_INSTRUCTIONS = generateThemedBorderRectangleInstructions(( 903, 507), FRAME_COLOR_RGBA)
+FRAME_TIMELINE_INSTRUCTIONS  = generateThemedBorderRectangleInstructions(( 903, 123), FRAME_COLOR_RGBA)
+FRAME_EDITOR_INSTRUCTIONS    = generateThemedBorderRectangleInstructions(( 388, 507), FRAME_COLOR_RGBA)
+FRAME_EDITOR_V_INSTRUCTIONS  = generateThemedBorderRectangleInstructions((1,1), FRAME_COLOR_RGBA) # "IDK"
+FRAME_OPTIONS_INSTRUCTIONS   = genereateSpecificThemedBorderRectangleInstructions("options", FRAME_COLOR_RGBA)
 FRAME_ANIMATION = Image.open(os.path.join("resources", "themed", "u_frame_animation.png")).convert("RGBA")
 FRAME_ANIMATION_ARRAY = numpy.array(FRAME_ANIMATION)
 FRAME_TIMELINE = Image.open(os.path.join("resources", "themed", "u_frame_timeline.png")).convert("RGBA")

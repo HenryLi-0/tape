@@ -49,17 +49,6 @@ def translatePastelLight(color):
     colorC = colorsys.hsv_to_rgb(colorC[0],colorC[1],colorC[2])
     return [round(colorC[0]*255), round(colorC[1]*255), round(colorC[2]*255), color[3]]
 
-def generateThemedBorderRectangleInstructions(size:list|tuple = (25,25),borderColor:list|tuple = (255,255,255,255)):
-    '''Generates Instructions for a Themed Border Rectangle'''
-    instructions = []
-    row = generateColorBox((size[0],3), borderColor)
-    col = generateColorBox((3,size[1]), borderColor)
-    instructions.append([row, (0,0)])
-    instructions.append([col, (0,0)])
-    instructions.append([row, (0,size[1]-3)])
-    instructions.append([col, (size[0]-3,0)])
-    return instructions
-
 def generateCircle(radius, color):
     '''Generates a circle with given radius (radius) and color (RGBA)'''
     diameter = radius * 2
@@ -73,3 +62,50 @@ def generateCircle(radius, color):
             else:
                 array[y,x] = (0,0,0,0)
     return array
+
+def generateThemedBorderRectangleInstructions(size:list|tuple = (25,25),borderColor:list|tuple = (255,255,255,255)):
+    '''Generates Instructions for a Themed Border Rectangle'''
+    instructions = []
+    row = generateColorBox((size[0],3), borderColor)
+    col = generateColorBox((3,size[1]), borderColor)
+    instructions.append([row, (0,0)])
+    instructions.append([col, (0,0)])
+    instructions.append([row, (0,size[1]-3)])
+    instructions.append([col, (size[0]-3,0)])
+    return instructions
+
+def genereateSpecificThemedBorderRectangleInstructions(section, borderColor:list|tuple = (255,255,255,255)):
+    '''Generates Instructions for a specific section's Themed Border Rectangle'''
+    if section == "editor":
+        "???"
+    elif section == "options":
+        instructions = []
+        longrow = generateColorBox((309,3), borderColor)
+        shortrow = generateColorBox((120,3), borderColor)
+        shorterrow = generateColorBox((58,3), borderColor)
+        col = generateColorBox((3,58), borderColor)
+        instructions.append([shortrow, (  7, 0)])
+        instructions.append([col,      (  7, 0)])
+        instructions.append([shortrow, (  7,55)])
+        instructions.append([col,      (124, 0)])
+        instructions.append([shortrow, (134, 0)])
+        instructions.append([col,      (134, 0)])
+        instructions.append([shortrow, (134,55)])
+        instructions.append([col,      (251, 0)])
+        instructions.append([shortrow, (261, 0)])
+        instructions.append([col,      (261, 0)])
+        instructions.append([shortrow, (261,55)])
+        instructions.append([col,      (378, 0)])
+
+        instructions.append([longrow, (  7, 65)])
+        instructions.append([    col, (  7, 65)])
+        instructions.append([longrow, (  7,120)])
+        instructions.append([    col, (313, 65)])
+
+        instructions.append([shorterrow, (323, 65)])
+        instructions.append([col,        (323, 65)])
+        instructions.append([shorterrow, (323,120)])
+        instructions.append([col,        (378, 65)])
+        return instructions
+    else:
+        "???"

@@ -5,7 +5,7 @@ import tkinter as tk
 from PIL import ImageTk, Image
 import time, math
 from subsystems.interface import Interface
-from subsystems.label import LabelWrapper
+from subsystems.label import LabelWrapper, followInstructions
 from subsystems.render import arrayToImage
 from settings import *
 
@@ -26,10 +26,15 @@ class Window:
 
         '''load test image'''
         testImage = ImageTk.PhotoImage(PLACEHOLDER_IMAGE)
-        self.w_animation = LabelWrapper(self.window, ( 903, 507), (  23,  36), (  23,  36), BACKGROUND_COLOR)
-        self.w_timeline  = LabelWrapper(self.window, ( 903, 123), (  23, 558), (  23, 558), BACKGROUND_COLOR)
-        self.w_editor    = LabelWrapper(self.window, ( 388, 507), ( 953,  36), ( 953,  36), BACKGROUND_COLOR)
-        self.w_options   = LabelWrapper(self.window, ( 388, 123), ( 953, 558), ( 953, 558), BACKGROUND_COLOR)
+        self.w_animation = LabelWrapper(self.window, ( 903, 507), (  23,  36), (  23,  36),        "#000000", FRAME_ANIMATION_INSTRUCTIONS)
+        self.b_animation = self.w_animation .getBlank()
+        self.w_timeline  = LabelWrapper(self.window, ( 903, 123), (  23, 558), (  23, 558), BACKGROUND_COLOR, FRAME_TIMELINE_INSTRUCTIONS )
+        self.b_timeline  = self.w_timeline  .getBlank()
+        self.w_editor    = LabelWrapper(self.window, ( 388, 507), ( 953,  36), ( 953,  36), BACKGROUND_COLOR, FRAME_EDITOR_INSTRUCTIONS   )
+        self.b_editor    = self.w_editor    .getBlank()
+        self.b_editor_v  = followInstructions(       ( 388, 507),                           BACKGROUND_COLOR, FRAME_EDITOR_V_INSTRUCTIONS )
+        self.w_options   = LabelWrapper(self.window, ( 388, 123), ( 953, 558), ( 953, 558), BACKGROUND_COLOR, FRAME_OPTIONS_INSTRUCTIONS  )
+        self.b_options   = self.w_options   .getBlank()
 
         '''start interface'''
         self.interface = Interface()
@@ -47,10 +52,13 @@ class Window:
         self.interface.tick(mx,my,self.mPressed, self.fps, self.keysPressed, self.mouseScroll)
         self.keyQueue = []
         self.mouseScroll = 0
-        self.w_animation.update(arrayToImage(self.interface.getImageAnimation()))
-        self.w_timeline .update(arrayToImage(self.interface.getImageTimeline()))
-        self.w_editor   .update(arrayToImage(self.interface.getImageEditor()))
-        self.w_options  .update(arrayToImage(self.interface.getImageOptions()))
+        self.w_animation .update(arrayToImage(self.interface.getImageAnimation(self.b_animation)))
+        self.w_timeline  .update(arrayToImage(self.interface.getImageTimeline (self.b_timeline )))
+        if self.interface.editorTab == "v":
+            self.w_editor.update(arrayToImage(self.interface.getImageEditor  (self.b_editor_v )))
+        else:
+            self.w_editor.update(arrayToImage(self.interface.getImageEditor  (self.b_editor   )))
+        self.w_options   .update(arrayToImage(self.interface.getImageOptions (self.b_options  )))
 
         self.window.after(TICK_MS, self.windowProcesses)
 
