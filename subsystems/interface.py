@@ -355,7 +355,7 @@ class Interface:
             for id in [evgP[index] for index in extent]:
                 placeOver(img, ORB_SELECTED_ARRAY if id==self.interacting else ORB_IDLE_ARRAY, self.interactableVisualObjects[id][1].pointData, True)
                 
-        return arrayToImage(img)
+        return img
     
     def getImageTimeline(self):
         '''Timeline Interface: `(23,558) to (925,680)`: size `(903,123)`'''
@@ -409,7 +409,7 @@ class Interface:
                 else:
                     self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
 
-        return arrayToImage(img)
+        return img
     
     def getImageEditor(self):
         '''Editor Interface: `(953,36) to (1340,542)`: size `(388,507)`'''
@@ -682,7 +682,7 @@ class Interface:
                     if self.interactableVisualObjects[id][1].name == "project name":
                         self.projectName = self.interactableVisualObjects[id][1].txt
 
-        return arrayToImage(img)
+        return img
     
     def getImageOptions(self):
         '''Options Interface: `(953,558) to (1340,680)`: size `(388,123)`'''
@@ -704,7 +704,7 @@ class Interface:
         placeOver(img, displayText(f"FPS: {self.fps}", "m", colorTXT=(155,155,155,255)), (20,95))
         placeOver(img, displayText(f"Interacting: {self.interacting}", "m", colorTXT= (225,225,225,255) if self.mPressed else (155,155,155,255)), (80,95))
         placeOver(img, displayText("Sprites                  Visuals                  Project", "m"), (193, 31), True)
-        return arrayToImage(img)
+        return img
 
     def importProject(self, clear = True):
         '''Import stuffs'''
