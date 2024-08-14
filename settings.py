@@ -19,6 +19,8 @@ INTERFACE_FPS = 60 # The interface window will be called every 1/INTERFACE_FPS s
 TICK_MS = 1 #round((1/INTERFACE_FPS)*1000)
 OCCASIONAL_TICK_MS = 5000 # Highly recommended to keep above 1 second, as it runs processes that do not need updates every tick
 
+hexColorToRGBA = lambda hexcolor: tuple(int(hexcolor[i:i+2], 16) for i in (1, 3, 5)) + (255,)
+
 BACKGROUND_COLOR = "#241530" #Background color
 FRAME_COLOR = "#381f4d" #Borders and Frame color
 SELECTED_COLOR = "#9e6cc9" #Selected Element color
@@ -26,7 +28,12 @@ TIMELINE_COLOR = "#6d3999" #Timeline color
 SPECIAL_COLOR = "#ab570e" #Special color
 SELECTED_SPECIAL_COLOR = "#db6d0d" #Selected special color
 
-hexColorToRGBA = lambda hexcolor: tuple(int(hexcolor[i:i+2], 16) for i in (1, 3, 5)) + (255,)
+BACKGROUND_COLOR_RGBA       = hexColorToRGBA(BACKGROUND_COLOR      )
+FRAME_COLOR_RGBA            = hexColorToRGBA(FRAME_COLOR           )
+SELECTED_COLOR_RGBA         = hexColorToRGBA(SELECTED_COLOR        )
+TIMELINE_COLOR_RGBA         = hexColorToRGBA(TIMELINE_COLOR        )
+SPECIAL_COLOR_RGBA          = hexColorToRGBA(SPECIAL_COLOR         )
+SELECTED_SPECIAL_COLOR_RGBA = hexColorToRGBA(SELECTED_SPECIAL_COLOR)
 
 '''Saving'''
 import os, time
