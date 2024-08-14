@@ -16,7 +16,7 @@ RENDER_FPS = 30 #This is the rendering FPS, also used for steps per second in pa
 
 '''Visuals'''
 INTERFACE_FPS = 60 # The interface window will be called every 1/INTERFACE_FPS seconds
-TICK_MS = round((1/INTERFACE_FPS)*1000)
+TICK_MS = 1 #round((1/INTERFACE_FPS)*1000)
 OCCASIONAL_TICK_MS = 5000 # Highly recommended to keep above 1 second, as it runs processes that do not need updates every tick
 
 BACKGROUND_COLOR = "#241530" #Background color
@@ -38,7 +38,7 @@ FORMAT_TIME = lambda x: time.strftime("%I:%M:%S %p %m/%d/%Y", time.localtime(x))
 DEFAULT_PROJECT_NAME = "Untitled Project"
 
 '''Keybinds'''
-EDITOR_VISUAL_KEYBINDS = {
+KB_EV_PROPERTY = {
     1 : "C",
     2 : "R",
     3 : "A",
@@ -48,23 +48,24 @@ EDITOR_VISUAL_KEYBINDS = {
     7 : "B",
     8 : "W"
 }
-KB_EDITOR_VISUAL_LINEAR_CONNECTION = ["Q", "q"]
-KB_EDITOR_VISUAL_SMOOTH_CONNECTION = ["W", "w"]
 KB_CREATE = ["A", "a"]
 KB_DELETE = ["S", "s"]
-KB_EDITOR_VISUAL_OFFSET_LEFT = ["Z", "z"]
-KB_EDITOR_VISUAL_OFFSET_RIGHT = ["X", "x"]
-KB_TIMELINE_OFFSET_LEFT = ["Left"]
-KB_TIMELINE_OFFSET_RIGHT = ["Right"]
-KB_ANIMATION_POINT_POSITION_EDIT = ["D", "d"]
-KB_SPRITE_LIST_OFFSET_UP = ["Up"]
-KB_SPRITE_LIST_OFFSET_DOWN = ["Down"]
+KB_EV_LINEAR_CONNECTION = ["Q", "q"]
+KB_EV_SMOOTH_CONNECTION = ["W", "w"]
+KB_EV_OFFSET_LEFT = ["Z", "z"]
+KB_EV_OFFSET_RIGHT = ["X", "x"]
+KB_T_OFFSET_LEFT = ["Left"]
+KB_T_OFFSET_RIGHT = ["Right"]
+KB_A_POINT_POSITION_EDIT = ["D", "d"]
+KB_S_LIST_OFFSET_UP = ["Up"]
+KB_S_LIST_OFFSET_DOWN = ["Down"]
 
 '''Constants - DO NOT CHANGE!!!'''
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 
    Editing certain constants will break things! You have been warned!'''
 from PIL import Image, ImageFont
 import numpy
+from subsystems.simplefancy import *
 
 # Version
 VERSION = "v1.0.0"
