@@ -157,15 +157,15 @@ class Interface:
                     break
             if self.interacting == -999:
                 if self.editorTab == "s":
-                    if key in KB_SPRITE_LIST_OFFSET_UP:   self.spriteListVelocity -= 25
-                    if key in KB_SPRITE_LIST_OFFSET_DOWN: self.spriteListVelocity += 25
-                    if key in KB_EDITOR_VISUAL_OFFSET_LEFT:  
+                    if key in KB_S_LIST_OFFSET_UP:   self.spriteListVelocity -= 25
+                    if key in KB_S_LIST_OFFSET_DOWN: self.spriteListVelocity += 25
+                    if key in KB_EV_OFFSET_LEFT:  
                         if 1 <= self.selectedSprite and self.selectedSprite <= len(self.sprites)-1:
                             temp = self.sprites[self.selectedSprite]
                             self.sprites.pop(self.selectedSprite)
                             self.selectedSprite -= 1
                             self.sprites.insert(self.selectedSprite, temp)
-                    if key in KB_EDITOR_VISUAL_OFFSET_RIGHT: 
+                    if key in KB_EV_OFFSET_RIGHT: 
                         if 0 <= self.selectedSprite and self.selectedSprite <= len(self.sprites)-2:
                             temp = self.sprites[self.selectedSprite]
                             self.sprites.pop(self.selectedSprite)
@@ -182,17 +182,17 @@ class Interface:
                             self.sprites.pop(self.selectedSprite)
                     self.selectedSprite = max(0,min(self.selectedSprite, len(self.sprites)-1))
                 if self.editorTab == "v":
-                    if key in KB_EDITOR_VISUAL_OFFSET_LEFT:  self.graphOffset -= (self.graphScale+0.000001)
-                    if key in KB_EDITOR_VISUAL_OFFSET_RIGHT: self.graphOffset += (self.graphScale+0.000001)
+                    if key in KB_EV_OFFSET_LEFT:  self.graphOffset -= (self.graphScale+0.000001)
+                    if key in KB_EV_OFFSET_RIGHT: self.graphOffset += (self.graphScale+0.000001)
                     if 1152<self.mx and 36<self.my and self.mx<1340 and self.my<245:
                         if key in KB_DELETE:
                             self.sprites[self.selectedSprite].removeImageUUID(math.floor(((self.mx-1152)+2*(self.my-36)-2*self.apperancePanelOffset-6)/90))
-                if key in KB_TIMELINE_OFFSET_LEFT:  self.timelineOffset -= (self.timelineScale+0.000001)
-                if key in KB_TIMELINE_OFFSET_RIGHT: self.timelineOffset += (self.timelineScale+0.000001)
+                if key in KB_T_OFFSET_LEFT:  self.timelineOffset -= (self.timelineScale+0.000001)
+                if key in KB_T_OFFSET_RIGHT: self.timelineOffset += (self.timelineScale+0.000001)
             else:
                 if self.selectedProperty == 1 and self.editorTab == "v":
                     if self.interactableVisualObjects[self.interacting][1].type == "point":
-                        if key in KB_ANIMATION_POINT_POSITION_EDIT:
+                        if key in KB_A_POINT_POSITION_EDIT:
                             self.interactableVisualObjects[self.interacting][1].setPointData((self.mx-23, self.my-36))
                             
         self.mouseScroll = mouseScroll
@@ -468,9 +468,9 @@ class Interface:
                     for i in range(1,8+1):
                         if str(i) in self.stringKeyQueue: requestSelectedProperty = i
                     connectionEdit = ""
-                    for keybind in KB_EDITOR_VISUAL_LINEAR_CONNECTION:
+                    for keybind in KB_EV_LINEAR_CONNECTION:
                         if str(keybind) in self.stringKeyQueue: connectionEdit = "L"
-                    for keybind in KB_EDITOR_VISUAL_SMOOTH_CONNECTION:
+                    for keybind in KB_EV_SMOOTH_CONNECTION:
                         if str(keybind) in self.stringKeyQueue: connectionEdit = "S"
 
                     if 953<self.mx and 255<self.my and self.mx<1340 and self.my<542:

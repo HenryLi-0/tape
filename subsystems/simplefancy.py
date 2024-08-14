@@ -48,3 +48,28 @@ def translatePastelLight(color):
     colorC[2] = 0.9
     colorC = colorsys.hsv_to_rgb(colorC[0],colorC[1],colorC[2])
     return [round(colorC[0]*255), round(colorC[1]*255), round(colorC[2]*255), color[3]]
+
+def generateThemedBorderRectangleInstructions(size:list|tuple = (25,25),borderColor:list|tuple = (255,255,255,255)):
+    '''Generates Instructions for a Themed Border Rectangle'''
+    instructions = []
+    row = generateColorBox((size[0],3), borderColor)
+    col = generateColorBox((3,size[1]), borderColor)
+    instructions.append([row, (0,0)])
+    instructions.append([col, (0,0)])
+    instructions.append([row, (0,size[1]-3)])
+    instructions.append([col, (size[0]-3,0)])
+    return instructions
+
+def generateCircle(radius, color):
+    '''Generates a circle with given radius (radius) and color (RGBA)'''
+    diameter = radius * 2
+    array = numpy.empty((diameter, diameter, 4), dtype=numpy.uint8)
+    center = radius
+    for y in range(diameter):
+        for x in range(diameter):
+            distance = numpy.sqrt((x-center)**2+(y-center)**2)
+            if distance <= radius:
+                array[y,x] = color
+            else:
+                array[y,x] = (0,0,0,0)
+    return array
