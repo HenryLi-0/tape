@@ -94,6 +94,8 @@ class Interface:
         self.animationPlaying = False
         self.mouseScroll = 0 
         self.keybindLastUpdate = time.time()
+        self.blankProcessingLayerSector = generateColorBox((129,169), (0,0,0,0))
+        self.updateAnimationRegions = []
         '''Timelines'''
         self.graphScale = 1.0
         self.graphOffset = 0
@@ -406,6 +408,16 @@ class Interface:
 
         return img
     
+    def getFetchAnimationSector(self, x, y):
+        '''129x169'''
+        img = self.blankProcessingLayerSector.copy()
+
+        for sprite in self.sprites:
+            frame = sprite.getFullStateAt(self.animationTime)
+            placeOver(img, readImgSingleFullState(frame, self.cache.getImage(sprite.imageUUIDs[frame[1]]), True), (frame[0][0]-x*129,frame[0][1]-y*169), True)
+
+        return img
+
     def getImageTimeline(self, im):
         '''Timeline Interface: `(23,558) to (925,680)`: size `(903,123)`'''
         img = im.copy()
@@ -881,6 +893,23 @@ class Interface:
                     placeOver(img, readImgSingleFullState(frame, self.cache.getImage(sprite.imageUUIDs[frame[1]]), True), (frame[0][0],frame[0][1]), True)
                 video.write(cv2.cvtColor(img[:,:,:3], cv2.COLOR_RGB2BGR))
             video.release()    
+
+    def scheduleRegionGivenPixel(self, pixel):
+        region = (max(0, min(pixel[0] // 129, 7-1)), max(0, min(pixel[1] // 169, 3-1)))
+        if region in self.updateAnimationRegions:
+            self.updateAnimationRegions.remove(region)
+        self.updateAnimationRegions.append(region)
+
+    def scheduleRegion(self, region):
+        safeRegion = (max(0, min(region[0], 7-1)), max(0, min(region[1], 3-1)))
+        if safeRegion in self.updateAnimationRegions:
+            self.updateAnimationRegions.remove(safeRegion)
+        self.updateAnimationRegions.append(safeRegion)
+
+    def scheduleAllRegions(self):
+        for region in ALL_REGIONS:
+            if region not in self.updateAnimationRegions:
+                self.updateAnimationRegions.append(region)
 
     def saveState(self):
         pass

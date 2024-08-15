@@ -19,6 +19,8 @@ INTERFACE_FPS = 60 # The interface window will be called every 1/INTERFACE_FPS s
 TICK_MS = 1 #round((1/INTERFACE_FPS)*1000)
 OCCASIONAL_TICK_MS = 5000 # Highly recommended to keep above 1 second, as it runs processes that do not need updates every tick
 
+SKETCH_MAX_REGIONS = 5 # The maximum allowed regions of the sketch screen (total 21) allowed to be updated per call to update
+
 KEYBIND_DIFFERENCE = 0.2 # Minimum allowed differance in time between keybinds
 
 hexColorToRGBA = lambda hexcolor: tuple(int(hexcolor[i:i+2], 16) for i in (1, 3, 5)) + (255,)
@@ -79,6 +81,8 @@ from subsystems.simplefancy import *
 
 # Version
 VERSION = "v1.0.0"
+
+ALL_REGIONS = [(x,y) for x in range(7) for y in range(3)]
 
 # Imagery
 LOADING_IMAGE = Image.open(os.path.join("resources", "loading.png")).convert("RGBA") # 1366x697, Solid, Loading Screen
