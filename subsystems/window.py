@@ -52,13 +52,14 @@ class Window:
         self.interface.tick(mx,my,self.mPressed, self.fps, self.keysPressed, self.mouseScroll)
         self.keyQueue = []
         self.mouseScroll = 0
-        self.w_animation .update(arrayToImage(self.interface.getImageAnimation(self.b_animation)))
-        self.w_timeline  .update(arrayToImage(self.interface.getImageTimeline (self.b_timeline )))
+        if self.interface.lastAnimationUpdateData != [self.interface.animationTime, len(self.interface.sprites)]:
+            self.w_animation.update(arrayToImage(self.interface.getImageAnimation(self.b_animation)))
+        self.w_timeline     .update(arrayToImage(self.interface.getImageTimeline (self.b_timeline )))
         if self.interface.editorTab == "v":
-            self.w_editor.update(arrayToImage(self.interface.getImageEditor  (self.b_editor_v )))
+            self.w_editor   .update(arrayToImage(self.interface.getImageEditor  (self.b_editor_v )))
         else:
-            self.w_editor.update(arrayToImage(self.interface.getImageEditor  (self.b_editor   )))
-        self.w_options   .update(arrayToImage(self.interface.getImageOptions (self.b_options  )))
+            self.w_editor   .update(arrayToImage(self.interface.getImageEditor  (self.b_editor   )))
+        self.w_options      .update(arrayToImage(self.interface.getImageOptions (self.b_options  )))
 
         self.window.after(TICK_MS, self.windowProcesses)
 

@@ -90,6 +90,7 @@ class Interface:
         self.stringKeyQueue = ""
         self.previousKeyQueue = []
         self.animationTime = 0
+        self.lastAnimationUpdateData = []
         self.animationPlaying = False
         self.mouseScroll = 0 
         self.keybindLastUpdate = time.time()
@@ -121,12 +122,18 @@ class Interface:
         self.fps = fps
         self.deltaTicks = 1 if self.fps==0 else round(RENDER_FPS/self.fps)
         self.ticks += self.deltaTicks
-        if self.interactableVisualObjects[self.interacting][1].name == "new sprite" and mPressed < 3: 
+
+        self.mouseInAnimationSection =  23 < self.mx and self.mx <  925 and  36 < self.my and self.my < 542
+        self.mouseInTimelineSection  =  23 < self.mx and self.mx <  925 and 558 < self.my and self.my < 680
+        self.mouseInEditorSection    = 953 < self.mx and self.mx < 1340 and  36 < self.my and self.my < 542
+        self.mouseInOptionsSection   = 953 < self.mx and self.mx < 1340 and 558 < self.my and self.my < 680
+
+        if self.interacting == -89 and mPressed < 3: 
             self.sprites.append(SingleSprite(f"New Sprite {len(self.sprites)}"))
-        if self.interactableVisualObjects[self.interacting][1].name == "delete sprite" and mPressed < 3 and len(self.sprites) > 1: 
+        if self.interacting == -88 and mPressed < 3 and len(self.sprites) > 1: 
             self.sprites.pop(self.selectedSprite)
             self.selectedSprite = max(0, min(self.selectedProperty, len(self.sprites)-1))
-        if self.interactableVisualObjects[self.interacting][1].name == "import image" and mPressed < 3 or (self.editorTab == "v" and 1152<self.mx and 36<self.my and self.mx<1340 and self.my<245 and self.interacting == -999 and KB_CREATE(self.keyQueue) and (time.time() - self.keybindLastUpdate > KEYBIND_DIFFERENCE)): 
+        if self.interacting == -87 and mPressed < 3 or (self.editorTab == "v" and 1152<self.mx and 36<self.my and self.mx<1340 and self.my<245 and self.interacting == -999 and KB_CREATE(self.keyQueue) and (time.time() - self.keybindLastUpdate > KEYBIND_DIFFERENCE)): 
             if (time.time() - self.keybindLastUpdate > KEYBIND_DIFFERENCE):
                 self.keybindLastUpdate = time.time()
             path = filedialog.askopenfilename(filetypes=[("Image files", "*.png;*.jpg;*.jpeg")])
@@ -134,19 +141,19 @@ class Interface:
                 self.sprites[self.selectedSprite].addImageUUID(self.cache.importImage(path))
             except:
                 pass
-        if self.interactableVisualObjects[self.interacting][1].name == "play pause button" and mPressed < 3: 
+        if self.interacting == -72 and mPressed < 3: 
             self.animationPlaying = not(self.animationPlaying)
         if self.animationPlaying:
             self.animationTime += self.deltaTicks/RENDER_FPS
-        if self.interactableVisualObjects[self.interacting][1].name == "save button" and mPressed < 3: 
+        if self.interacting == -71 and mPressed < 3: 
             self.exportProject(EXPORT_IMAGE_DATA)
-        if self.interactableVisualObjects[self.interacting][1].name == "load button" and mPressed < 3: 
+        if self.interacting == -70 and mPressed < 3: 
             self.importProject(CLEAR_ON_OPEN)
-        if self.interactableVisualObjects[self.interacting][1].name == "export gif" and mPressed < 3: 
+        if self.interacting == -85 and mPressed < 3: 
             self.renderGIF()
-        if self.interactableVisualObjects[self.interacting][1].name == "export mp4" and mPressed < 3: 
+        if self.interacting == -84 and mPressed < 3: 
             self.renderMP4()
-        if self.interactableVisualObjects[self.interacting][1].name == "settings" and mPressed < 3: 
+        if self.interacting == -96 and mPressed < 3: 
             os.startfile(os.path.join("settings.py"))
 
         '''Keyboard'''
@@ -373,11 +380,11 @@ class Interface:
             if self.interactableVisualObjects[id][0] == "a":
                 self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
 
-        tempPath = []
-        for id in self.interactableVisualObjects: 
-            if self.interactableVisualObjects[id][1].type == "orb": 
-                tempPath.append(self.interactableVisualObjects[id][1].positionO.getPosition())
-        self.pathVisualObject.tick(img, tempPath)
+        # tempPath = []
+        # for id in self.interactableVisualObjects: 
+        #     if self.interactableVisualObjects[id][1].type == "orb": 
+        #         tempPath.append(self.interactableVisualObjects[id][1].positionO.getPosition())
+        # self.pathVisualObject.tick(img, tempPath)
 
         for sprite in self.sprites:
             frame = sprite.getFullStateAt(self.animationTime)
@@ -395,6 +402,8 @@ class Interface:
             for id in [evgP[index] for index in extent]:
                 placeOver(img, ORB_SELECTED_ARRAY if id==self.interacting else ORB_IDLE_ARRAY, self.interactableVisualObjects[id][1].pointData, True)
                 
+        self.lastAnimationUpdateData = [self.animationTime, len(self.sprites)]
+
         return img
     
     def getImageTimeline(self, im):
@@ -555,10 +564,7 @@ class Interface:
                 evgPoints = listEVGPoints(self.interactableVisualObjects)
                 evgConnections = listEVGConnections(self.interactableVisualObjects)
                 if self.previousEditorTab != "v" or self.selectedProperty != self.previousSelectedProperty:
-                    for id in self.interactableVisualObjects:
-                        if self.interactableVisualObjects[id][1].name == "sprite name":
-                            self.interactableVisualObjects[id][1].updateText(self.sprites[self.selectedSprite].name)
-                            break
+                    self.interactableVisualObjects[-86][1].updateText(self.sprites[self.selectedSprite].name)
                 if self.previousEditorTab != "v" or self.selectedProperty != self.previousSelectedProperty or regen:
                     self.graphLastCheck = self.ticks
                     if len(evgPoints) > lenData:
@@ -740,7 +746,7 @@ class Interface:
                 if self.interacting==id and self.interactableVisualObjects[id][1].name in ["sprites", "visuals", "project"]: self.editorTab = self.interactableVisualObjects[id][1].name[0]
                 self.interactableVisualObjects[id][1].tick(img, self.interacting==id or (self.editorTab==self.interactableVisualObjects[id][1].name[0] and self.interactableVisualObjects[id][1].name in ["sprites", "visuals", "project"]))
 
-        if 23 <= self.mx and self.mx <= 925 and 36 <= self.my and self.my <= 542:
+        if self.mouseInAnimationSection:
             placeOver(img, displayText(f"rx: {self.mx-23}", "m"), (20,73)) 
             placeOver(img, displayText(f"ry: {self.my-36}", "m"), (80,73))
         else:            
@@ -765,10 +771,7 @@ class Interface:
                 self.sprites = []
             projectData = project[0]
             self.projectName = projectData["project name"]
-            for id in self.interactableVisualObjects:
-                if self.interactableVisualObjects[id][1].name == "project name":
-                    self.interactableVisualObjects[id][1].updateText(self.projectName)
-                    break
+            self.interactableVisualObjects[-83][1].updateText(self.projectName)
             self.projectUUID = projectData["UUID"]
             self.projectCreatedOn = projectData["created on"]
             self.projectLastSaved = projectData["last saved"]
