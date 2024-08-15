@@ -54,25 +54,25 @@ class Interface:
         o - options
         '''
         self.interactableVisualObjects = {
-            -999 : [" ", DummyVisualObject("dummy", (0,0))],
-            -998 : [" ", DummyVisualObject("dummy", (0,0))],
+            -999 : [" ", DummyVisualObject("dummy", (0,0))], # used for not interacting with anything
+            -998 : [" ", DummyVisualObject("dummy", (0,0))], # used for text boxes
 
-            self.c.c():["o",ButtonVisualObject("sprites",(7,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            self.c.c():["o",ButtonVisualObject("visuals",(134,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            self.c.c():["o",ButtonVisualObject("project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            self.c.c():["o",ButtonVisualObject("settings",(323,65),i_settingsIconIdle,i_settingsIconActive)],
+            -99 : ["o",ButtonVisualObject("sprites",(7,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
+            -98 : ["o",ButtonVisualObject("visuals",(134,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
+            -97 : ["o",ButtonVisualObject("project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
+            -96 : ["o",ButtonVisualObject("settings",(323,65),i_settingsIconIdle,i_settingsIconActive)],
 
-            self.c.c():["es", ButtonVisualObject("new sprite", (338,15), i_plusIconIdle, i_plusIconActive)],
-            self.c.c():["es", ButtonVisualObject("delete sprite", (338,65), i_trashcanIconIdle, i_trashcanIconActive)],
-            self.c.c():["ev", ButtonVisualObject("import image", (338,161), i_importIconIdle, i_importIconActive)],
-            self.c.c():["ev", EditableTextBoxVisualObject("sprite name", (80,41), "Sprite Name")],
-            self.c.c():["ep", ButtonVisualObject("export gif", (7,457), i_exportGIFIconIdle, i_exportGIFIconActive)],
-            self.c.c():["ep", ButtonVisualObject("export mp4", (57,457), i_exportMP4IconIdle, i_exportMP4IconActive)],
-            self.c.c():["ep", EditableTextBoxVisualObject("project name", (72,52), DEFAULT_PROJECT_NAME)],
+            -89 : ["es", ButtonVisualObject("new sprite", (338,15), i_plusIconIdle, i_plusIconActive)],
+            -88 : ["es", ButtonVisualObject("delete sprite", (338,65), i_trashcanIconIdle, i_trashcanIconActive)],
+            -87 : ["ev", ButtonVisualObject("import image", (338,161), i_importIconIdle, i_importIconActive)],
+            -86 : ["ev", EditableTextBoxVisualObject("sprite name", (80,41), "Sprite Name")],
+            -85 : ["ep", ButtonVisualObject("export gif", (7,457), i_exportGIFIconIdle, i_exportGIFIconActive)],
+            -84 : ["ep", ButtonVisualObject("export mp4", (57,457), i_exportMP4IconIdle, i_exportMP4IconActive)],
+            -83 : ["ep", EditableTextBoxVisualObject("project name", (72,52), DEFAULT_PROJECT_NAME)],
 
-            self.c.c():["t", ButtonVisualObject("play pause button", (0,0), i_playIcon, i_pauseIcon)],
-            self.c.c():["t", ButtonVisualObject("save button", (0,40), i_saveIconIdle, i_saveIconActive)],
-            self.c.c():["t", ButtonVisualObject("load button", (0,80), i_loadIconIdle, i_loadIconActive)]
+            -72 : ["t", ButtonVisualObject("play pause button", (0,0), i_playIcon, i_pauseIcon)],
+            -71 : ["t", ButtonVisualObject("save button", (0,40), i_saveIconIdle, i_saveIconActive)],
+            -70 : ["t", ButtonVisualObject("load button", (0,80), i_loadIconIdle, i_loadIconActive)]
         }
         #for i in range(10): self.interactableVisualObjects[self.c.c()] = ["a", OrbVisualObject(f"test{i}")]
         '''Noninteractable, Adaptive, Visual Objects'''
