@@ -26,8 +26,10 @@ class Window:
 
         '''load test image'''
         testImage = ImageTk.PhotoImage(PLACEHOLDER_IMAGE)
-        self.w_animation = LabelWrapper(self.window, ( 903, 507), (  23,  36), (  23,  36),        "#000000", FRAME_ANIMATION_INSTRUCTIONS)
-        self.b_animation = self.w_animation .getBlank()
+        self.w_animation = {}
+        for region in ALL_REGIONS:
+            self.w_animation[region] = LabelWrapper(self.window, (129, 169), (region[0]*129+23, region[1]*169+36), (region[0]*129+23, region[1]*169+36), "#000000")
+        self.b_animation = self.w_animation[(0,0)].getBlank()
         self.w_timeline  = LabelWrapper(self.window, ( 903, 123), (  23, 558), (  23, 558), BACKGROUND_COLOR, FRAME_TIMELINE_INSTRUCTIONS )
         self.b_timeline  = self.w_timeline  .getBlank()
         self.w_editor    = LabelWrapper(self.window, ( 388, 507), ( 953,  36), ( 953,  36), BACKGROUND_COLOR, FRAME_EDITOR_INSTRUCTIONS   )
@@ -52,8 +54,14 @@ class Window:
         self.interface.tick(mx,my,self.mPressed, self.fps, self.keysPressed, self.mouseScroll)
         self.keyQueue = []
         self.mouseScroll = 0
-        if self.interface.lastAnimationUpdateData != [self.interface.animationTime, len(self.interface.sprites)]:
-            self.w_animation.update(arrayToImage(self.interface.getImageAnimation(self.b_animation)))
+        if len(self.interface.updateAnimationRegions) > 0:
+            i = 0
+            start = time.time()
+            for i in range(min(SKETCH_MAX_REGIONS, len(self.interface.updateAnimationRegions))):
+                region = self.interface.updateAnimationRegions.pop(0)
+                temp = arrayToImage(self.interface.getFetchAnimationSector(region[0], region[1])).resize((129,169))
+                self.w_animation[region].update(temp)
+            print(len(self.interface.updateAnimationRegions))
         self.w_timeline     .update(arrayToImage(self.interface.getImageTimeline (self.b_timeline )))
         if self.interface.editorTab == "v":
             self.w_editor   .update(arrayToImage(self.interface.getImageEditor  (self.b_editor_v )))
