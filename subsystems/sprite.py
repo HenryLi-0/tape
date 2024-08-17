@@ -57,7 +57,8 @@ class SingleSprite:
             "b":[0,   50,"L",1,   50,"L"],  # Brightness - 50 = normal
             "w":[0,    0,"L",1,    0,"L"]   # Blur - 0 = normal
         }
-        self.oldData = -999
+        self.oldData = self.data.copy()
+        self.lastTime = -999
         self.updated = True
     def setData(self, key, data):
         '''Sets a properity's set of data, given the key and data'''
@@ -66,12 +67,14 @@ class SingleSprite:
         self.updated = True
     def getUpdated(self, time):
         '''Returns the old time if the sprite has changed data since the given time, otherwise returns False'''
-        if self.updated or roundf(self.oldData, PATH_FLOAT_ACCURACY) != roundf(time, PATH_FLOAT_ACCURACY):
-            self.oldData = roundf(time, PATH_FLOAT_ACCURACY)
+        if self.updated or roundf(self.lastTime, PATH_FLOAT_ACCURACY) != roundf(time, PATH_FLOAT_ACCURACY):
+            self.lastTime = roundf(time, PATH_FLOAT_ACCURACY)
             self.updated = False
-            return self.oldData
+            c = self.oldData.copy()
+            self.oldData = self.data.copy()
+            return [self.lastTime, c]
         else:
-            return False
+            return [False, self.data]
     def getData(self, key):
         '''Gets a properity's set of data, given the key'''
         return self.data[key]
@@ -81,14 +84,16 @@ class SingleSprite:
         if key == "p": return mergeCoordRotationPath(iterateThroughPath(self.data["c"]), iterateThroughSingle(self.data["r"]))
         if key == "a": return [max(0, min(len(self.imageUUIDs)-1, round(item))) for item in iterateThroughSingle(self.data["a"])]
         if key in "rshtbw" and len(key) == 1: return iterateThroughSingle(self.data[key])
-    def getStateAt(self, key, time):
+    def getStateAt(self, key, time, overrideData = ""):
         '''Returns a state of a given property for a given time, given the key and time'''
-        if key == "c": return findStateThroughPath(self.data["c"], time)
+        if overrideData == "": data = self.data
+        else: data = overrideData
+        if key == "c": return findStateThroughPath(data["c"], time)
         if key == "p":
-            cx, cy = findStateThroughPath(self.data["c"], time) 
-            return (cx, cy, findStateThroughSingle(self.data["r"], time))
-        if key == "a": return max(0, min(len(self.imageUUIDs)-1, round(findStateThroughSingle(self.data["a"],time))))
-        if key in "rshtbw" and len(key) == 1: return findStateThroughSingle(self.data[key], time)
+            cx, cy = findStateThroughPath(data["c"], time) 
+            return (cx, cy, findStateThroughSingle(data["r"], time))
+        if key == "a": return max(0, min(len(self.imageUUIDs)-1, round(findStateThroughSingle(data["a"],time))))
+        if key in "rshtbw" and len(key) == 1: return findStateThroughSingle(data[key], time)
     def generateFullSequence(self):
         '''Generates a full state sequence for all properties for the entire duration of importance'''
         p = self.generateSequence("p")

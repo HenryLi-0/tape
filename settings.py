@@ -19,7 +19,7 @@ INTERFACE_FPS = 60 # The interface window will be called every 1/INTERFACE_FPS s
 TICK_MS = 1 #round((1/INTERFACE_FPS)*1000)
 OCCASIONAL_TICK_MS = 5000 # Highly recommended to keep above 1 second, as it runs processes that do not need updates every tick
 
-SKETCH_MAX_REGIONS = 5 # The maximum allowed regions of the sketch screen (total 21) allowed to be updated per call to update
+SKETCH_MAX_REGIONS = 21 # The maximum allowed regions of the sketch screen (total 21) allowed to be updated per call to update
 
 KEYBIND_DIFFERENCE = 0.2 # Minimum allowed differance in time between keybinds
 
