@@ -147,6 +147,7 @@ def rotateDegHundred(img: numpy.ndarray, cent:float):
 
 def setSize(img: numpy.ndarray, size):
     '''Returns a copy of the given image scaled by size, given the size change (given with 50 as normal, >50 scale up, <50 scale down)'''
+    '''EDITING WARNING: IF CHANGED, MUST UPDATE THE REGION LOGIC.'''
     y, x = img.shape[:2]
     return numpy.array(Image.fromarray(img).resize((max(1, (round(x*(size/50)**2))),max(1, round(y*(size/50)**2)))))
 

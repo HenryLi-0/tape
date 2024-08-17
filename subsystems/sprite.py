@@ -57,18 +57,18 @@ class SingleSprite:
             "b":[0,   50,"L",1,   50,"L"],  # Brightness - 50 = normal
             "w":[0,    0,"L",1,    0,"L"]   # Blur - 0 = normal
         }
-        self.oldData = self.data.copy()
+        self.oldData = -999
         self.updated = True
     def setData(self, key, data):
         '''Sets a properity's set of data, given the key and data'''
         dataCheck(key, data)
         self.data[key] = data
         self.updated = True
-    def getUpdated(self):
-        '''Returns the old data if the sprite has changed data since the last time `getUpdate()` was called, otherwise returns False'''
-        if self.updated:
-            self.update = False
-            self.oldData = self.data.copy()
+    def getUpdated(self, time):
+        '''Returns the old time if the sprite has changed data since the given time, otherwise returns False'''
+        if self.updated or roundf(self.oldData, PATH_FLOAT_ACCURACY) != roundf(time, PATH_FLOAT_ACCURACY):
+            self.oldData = roundf(time, PATH_FLOAT_ACCURACY)
+            self.updated = False
             return self.oldData
         else:
             return False
