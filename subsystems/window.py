@@ -62,6 +62,7 @@ class Window:
                 temp = arrayToImage(self.interface.getFetchAnimationSector(region[0], region[1])).resize((129,169))
                 self.w_animation[region].update(temp)
             print(len(self.interface.updateAnimationRegions))
+        self.interface.getImageAnimationToProcess()
         self.w_timeline     .update(arrayToImage(self.interface.getImageTimeline (self.b_timeline )))
         if self.interface.editorTab == "v":
             self.w_editor   .update(arrayToImage(self.interface.getImageEditor  (self.b_editor_v )))

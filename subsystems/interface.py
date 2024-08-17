@@ -410,10 +410,19 @@ class Interface:
 
     def getImageAnimationToProcess(self):
         for sprite in self.sprites:
-            if not(sprite.getUpdated() == False):
-                pos = sprite.getStateAt("p",self.animationTime)
-                self.scheduleRegionGivenImageData()
-                
+            getUpdated = sprite.getUpdated(self.animationTime)
+            if getUpdated:
+                for timestamp in [getUpdated, self.animationTime]:
+                    pos = sprite.getStateAt("p",timestamp)
+                    size = self.cache.getImage(sprite.imageUUIDs[sprite.getStateAt("a",timestamp)]).shape[:2]
+                    scalar = sprite.getStateAt("s",timestamp)
+                    size = (max(1, (round(size[0]*(scalar/50)**2))),max(1, round(size[1]*(scalar/50)**2)))
+                    rot = sprite.getStateAt("r",timestamp)
+                    a = ROTATE_AROUND_ORIGIN( size[0]/2,  size[1]/2, rot)
+                    b = ROTATE_AROUND_ORIGIN(-size[0]/2,  size[1]/2, rot)
+                    c = ROTATE_AROUND_ORIGIN( size[0]/2, -size[1]/2, rot)
+                    d = ROTATE_AROUND_ORIGIN(-size[0]/2, -size[1]/2, rot)
+                    self.scheduleRegionGivenArea(min(a[0], b[0], c[0], d[0]) + pos[0], min(a[1], b[1], c[1], d[1]) + pos[1], max(a[0], b[0], c[0], d[0]) + pos[0], max(a[1], b[1], c[1], d[1]) + pos[1])
     
     def getFetchAnimationSector(self, x, y):
         '''129x169'''
@@ -901,9 +910,9 @@ class Interface:
                 video.write(cv2.cvtColor(img[:,:,:3], cv2.COLOR_RGB2BGR))
             video.release()    
 
-    def scheduleRegionGivenImageData(self, rmx, rmy, size):
-        cornerA = (max(0, min(math.floor((rmx-size[0])/129), 7-1)), max(0, min(math.floor((rmy-size[1])/169), 3-1)))
-        cornerB = (max(0, min(math.floor((rmx+size[0])/129), 7-1)), max(0, min(math.floor((rmy+size[1])/169), 3-1)))
+    def scheduleRegionGivenArea(self, x1, y1, x2, y2):
+        cornerA = (max(0, min(math.floor((min(x1, x2))/129), 7-1)), max(0, min(math.floor((min(y1, y2))/169), 3-1)))
+        cornerB = (max(0, min(math.floor((max(x1, x2))/129), 7-1)), max(0, min(math.floor((max(y1, y2))/169), 3-1)))
         for ix in range(cornerB[0]-cornerA[0]+2):
             for iy in range(cornerB[1]-cornerA[1]+2):
                 self.scheduleRegion((cornerA[0]+ix, cornerA[1]+iy))

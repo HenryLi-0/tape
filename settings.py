@@ -11,7 +11,7 @@ Here are the parts:
 
 
 '''Calculation'''
-PATH_FLOAT_ACCURACY = 3 #This is how many digits after the decimal point the intersection calculator will save for
+PATH_FLOAT_ACCURACY = 3 #This is how many digits after the decimal point some calculations will save for
 RENDER_FPS = 30 #This is the rendering FPS, also used for steps per second in path calculations
 
 '''Visuals'''
@@ -76,13 +76,14 @@ KB_S_LIST_OFFSET_DOWN    = lambda keys: (len(keys) == 1) and ("Down"  in keys)
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 
    Editing certain constants will break things! You have been warned!'''
 from PIL import Image, ImageFont
-import numpy
+import numpy, math
 from subsystems.simplefancy import *
 
 # Version
 VERSION = "v1.0.0"
 
 ALL_REGIONS = [(x,y) for x in range(7) for y in range(3)]
+ROTATE_AROUND_ORIGIN = lambda x,y,d: [(x/abs(x))*math.cos(math.atan(y/x)+(d*math.pi/50))*math.sqrt(x*x+y*y), (x/abs(x))*math.sin(math.atan(y/x)+(d*math.pi/50))*math.sqrt(x*x+y*y)]
 
 # Imagery
 LOADING_IMAGE = Image.open(os.path.join("resources", "loading.png")).convert("RGBA") # 1366x697, Solid, Loading Screen
