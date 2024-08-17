@@ -411,13 +411,13 @@ class Interface:
     def getImageAnimationToProcess(self):
         for sprite in self.sprites:
             getUpdated = sprite.getUpdated(self.animationTime)
-            if getUpdated:
-                for timestamp in [getUpdated, self.animationTime]:
-                    pos = sprite.getStateAt("p",timestamp)
-                    size = self.cache.getImage(sprite.imageUUIDs[sprite.getStateAt("a",timestamp)]).shape[:2]
-                    scalar = sprite.getStateAt("s",timestamp)
+            if getUpdated[0]:
+                for data in [getUpdated, [self.animationTime, ""]]:
+                    pos = sprite.getStateAt("p",data[0], data[1])
+                    size = self.cache.getImage(sprite.imageUUIDs[sprite.getStateAt("a", data[0], data[1])]).shape[:2]
+                    scalar = sprite.getStateAt("s", data[0], data[1])
                     size = (max(1, (round(size[0]*(scalar/50)**2))),max(1, round(size[1]*(scalar/50)**2)))
-                    rot = sprite.getStateAt("r",timestamp)
+                    rot = sprite.getStateAt("r", data[0], data[1])
                     a = ROTATE_AROUND_ORIGIN( size[0]/2,  size[1]/2, rot)
                     b = ROTATE_AROUND_ORIGIN(-size[0]/2,  size[1]/2, rot)
                     c = ROTATE_AROUND_ORIGIN( size[0]/2, -size[1]/2, rot)
@@ -427,6 +427,10 @@ class Interface:
     def getFetchAnimationSector(self, x, y):
         '''129x169'''
         img = self.blankProcessingLayerSector.copy()
+        if time.time() % 0.2 <= 0.1:
+            img = generateColorBox((129,169),(155,0,0,255))
+        else:
+            img = generateColorBox((129,169),(0,155,0,255))
 
         for sprite in self.sprites:
             frame = sprite.getFullStateAt(self.animationTime)
@@ -655,7 +659,8 @@ class Interface:
                         for timeState in dataS: 
                             for thing in timeState: data.append(thing)
                     dataCheck("crashtbw"[self.selectedProperty-1], data)
-                    self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
+                    if self.interacting != -999 or self.previousInteracting != -999:
+                        self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
                     evgConnections = listEVGConnections(self.interactableVisualObjects)
                     for i in range(len(evgConnections)):
                         if self.selectedProperty == 1: 
@@ -912,9 +917,9 @@ class Interface:
 
     def scheduleRegionGivenArea(self, x1, y1, x2, y2):
         cornerA = (max(0, min(math.floor((min(x1, x2))/129), 7-1)), max(0, min(math.floor((min(y1, y2))/169), 3-1)))
-        cornerB = (max(0, min(math.floor((max(x1, x2))/129), 7-1)), max(0, min(math.floor((max(y1, y2))/169), 3-1)))
-        for ix in range(cornerB[0]-cornerA[0]+2):
-            for iy in range(cornerB[1]-cornerA[1]+2):
+        cornerB = (max(0, min(math.ceil ((max(x1, x2))/129), 7-1)), max(0, min(math.ceil ((max(y1, y2))/169), 3-1)))
+        for ix in range(cornerB[0]-cornerA[0]+1):
+            for iy in range(cornerB[1]-cornerA[1]+1):
                 self.scheduleRegion((cornerA[0]+ix, cornerA[1]+iy))
 
     def scheduleRegionGivenPixel(self, pixel):
