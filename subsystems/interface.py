@@ -407,6 +407,13 @@ class Interface:
         self.lastAnimationUpdateData = [self.animationTime, len(self.sprites)]
 
         return img
+
+    def getImageAnimationToProcess(self):
+        for sprite in self.sprites:
+            if not(sprite.getUpdated() == False):
+                pos = sprite.getStateAt("p",self.animationTime)
+                self.scheduleRegionGivenImageData()
+                
     
     def getFetchAnimationSector(self, x, y):
         '''129x169'''
@@ -893,6 +900,13 @@ class Interface:
                     placeOver(img, readImgSingleFullState(frame, self.cache.getImage(sprite.imageUUIDs[frame[1]]), True), (frame[0][0],frame[0][1]), True)
                 video.write(cv2.cvtColor(img[:,:,:3], cv2.COLOR_RGB2BGR))
             video.release()    
+
+    def scheduleRegionGivenImageData(self, rmx, rmy, size):
+        cornerA = (max(0, min(math.floor((rmx-size[0])/129), 7-1)), max(0, min(math.floor((rmy-size[1])/169), 3-1)))
+        cornerB = (max(0, min(math.floor((rmx+size[0])/129), 7-1)), max(0, min(math.floor((rmy+size[1])/169), 3-1)))
+        for ix in range(cornerB[0]-cornerA[0]+2):
+            for iy in range(cornerB[1]-cornerA[1]+2):
+                self.scheduleRegion((cornerA[0]+ix, cornerA[1]+iy))
 
     def scheduleRegionGivenPixel(self, pixel):
         region = (max(0, min(pixel[0] // 129, 7-1)), max(0, min(pixel[1] // 169, 3-1)))
