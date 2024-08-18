@@ -96,6 +96,8 @@ class Interface:
         self.keybindLastUpdate = time.time()
         self.blankProcessingLayerSector = generateColorBox((129,169), (0,0,0,0))
         self.updateAnimationRegions = []
+        self.tempPath = []
+        self.tempOverlay = None
         '''Timelines'''
         self.graphScale = 1.0
         self.graphOffset = 0
@@ -365,6 +367,14 @@ class Interface:
                     if 0 <= target and target <= len(self.sprites)-1:
                         self.selectedSprite = target
 
+    def getDoesNeedGetImageAnimation(self):
+        '''Returns if the window should run `getImageAnimation()`'''
+        if self.ticks < 3:
+            return True
+        if self.interacting != -999 and self.interactableVisualObjects[self.interacting][1].type == "point" and self.selectedProperty == 1:
+            return True
+        return False
+
     def getImageAnimation(self, im):
         '''Animation Interface: `(23,36) to (925,542)`: size `(903,507)`'''
         rmx = self.mx - 23
@@ -382,19 +392,12 @@ class Interface:
             if self.interactableVisualObjects[id][0] == "a":
                 self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
 
-        # tempPath = []
-        # for id in self.interactableVisualObjects: 
-        #     if self.interactableVisualObjects[id][1].type == "orb": 
-        #         tempPath.append(self.interactableVisualObjects[id][1].positionO.getPosition())
-        # self.pathVisualObject.tick(img, tempPath)
-
-        for sprite in self.sprites:
-            frame = sprite.getFullStateAt(self.animationTime)
-            placeOver(img, readImgSingleFullState(frame, self.cache.getImage(sprite.imageUUIDs[frame[1]]), True), (frame[0][0],frame[0][1]), True)
-
         if self.interacting != -999 and self.interactableVisualObjects[self.interacting][1].type == "point" and self.selectedProperty == 1:
             data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
+            previousPath = self.tempPath.copy()
             coords = iterateThroughPath(data)
+            self.tempPath = coords
+            if previousPath != self.tempPath: self.scheduleAllRegions()
             for coord in coords:
                 placeOver(img, PATH_POINT_IDLE_ARRAY, coord, True)
             evgP = listEVGPoints(self.interactableVisualObjects)
@@ -403,10 +406,13 @@ class Interface:
                 extent = extent[0:-2]
             for id in [evgP[index] for index in extent]:
                 placeOver(img, ORB_SELECTED_ARRAY if id==self.interacting else ORB_IDLE_ARRAY, self.interactableVisualObjects[id][1].pointData, True)
-                
-        self.lastAnimationUpdateData = [self.animationTime, len(self.sprites)]
 
-        return img
+        if self.interacting == -999 and self.previousInteracting != -999 and self.interactableVisualObjects[self.previousInteracting][1].type == "point" and self.selectedProperty == 1:
+            self.scheduleAllRegions()
+        if self.previousSelectedProperty == 1 and self.selectedProperty != 1:
+            self.scheduleAllRegions()
+
+        self.tempOverlay = img
 
     def getImageAnimationToProcess(self):
         for sprite in self.sprites:
@@ -435,6 +441,8 @@ class Interface:
         for sprite in self.sprites:
             frame = sprite.getFullStateAt(self.animationTime)
             placeOver(img, readImgSingleFullState(frame, self.cache.getImage(sprite.imageUUIDs[frame[1]]), True), (frame[0][0]-x*129,frame[0][1]-y*169), True)
+
+        placeOver(img, getRegion(self.tempOverlay, (x*129, y*169), ((x+1)*129, (y+1)*169), 1), (0,0))
 
         return img
 
