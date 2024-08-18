@@ -26,6 +26,7 @@ class Window:
 
         '''load test image'''
         testImage = ImageTk.PhotoImage(PLACEHOLDER_IMAGE)
+        self.b_animation_full =     generateColorBox(( 903, 507), (0,0,0,0))
         self.w_animation = {}
         for region in ALL_REGIONS:
             self.w_animation[region] = LabelWrapper(self.window, (129, 169), (region[0]*129+23, region[1]*169+36), (region[0]*129+23, region[1]*169+36), "#000000")
@@ -61,7 +62,8 @@ class Window:
                 region = self.interface.updateAnimationRegions.pop(0)
                 temp = arrayToImage(self.interface.getFetchAnimationSector(region[0], region[1])).resize((129,169))
                 self.w_animation[region].update(temp)
-            print(f"need to process {self.interface.updateAnimationRegions}")
+        if self.interface.getDoesNeedGetImageAnimation():
+            self.interface.getImageAnimation(self.b_animation_full)
         self.interface.getImageAnimationToProcess()
         self.w_timeline     .update(arrayToImage(self.interface.getImageTimeline (self.b_timeline )))
         if self.interface.editorTab == "v":
