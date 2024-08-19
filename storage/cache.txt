@@ -1,1 +1,1 @@
-{'placeholder5': '', '09225a79-fc6c-4781-878b-653701f03203': 'C:/Users/henry/Downloads/arrow.png', '2287d674-5a49-4c18-b7cf-a35a5f4c113c': 'C:/Users/henry/Downloads/npr guy.png'}
+{'placeholder5': ''}
