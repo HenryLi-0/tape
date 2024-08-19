@@ -100,6 +100,9 @@ class Interface:
         self.previousPath = []
         self.animationPathOverlay = None
         self.timelineFancyBar = None
+        self.keybindRegen = False
+        self.connectionEdit = ""
+        self.requestSelectedProperty = self.selectedProperty
         '''Timelines'''
         self.graphScale = 1.0
         self.graphOffset = 0
@@ -246,7 +249,51 @@ class Interface:
                     if KB_A_POINT_POSITION_EDIT(self.keyQueue):
                         '''MOVE SELECTED POINT POINT TO MOUSE POSITION'''
                         self.interactableVisualObjects[self.interacting][1].setPointData((self.mx-23, self.my-36))
-                            
+
+        self.requestSelectedProperty = self.selectedProperty
+        if self.previousEditorTab == "v" and self.editorTab == "v":
+            data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
+            dataCheck("crashtbw"[self.selectedProperty-1], data)
+            lenData = round(len(data)/3)
+            
+            for i in range(1,8+1):
+                if str(i) in self.stringKeyQueue: self.requestSelectedProperty = i
+            self.connectionEdit = ""
+            if (time.time() - self.keybindLastUpdate > KEYBIND_DIFFERENCE):
+                if KB_EV_LINEAR_CONNECTION(self.keyQueue): 
+                    '''CHANGE CONNECTION TO LINEAR'''
+                    self.keybindLastUpdate = time.time()
+                    self.connectionEdit = "L"
+                if KB_EV_SMOOTH_CONNECTION(self.keyQueue): 
+                    '''CHANGE CONNECTION TO SMOOTH'''
+                    self.keybindLastUpdate = time.time()
+                    self.connectionEdit = "S"
+                if 953<self.mx and 255<self.my and self.mx<1340 and self.my<542:
+                    if KB_CREATE(self.keyQueue):
+                        self.keybindLastUpdate = time.time()
+                        if self.interacting == -999:
+                            x = (self.mx-982)*(self.graphScale+0.000001)/25+self.graphOffset
+                            y = 100-((self.my-279)/2.33)   
+                            timeStamps = [data[i*3] for i in range(lenData)]
+                            low = -1
+                            for i in range(len(timeStamps)-1):
+                                if timeStamps[i]<=x: low = i
+                                else: break
+                            for item in ["L", (random.randrange(0,903),random.randrange(0,507)) if self.selectedProperty == 1 else y, x]: data.insert((low+1)*3, item)
+                            self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
+                            dataCheck("crashtbw"[self.selectedProperty-1], data)
+                            self.interacting = -999
+                            self.keybindRegen = True
+                    if KB_DELETE(self.keyQueue):
+                        self.keybindLastUpdate = time.time()
+                        if self.interacting != -999:
+                            if self.interactableVisualObjects[self.interacting][1].type == "point":
+                                index = listEVGPoints(self.interactableVisualObjects).index(self.interacting)
+                                for i in range(3): data.pop(index*3)
+                                self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
+                                self.interacting = -999
+                                self.keybindRegen = True
+
         self.mouseScroll = mouseScroll
         if self.editorTab == "v" and 955<self.mx and 257<self.my and self.mx<1336 and self.my<537 and self.interacting == -999:
             graphScalePrevious = self.graphScale
@@ -375,6 +422,8 @@ class Interface:
             return True
         if self.interacting != -999 and self.interactableVisualObjects[self.interacting][1].type == "point" and self.selectedProperty == 1:
             return True
+        if (self.previousInteracting != -999 and self.interactableVisualObjects[self.previousInteracting][1].type == "point" and self.selectedProperty == 1) or self.previousSelectedProperty == 1:
+            return True
         return False
 
     def getImageAnimation(self, im):
@@ -390,9 +439,6 @@ class Interface:
         # placeOver(img, displayText(f"Interacting With Element: {self.interacting}", "m"), (455,15))
         # placeOver(img, displayText(f"stringKeyQueue: {self.stringKeyQueue}", "m"), (455,95))
 
-        for id in self.interactableVisualObjects:
-            if self.interactableVisualObjects[id][0] == "a":
-                self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
 
         if self.interacting != -999 and self.interactableVisualObjects[self.interacting][1].type == "point" and self.selectedProperty == 1:
             data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
@@ -413,6 +459,10 @@ class Interface:
             self.scheduleAllRegions()
         if self.previousSelectedProperty == 1 and self.selectedProperty != 1:
             self.scheduleAllRegions()
+        
+        for id in self.interactableVisualObjects:
+            if self.interactableVisualObjects[id][0] == "a":
+                self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
 
         self.animationPathOverlay = img
 
@@ -451,7 +501,7 @@ class Interface:
 
     def getImageTimeline(self, im):
         '''Timeline Interface: `(23,558) to (925,680)`: size `(903,123)`'''
-        if (self.interacting != -999 or self.interacting != -999) or self.ticks < 3 or self.animationTime != self.lastAnimationTimeline:
+        if (self.interacting != -999 or self.interacting != -999) or self.ticks < 3 or self.animationTime != self.lastAnimationTimeline or self.animationPlaying or self.interactableVisualObjects[self.interacting][0] == "t" or self.interactableVisualObjects[self.previousInteracting][0] == "t":
             self.lastAnimationTimeline = self.animationTime
             img = im.copy()
             placeOver(img, self.timelineFancyBar, (0,0))
@@ -561,57 +611,16 @@ class Interface:
                     pathP = iterateThroughSingle(data, True)
                 lenData = round(len(data)/3)
 
-                '''Keybinds'''
-                regen = False
-                requestSelectedProperty = self.selectedProperty
                 if self.previousEditorTab != "v":
                     self.stringKeyQueue = ""
                 else:
-                    for i in range(1,8+1):
-                        if str(i) in self.stringKeyQueue: requestSelectedProperty = i
-                    connectionEdit = ""
-                    if (time.time() - self.keybindLastUpdate > KEYBIND_DIFFERENCE):
-                        if KB_EV_LINEAR_CONNECTION(self.keyQueue): 
-                            self.keybindLastUpdate = time.time()
-                            connectionEdit = "L"
-                        if KB_EV_SMOOTH_CONNECTION(self.keyQueue): 
-                            self.keybindLastUpdate = time.time()
-                            connectionEdit = "S"
-
-                        if 953<self.mx and 255<self.my and self.mx<1340 and self.my<542:
-                            if KB_CREATE(self.keyQueue):
-                                self.keybindLastUpdate = time.time()
-                                if self.interacting == -999:
-                                    x = (self.mx-982)*(self.graphScale+0.000001)/25+self.graphOffset
-                                    y = 100-((self.my-279)/2.33)   
-                                    timeStamps = [data[i*3] for i in range(lenData)]
-                                    low = -1
-                                    for i in range(len(timeStamps)-1):
-                                        if timeStamps[i]<=x: low = i
-                                        else: break
-                                    for item in ["L", (random.randrange(0,903),random.randrange(0,507)) if self.selectedProperty == 1 else y, x]: data.insert((low+1)*3, item)
-                                    self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
-                                    dataCheck("crashtbw"[self.selectedProperty-1], data)
-                                    if self.selectedProperty == 1: 
-                                        pathP = iterateThroughPath(data, True)
-                                        pathV = [tcoordVelocity(partition) for partition in pathP]
-                                    else: 
-                                        pathP = iterateThroughSingle(data, True)
-                                    lenData = round(len(data)/3)
-                                    self.interacting = -999
-                                    regen = True                                
-                            if KB_DELETE(self.keyQueue):
-                                self.keybindLastUpdate = time.time()
-                                if self.interacting != -999:
-                                    if self.interactableVisualObjects[self.interacting][1].type == "point":
-                                        index = listEVGPoints(self.interactableVisualObjects).index(self.interacting)
-                                        for i in range(3): data.pop(index*3)
-                                        self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
-                                        lenData = round(len(data)/3)
-                                        self.interacting = -999
-                                        regen = True
                     if not(self.interactableVisualObjects[self.interacting][1].type == "textbox"):
                         self.stringKeyQueue = ""
+                
+                regen = False
+                if self.keybindRegen:
+                    regen = True
+                    self.keybindRegen = False
 
                 '''Graph Points and Editing'''
                 evgPoints = listEVGPoints(self.interactableVisualObjects)
@@ -704,9 +713,10 @@ class Interface:
                         if data[i*3+2] == "L": placeOver(img, displayText(f"C {i+1}: Linear", "m"), (89,190), True)
                         elif data[i*3+2] == "S": placeOver(img, displayText(f"C {i+1}: Smooth", "m"), (89,190), True)
                         else: placeOver(img, displayText(f"C {i+1}: {data[i*3+2]}", "m"), (89,190), True)
-                        if connectionEdit in ["L", "S"]:
-                            data[i*3+2] = connectionEdit
+                        if self.connectionEdit in ["L", "S"]:
+                            data[i*3+2] = self.connectionEdit
                             self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
+                            self.connectionEdit = ""
 
                 evgPoints = listEVGPoints(self.interactableVisualObjects)
                 evgConnections = listEVGConnections(self.interactableVisualObjects)
@@ -733,7 +743,7 @@ class Interface:
                     if xPos > 210: break
                 placeOver(img, apperancePanel, (199,0))
 
-                self.selectedProperty = requestSelectedProperty
+                self.selectedProperty = self.requestSelectedProperty
                 placeOver(img, FRAME_EDITOR_VISUALS_GRAPH_ARRAY, (0,219))
                 # placeOver(img, PLACEHOLDER_IMAGE_5_ARRAY, ((100-self.graphOffset)*25/(self.graphScale+0.000001)+29,219), True)
 
