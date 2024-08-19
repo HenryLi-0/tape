@@ -23,6 +23,8 @@ SKETCH_MAX_REGIONS = 21 # The maximum allowed regions of the sketch screen (tota
 
 KEYBIND_DIFFERENCE = 0.2 # Minimum allowed differance in time between keybinds
 
+DEBUG_BACKGROUND = False # When true, turns the background red and green, helpful for debugging region updating related issues
+
 hexColorToRGBA = lambda hexcolor: tuple(int(hexcolor[i:i+2], 16) for i in (1, 3, 5)) + (255,)
 
 BACKGROUND_COLOR = "#241530" #Background color
