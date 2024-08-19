@@ -19,10 +19,7 @@ INTERFACE_FPS = 60 # The interface window will be called every 1/INTERFACE_FPS s
 TICK_MS = 1 #round((1/INTERFACE_FPS)*1000)
 OCCASIONAL_TICK_MS = 5000 # Highly recommended to keep above 1 second, as it runs processes that do not need updates every tick
 
-SKETCH_MAX_REGIONS = 21 # The maximum allowed regions of the sketch screen (total 21) allowed to be updated per call to update
-
-KEYBIND_DIFFERENCE = 0.2 # Minimum allowed differance in time between keybinds
-
+SKETCH_MAX_REGIONS = 21 # The maximum allowed regions of the sketch screen (total 21) allowed to be updated per call to update. Recommended to not change.
 DEBUG_BACKGROUND = False # When true, turns the background red and green, helpful for debugging region updating related issues
 
 hexColorToRGBA = lambda hexcolor: tuple(int(hexcolor[i:i+2], 16) for i in (1, 3, 5)) + (255,)
@@ -51,6 +48,8 @@ FORMAT_TIME = lambda x: time.strftime("%I:%M:%S %p %m/%d/%Y", time.localtime(x))
 DEFAULT_PROJECT_NAME = "Untitled Project"
 
 '''Keybinds'''
+KEYBIND_DIFFERENCE = 0.2 # Minimum allowed differance in time between keybinds
+
 KB_IGNORE = ["Win_L"]
 KB_EV_PROPERTY = {
     1 : "C",
