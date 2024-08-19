@@ -65,12 +65,20 @@ class Window:
         if self.interface.getDoesNeedGetImageAnimation():
             self.interface.getImageAnimation(self.b_animation_full)
         self.interface.getImageAnimationToProcess()
-        self.w_timeline     .update(arrayToImage(self.interface.getImageTimeline (self.b_timeline )))
-        if self.interface.editorTab == "v":
-            self.w_editor   .update(arrayToImage(self.interface.getImageEditor  (self.b_editor_v )))
-        else:
-            self.w_editor   .update(arrayToImage(self.interface.getImageEditor  (self.b_editor   )))
-        self.w_options      .update(arrayToImage(self.interface.getImageOptions (self.b_options  )))
+        self.interface.getImageFancyTimeline(self.b_timeline)
+        temp = self.interface.getImageTimeline(self.b_timeline)
+        if type(temp) != type(None): self.w_timeline.update(arrayToImage(temp))
+        if   self.interface.editorTab == "s":
+            if self.interface.interacting != -999 or self.interface.previousInteracting != -999 or self.fpsCounter == 0 or self.interface.previousEditorTab != self.interface.editorTab or abs(self.interface.spriteListVelocity) > 0 or self.mPressed > 0:
+                self.w_editor.update(arrayToImage(self.interface.getImageEditor(self.b_editor)))
+        elif self.interface.editorTab == "v":
+            if self.interface.interacting != -999 or self.interface.previousInteracting != -999 or self.fpsCounter == 0 or self.interface.previousEditorTab != self.interface.editorTab or self.interface.previousSelectedProperty != self.interface.selectedProperty:
+                self.w_editor.update(arrayToImage(self.interface.getImageEditor(self.b_editor_v)))
+        elif self.interface.editorTab == "p":
+            if self.interface.interacting != -999 or self.interface.previousInteracting != -999 or self.fpsCounter == 0 or self.interface.previousEditorTab != self.interface.editorTab:
+                self.w_editor.update(arrayToImage(self.interface.getImageEditor(self.b_editor)))
+        else: pass
+        self.w_options.update(arrayToImage(self.interface.getImageOptions(self.b_options)))
 
         self.window.after(TICK_MS, self.windowProcesses)
 

@@ -91,13 +91,15 @@ class Interface:
         self.previousKeyQueue = []
         self.animationTime = 0
         self.lastAnimationUpdateData = []
+        self.lastAnimationTimeline = self.animationTime - 1
         self.animationPlaying = False
         self.mouseScroll = 0 
         self.keybindLastUpdate = time.time()
         self.blankProcessingLayerSector = generateColorBox((129,169), (0,0,0,0))
         self.updateAnimationRegions = []
-        self.tempPath = []
-        self.tempOverlay = None
+        self.previousPath = []
+        self.animationPathOverlay = None
+        self.timelineFancyBar = None
         '''Timelines'''
         self.graphScale = 1.0
         self.graphOffset = 0
@@ -276,8 +278,8 @@ class Interface:
                 self.spriteListOffset += self.mouseScroll / 5
             self.spriteListVelocity = self.spriteListVelocity * 0.9
             self.spriteListOffset += self.spriteListVelocity
-            if self.spriteListOffset > len(self.sprites)*30-507:
-                self.spriteListOffset = len(self.sprites)*30-507
+            if self.spriteListOffset > len(self.sprites)*35-507:
+                self.spriteListOffset = len(self.sprites)*35-507
                 self.spriteListVelocity = 0
             if self.spriteListOffset < 0: 
                 self.spriteListOffset = 0
@@ -394,10 +396,10 @@ class Interface:
 
         if self.interacting != -999 and self.interactableVisualObjects[self.interacting][1].type == "point" and self.selectedProperty == 1:
             data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
-            previousPath = self.tempPath.copy()
+            previousPath = self.previousPath.copy()
             coords = iterateThroughPath(data)
-            self.tempPath = coords
-            if previousPath != self.tempPath: self.scheduleAllRegions()
+            self.previousPath = coords
+            if previousPath != self.previousPath: self.scheduleAllRegions()
             for coord in coords:
                 placeOver(img, PATH_POINT_IDLE_ARRAY, coord, True)
             evgP = listEVGPoints(self.interactableVisualObjects)
@@ -412,7 +414,7 @@ class Interface:
         if self.previousSelectedProperty == 1 and self.selectedProperty != 1:
             self.scheduleAllRegions()
 
-        self.tempOverlay = img
+        self.animationPathOverlay = img
 
     def getImageAnimationToProcess(self):
         for sprite in self.sprites:
@@ -433,73 +435,84 @@ class Interface:
     def getFetchAnimationSector(self, x, y):
         '''129x169'''
         img = self.blankProcessingLayerSector.copy()
-        if time.time() % 0.2 <= 0.1:
-            img = generateColorBox((129,169),(155,0,0,255))
-        else:
-            img = generateColorBox((129,169),(0,155,0,255))
+        if DEBUG_BACKGROUND:
+            if time.time() % 0.2 <= 0.1:
+                img = generateColorBox((129,169),(155,0,0,255))
+            else:
+                img = generateColorBox((129,169),(0,155,0,255))
 
         for sprite in self.sprites:
             frame = sprite.getFullStateAt(self.animationTime)
             placeOver(img, readImgSingleFullState(frame, self.cache.getImage(sprite.imageUUIDs[frame[1]]), True), (frame[0][0]-x*129,frame[0][1]-y*169), True)
 
-        placeOver(img, getRegion(self.tempOverlay, (x*129, y*169), ((x+1)*129, (y+1)*169), 1), (0,0))
+        placeOver(img, getRegion(self.animationPathOverlay, (x*129, y*169), ((x+1)*129, (y+1)*169), 1), (0,0))
 
         return img
 
     def getImageTimeline(self, im):
         '''Timeline Interface: `(23,558) to (925,680)`: size `(903,123)`'''
-        img = im.copy()
-        startI = round(self.timelineOffset/(10**math.floor(math.log(self.timelineScale+0.000001,10)+1)))
-        for i in range(startI - 3, startI + 33):
-            pos = 48 + ((i*(10**math.floor(math.log(self.timelineScale+0.000001,10)+1)))-self.timelineOffset)*(1/(self.timelineScale+0.000001))*25
-            if pos > 902: break
-            if pos > 48: 
-                placeOver(img, FRAME_EDITOR_VISUALS_GRAPH_BAR_ARRAY, (pos, 25))
-                time = roundf((i*(10**math.floor(math.log(self.timelineScale+0.000001,10)+1))),2)
-                if time >= 1:
-                    if time < 3600:
-                        time = "{:02}:{:02}".format(math.floor(time/60), roundf(time%60,2))
+        if (self.interacting != -999 or self.interacting != -999) or self.ticks < 3 or self.animationTime != self.lastAnimationTimeline:
+            self.lastAnimationTimeline = self.animationTime
+            img = im.copy()
+            placeOver(img, self.timelineFancyBar, (0,0))
+
+            startI = round(self.timelineOffset/(10**math.floor(math.log(self.timelineScale+0.000001,10)+1)))
+            for i in range(startI - 3, startI + 33):
+                pos = 48 + ((i*(10**math.floor(math.log(self.timelineScale+0.000001,10)+1)))-self.timelineOffset)*(1/(self.timelineScale+0.000001))*25
+                if pos > 902: break
+                if pos > 48: 
+                    placeOver(img, FRAME_EDITOR_VISUALS_GRAPH_BAR_ARRAY, (pos, 25))
+                    time = roundf((i*(10**math.floor(math.log(self.timelineScale+0.000001,10)+1))),2)
+                    if time >= 1:
+                        if time < 3600:
+                            time = "{:02}:{:02}".format(math.floor(time/60), roundf(time%60,2))
+                        else:
+                            time = "{:02}:{:02}:{:02}".format(math.floor(time/3600), math.floor((time-3600*math.floor(time/3600))/60), roundf(time%60,2))
                     else:
-                        time = "{:02}:{:02}:{:02}".format(math.floor(time/3600), math.floor((time-3600*math.floor(time/3600))/60), roundf(time%60,2))
-                else:
-                    time = str(time)
-                placeOver(img, displayText(time, "s"), (pos,15), True)
+                        time = str(time)
+                    placeOver(img, displayText(time, "s"), (pos,15), True)
 
-        '''Fancy Sprite Timelines'''
-        barHeight = max(2, min(round(95/len(self.sprites))-2,10))
-        yOffset = 25
-        i=0
-        for i in range(len(self.sprites)):
-            lowest = 999
-            farthest = 0
-            for prop in ["c","r","a","s","t","b","w"]:
-                data = self.sprites[i].getData(prop)
-                for ie in range(round(len(data)/3)):
-                    if data[ie*3] < lowest: lowest = data[ie*3]
-                    if data[ie*3] > farthest: farthest = data[ie*3]
-            lowest=(lowest-self.timelineOffset)*25/(self.timelineScale+0.000001) + 47
-            farthest=(farthest-self.timelineOffset)*25/(self.timelineScale+0.000001) + 47
-            lowest=max(50,min(round(lowest), 922))
-            farthest=max(50,min(round(farthest), 922))
-            if i==self.selectedSprite: placeOver(img, generateColorBox((922,barHeight), hexColorToRGBA(FRAME_COLOR)), (50, yOffset))
-            placeOver(img, generateColorBox((farthest-lowest, barHeight), translatePastelLight(self.sprites[i].getColor()) if i==self.selectedSprite else self.sprites[i].getColor()), (lowest, yOffset))
-            yOffset += barHeight+2
-            if yOffset > 119: break
+            '''Timeline Bar'''
+            pos = (self.animationTime-self.timelineOffset)*25/(self.timelineScale+0.000001) + 47
+            if 46 < pos and pos < 896:
+                placeOver(img, FRAME_TIMELINE_READER_ARRAY, (max(51,pos), 3))
 
-        '''Timeline Bar'''
-        pos = (self.animationTime-self.timelineOffset)*25/(self.timelineScale+0.000001) + 47
-        if 46 < pos and pos < 896:
-            placeOver(img, FRAME_TIMELINE_READER_ARRAY, (max(51,pos), 3))
+            for id in self.interactableVisualObjects:
+                if self.interactableVisualObjects[id][0] == "t":
+                    if self.interactableVisualObjects[id][1].name == "play pause button":
+                        self.interactableVisualObjects[id][1].tick(img, self.animationPlaying)
+                    else:
+                        self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
 
-        for id in self.interactableVisualObjects:
-            if self.interactableVisualObjects[id][0] == "t":
-                if self.interactableVisualObjects[id][1].name == "play pause button":
-                    self.interactableVisualObjects[id][1].tick(img, self.animationPlaying)
-                else:
-                    self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
-
-        return img
+            return img
     
+    def getImageFancyTimeline(self, im):
+        '''Fancy Sprite Timelines'''
+        if (self.interacting != -999 or self.interacting != -999) or self.ticks < 3:
+            img = im.copy()
+            barHeight = max(2, min(round(95/len(self.sprites))-2,10))
+            yOffset = 25
+            i=0
+            for i in range(len(self.sprites)):
+                lowest = 999
+                farthest = 0
+                for prop in ["c","r","a","s","t","b","w"]:
+                    data = self.sprites[i].getData(prop)
+                    for ie in range(round(len(data)/3)):
+                        if data[ie*3] < lowest: lowest = data[ie*3]
+                        if data[ie*3] > farthest: farthest = data[ie*3]
+                lowest=(lowest-self.timelineOffset)*25/(self.timelineScale+0.000001) + 47
+                farthest=(farthest-self.timelineOffset)*25/(self.timelineScale+0.000001) + 47
+                lowest=max(50,min(round(lowest), 922))
+                farthest=max(50,min(round(farthest), 922))
+                if i==self.selectedSprite: placeOver(img, generateColorBox((922,barHeight), hexColorToRGBA(FRAME_COLOR)), (50, yOffset))
+                placeOver(img, generateColorBox((farthest-lowest, barHeight), translatePastelLight(self.sprites[i].getColor()) if i==self.selectedSprite else self.sprites[i].getColor()), (lowest, yOffset))
+                yOffset += barHeight+2
+                if yOffset > 119: break
+            
+            self.timelineFancyBar = img
+
+
     def getImageEditor(self, im):
         '''Editor Interface: `(953,36) to (1340,542)`: size `(388,507)`'''
         img = im.copy()
