@@ -217,9 +217,15 @@ print(time.strftime("%I:%M:%S %p %m/%d/%Y", time.localtime(time.time())))
 import os
 os.startfile(os.path.join("settings.py"))
 '''
+'''
 import math
 time = 36000
 x=f"{math.floor(time%60)}s"
 if time >= 60: x=f"{math.floor((time-3600*math.floor(time/3600))/60)}m "+x
 if time >= 3600: x=f"{math.floor(time/3600)}h "+x
 print(x)
+'''
+
+from subsystems.sprite import findStateThroughPath
+compact = [0.0, (0.0, 0.0), 'S', 1.0, (20.0, 0.0), 'S', 3.2, (338.0, 330.0), 'S']
+print(findStateThroughPath(compact, 2.1))

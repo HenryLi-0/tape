@@ -232,9 +232,11 @@ class Interface:
             data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
             dataCheck("crashtbw"[self.selectedProperty-1], data)
             lenData = round(len(data)/3)
-            
+
             for i in range(1,8+1):
-                if str(i) in self.stringKeyQueue: self.requestSelectedProperty = i
+                if str(i) in self.keyQueue and len(self.keyQueue) == 1: 
+                    self.requestSelectedProperty = i
+                    self.interacting = -999
             self.connectionEdit = ""
             if (time.time() - self.keybindLastUpdate > KEYBIND_DIFFERENCE):
                 if KB_EV_LINEAR_CONNECTION(self.keyQueue): 
@@ -622,10 +624,22 @@ class Interface:
                         if self.selectedProperty == 1: self.interactableVisualObjects[evgPoints[i]][1].updatePos((data[i*3]-self.graphOffset)*25/(self.graphScale+0.000001),223)
                         else: self.interactableVisualObjects[evgPoints[i]][1].updatePos((data[i*3]-self.graphOffset)*25/(self.graphScale+0.000001),(100-data[i*3+1])*2.23)
 
+                    data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
+                    dataCheck("crashtbw"[self.selectedProperty-1], data)
+
+                    dataS = [[data[i*3],data[i*3+1],data[i*3+2]] for i in range(lenData)]
+                    dataS.sort(key = lambda x: x[0])
+                    data = []
+                    for timeState in dataS:
+                        for thing in timeState: data.append(thing)
+                    self.sprites[self.selectedSprite].setData("crashtbw"[self.selectedProperty-1], data)
 
                     if self.selectedProperty == 1:
+                        pathP = iterateThroughPath(data, True)
+                        pathV = [tcoordVelocity(partition) for partition in pathP]
                         for i in range(len(evgConnections)): self.interactableVisualObjects[evgConnections[i]][1].setPathData(pathV[i])
                     else:
+                        pathP = iterateThroughSingle(data, True)
                         for i in range(len(evgConnections)): self.interactableVisualObjects[evgConnections[i]][1].setPathData(pathP[i])
                 else:
                     if self.selectedProperty == 1:

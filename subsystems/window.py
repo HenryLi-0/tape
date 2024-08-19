@@ -74,7 +74,7 @@ class Window:
             if self.interface.interacting != -999 or self.interface.previousInteracting != -999 or self.fpsCounter == 0 or self.interface.previousEditorTab != self.interface.editorTab or abs(self.interface.spriteListVelocity) > 0 or self.mPressed > 0:
                 self.w_editor.update(arrayToImage(self.interface.getImageEditor(self.b_editor)))
         elif self.interface.editorTab == "v":
-            if self.interface.interacting != -999 or self.interface.previousInteracting != -999 or self.fpsCounter == 0 or self.interface.previousEditorTab != self.interface.editorTab or self.interface.previousSelectedProperty != self.interface.selectedProperty or self.interface.keybindRegen or self.uc_editorVisual != [self.interface.graphOffset, self.interface.graphScale]:
+            if self.interface.interacting != -999 or self.interface.previousInteracting != -999 or self.fpsCounter == 0 or self.interface.previousEditorTab != self.interface.editorTab or self.interface.previousSelectedProperty != self.interface.selectedProperty or self.interface.keybindRegen or self.uc_editorVisual != [self.interface.graphOffset, self.interface.graphScale] or self.interface.requestSelectedProperty != self.interface.selectedProperty:
                 self.w_editor.update(arrayToImage(self.interface.getImageEditor(self.b_editor_v)))
                 self.uc_editorVisual = [self.interface.graphOffset, self.interface.graphScale]
         elif self.interface.editorTab == "p":
