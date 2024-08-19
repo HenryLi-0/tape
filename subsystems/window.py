@@ -39,6 +39,8 @@ class Window:
         self.w_options   = LabelWrapper(self.window, ( 388, 123), ( 953, 558), ( 953, 558), BACKGROUND_COLOR, FRAME_OPTIONS_INSTRUCTIONS  )
         self.b_options   = self.w_options   .getBlank()
 
+        '''Update Checks'''
+        self.uc_editorVisual = -999
         '''start interface'''
         self.interface = Interface()
 
@@ -72,8 +74,9 @@ class Window:
             if self.interface.interacting != -999 or self.interface.previousInteracting != -999 or self.fpsCounter == 0 or self.interface.previousEditorTab != self.interface.editorTab or abs(self.interface.spriteListVelocity) > 0 or self.mPressed > 0:
                 self.w_editor.update(arrayToImage(self.interface.getImageEditor(self.b_editor)))
         elif self.interface.editorTab == "v":
-            if self.interface.interacting != -999 or self.interface.previousInteracting != -999 or self.fpsCounter == 0 or self.interface.previousEditorTab != self.interface.editorTab or self.interface.previousSelectedProperty != self.interface.selectedProperty:
+            if self.interface.interacting != -999 or self.interface.previousInteracting != -999 or self.fpsCounter == 0 or self.interface.previousEditorTab != self.interface.editorTab or self.interface.previousSelectedProperty != self.interface.selectedProperty or self.interface.keybindRegen or self.uc_editorVisual != [self.interface.graphOffset, self.interface.graphScale]:
                 self.w_editor.update(arrayToImage(self.interface.getImageEditor(self.b_editor_v)))
+                self.uc_editorVisual = [self.interface.graphOffset, self.interface.graphScale]
         elif self.interface.editorTab == "p":
             if self.interface.interacting != -999 or self.interface.previousInteracting != -999 or self.fpsCounter == 0 or self.interface.previousEditorTab != self.interface.editorTab:
                 self.w_editor.update(arrayToImage(self.interface.getImageEditor(self.b_editor)))

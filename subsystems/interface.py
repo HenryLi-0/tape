@@ -24,25 +24,6 @@ class Interface:
         self.activity = ""
         self.c = Counter()
         self.cache = CacheManager()
-        '''Generate Icons'''
-        i_plusIconIdle = generateIcon(PLUS_SIGN_ARRAY, False, (29,29))
-        i_plusIconActive = generateIcon(PLUS_SIGN_ARRAY, True, (29,29))
-        i_trashcanIconIdle = generateIcon(TRASHCAN_ARRAY, False, (29,29))
-        i_trashcanIconActive = generateIcon(TRASHCAN_ARRAY, True, (29,29))
-        i_importIconIdle = generateIcon(IMPORT_ARRAY, False, (29,29))
-        i_importIconActive = generateIcon(IMPORT_ARRAY, True, (29,29))
-        i_playIcon = generateIcon(PLAY_BUTTON_ARRAY, False, (37,37))
-        i_pauseIcon = generateIcon(PAUSE_BUTTON_ARRAY, False, (37,37))
-        i_saveIconIdle = generateIcon(SAVE_ICON_ARRAY, False, (37,37))
-        i_saveIconActive = generateIcon(SAVE_ICON_ARRAY, True, (37,37))
-        i_loadIconIdle = generateIcon(LOAD_ICON_ARRAY, False, (37,37))
-        i_loadIconActive = generateIcon(LOAD_ICON_ARRAY, True, (37,37))
-        i_exportGIFIconIdle = generateIcon(RENDER_GIF_ICON_ARRAY, False, (37,37), SPECIAL_COLOR)
-        i_exportGIFIconActive = generateIcon(RENDER_GIF_ICON_ARRAY, True, (37,37), SELECTED_SPECIAL_COLOR)
-        i_exportMP4IconIdle = generateIcon(RENDER_MP4_ICON_ARRAY, False, (37,37), SPECIAL_COLOR)
-        i_exportMP4IconActive = generateIcon(RENDER_MP4_ICON_ARRAY, True, (37,37), SELECTED_SPECIAL_COLOR)
-        i_settingsIconIdle = generateIcon(GEAR_ARRAY, False, (52,52))
-        i_settingsIconActive = generateIcon(GEAR_ARRAY, True, (52,52))
         '''Interactable Visual Objects'''
         '''
         Code:
@@ -60,19 +41,19 @@ class Interface:
             -99 : ["o",ButtonVisualObject("sprites",(7,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
             -98 : ["o",ButtonVisualObject("visuals",(134,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
             -97 : ["o",ButtonVisualObject("project",(261,0),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            -96 : ["o",ButtonVisualObject("settings",(323,65),i_settingsIconIdle,i_settingsIconActive)],
+            -96 : ["o",IconVisualObject("Settings",(323,65), GEAR_ARRAY, (52,52))],
 
-            -89 : ["es", ButtonVisualObject("new sprite", (338,15), i_plusIconIdle, i_plusIconActive)],
-            -88 : ["es", ButtonVisualObject("delete sprite", (338,65), i_trashcanIconIdle, i_trashcanIconActive)],
-            -87 : ["ev", ButtonVisualObject("import image", (338,161), i_importIconIdle, i_importIconActive)],
+            -89 : ["es", IconVisualObject(   "New Sprite", (338, 15), PLUS_SIGN_ARRAY, (29,29))],
+            -88 : ["es", IconVisualObject("Delete Sprite", (338, 65),  TRASHCAN_ARRAY, (29,29))],
+            -87 : ["ev", IconVisualObject( "Import Image", (338,161),    IMPORT_ARRAY, (29,29))],
             -86 : ["ev", EditableTextBoxVisualObject("sprite name", (80,41), "Sprite Name")],
-            -85 : ["ep", ButtonVisualObject("export gif", (7,457), i_exportGIFIconIdle, i_exportGIFIconActive)],
-            -84 : ["ep", ButtonVisualObject("export mp4", (57,457), i_exportMP4IconIdle, i_exportMP4IconActive)],
+            -85 : ["ep", IconVisualObject("Export GIF", ( 7,457), RENDER_GIF_ICON_ARRAY, (37,37))],
+            -84 : ["ep", IconVisualObject("Export MP4", (57,457), RENDER_MP4_ICON_ARRAY, (37,37))],
             -83 : ["ep", EditableTextBoxVisualObject("project name", (72,52), DEFAULT_PROJECT_NAME)],
 
-            -72 : ["t", ButtonVisualObject("play pause button", (0,0), i_playIcon, i_pauseIcon)],
-            -71 : ["t", ButtonVisualObject("save button", (0,40), i_saveIconIdle, i_saveIconActive)],
-            -70 : ["t", ButtonVisualObject("load button", (0,80), i_loadIconIdle, i_loadIconActive)]
+            -72 : ["t", ButtonVisualObject("Play/Pause", (0,0), generateIcon(PLAY_BUTTON_ARRAY, False, (37,37)), generateIcon(PAUSE_BUTTON_ARRAY, False, (37,37)))],
+            -71 : ["t", IconVisualObject("Save Project", (0,40),   SAVE_ICON_ARRAY, (37,37))],
+            -70 : ["t", IconVisualObject("Load Project", (0,80),   LOAD_ICON_ARRAY, (37,37))]
         }
         #for i in range(10): self.interactableVisualObjects[self.c.c()] = ["a", OrbVisualObject(f"test{i}")]
         '''Noninteractable, Adaptive, Visual Objects'''
@@ -224,11 +205,9 @@ class Interface:
                 '''VISUAL EDITOR TAB'''
                 if KB_EV_OFFSET_LEFT(self.keyQueue):
                     '''MOVE GRAPH TIMELINE LEFT'''
-                    self.keybindLastUpdate = time.time()
                     self.graphOffset -= (self.graphScale+0.000001)
                 if KB_EV_OFFSET_RIGHT(self.keyQueue):
                     '''MOVE GRAPH TIMELINE RIGHT'''
-                    self.keybindLastUpdate = time.time()
                     self.graphOffset += (self.graphScale+0.000001)
                 if 1152<self.mx and 36<self.my and self.mx<1340 and self.my<245:
                     if KB_DELETE(self.keyQueue):
@@ -237,11 +216,9 @@ class Interface:
                         self.sprites[self.selectedSprite].removeImageUUID(math.floor(((self.mx-1152)+2*(self.my-36)-2*self.apperancePanelOffset-6)/90))
             if KB_T_OFFSET_LEFT(self.keyQueue):
                 '''MOVE TIMELINE LEFT'''
-                self.keybindLastUpdate = time.time()
                 self.timelineOffset -= (self.timelineScale+0.000001)
             if KB_T_OFFSET_RIGHT(self.keyQueue):
                 '''MOVE TIMELINE RIGHT'''
-                self.keybindLastUpdate = time.time()
                 self.timelineOffset += (self.timelineScale+0.000001)
         else:
             if self.selectedProperty == 1 and self.editorTab == "v":
@@ -251,7 +228,7 @@ class Interface:
                         self.interactableVisualObjects[self.interacting][1].setPointData((self.mx-23, self.my-36))
 
         self.requestSelectedProperty = self.selectedProperty
-        if self.previousEditorTab == "v" and self.editorTab == "v":
+        if self.previousEditorTab == "v" and self.editorTab == "v" and self.selectedSprite != -999:
             data = self.sprites[self.selectedSprite].getData("crashtbw"[self.selectedProperty-1])
             dataCheck("crashtbw"[self.selectedProperty-1], data)
             lenData = round(len(data)/3)
@@ -270,6 +247,7 @@ class Interface:
                     self.connectionEdit = "S"
                 if 953<self.mx and 255<self.my and self.mx<1340 and self.my<542:
                     if KB_CREATE(self.keyQueue):
+                        '''CREATE POINT'''
                         self.keybindLastUpdate = time.time()
                         if self.interacting == -999:
                             x = (self.mx-982)*(self.graphScale+0.000001)/25+self.graphOffset
@@ -285,6 +263,7 @@ class Interface:
                             self.interacting = -999
                             self.keybindRegen = True
                     if KB_DELETE(self.keyQueue):
+                        '''DELETE POINT'''
                         self.keybindLastUpdate = time.time()
                         if self.interacting != -999:
                             if self.interactableVisualObjects[self.interacting][1].type == "point":
@@ -529,7 +508,7 @@ class Interface:
 
             for id in self.interactableVisualObjects:
                 if self.interactableVisualObjects[id][0] == "t":
-                    if self.interactableVisualObjects[id][1].name == "play pause button":
+                    if id == -72:
                         self.interactableVisualObjects[id][1].tick(img, self.animationPlaying)
                     else:
                         self.interactableVisualObjects[id][1].tick(img, self.interacting==id)
@@ -611,23 +590,13 @@ class Interface:
                     pathP = iterateThroughSingle(data, True)
                 lenData = round(len(data)/3)
 
-                if self.previousEditorTab != "v":
-                    self.stringKeyQueue = ""
-                else:
-                    if not(self.interactableVisualObjects[self.interacting][1].type == "textbox"):
-                        self.stringKeyQueue = ""
-                
-                regen = False
-                if self.keybindRegen:
-                    regen = True
-                    self.keybindRegen = False
-
                 '''Graph Points and Editing'''
                 evgPoints = listEVGPoints(self.interactableVisualObjects)
                 evgConnections = listEVGConnections(self.interactableVisualObjects)
                 if self.previousEditorTab != "v" or self.selectedProperty != self.previousSelectedProperty:
                     self.interactableVisualObjects[-86][1].updateText(self.sprites[self.selectedSprite].name)
-                if self.previousEditorTab != "v" or self.selectedProperty != self.previousSelectedProperty or regen:
+                if self.previousEditorTab != "v" or self.selectedProperty != self.previousSelectedProperty or self.keybindRegen:
+                    self.keybindRegen = False
                     self.graphLastCheck = self.ticks
                     if len(evgPoints) > lenData:
                         for i in range(len(evgPoints)-lenData): self.interactableVisualObjects.pop(evgPoints[i])
