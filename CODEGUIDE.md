@@ -22,10 +22,12 @@ where useful code exists across different files
 - `bay.py` : used for loading images and poorly manages them
 - `checks.py` : checks that important resources exist to prevent random crashes
 - `counter.py` : just a counter, but it shockingly important!
-- `fancy.py` : used for fancy rendering stuff (fonts, border boxes)
+- `fancy.py` : used for fancy rendering stuff (but needs imports from settings!)
 - `interface.py` : parts of the tk window (animation, timeline, editor, options). contains a lot of code.
+- `label.py` : a wrapper for the tk label!
 - `pathing.py` : used to generate paths (idk what to call it) and things related to moving and coordinates
 - `render.py` : things related to rendering and image stuff
+- `simplefancy.py` : used for fancy rendering stuff (but doesnt require any imports from settings!)
 - `sprite.py` : all things sprite related
 - `visuals.py` : very silly way for buttons and visuals on the screen
 - `window.py` : just the tk window
