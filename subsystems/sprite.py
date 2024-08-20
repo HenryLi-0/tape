@@ -57,10 +57,24 @@ class SingleSprite:
             "b":[0,   50,"L",1,   50,"L"],  # Brightness - 50 = normal
             "w":[0,    0,"L",1,    0,"L"]   # Blur - 0 = normal
         }
+        self.oldData = self.data.copy()
+        self.lastTime = -999
+        self.updated = True
     def setData(self, key, data):
         '''Sets a properity's set of data, given the key and data'''
         dataCheck(key, data)
         self.data[key] = data
+        self.updated = True
+    def getUpdated(self, time):
+        '''Returns the old time if the sprite has changed data since the given time, otherwise returns False'''
+        if self.updated or roundf(self.lastTime, PATH_FLOAT_ACCURACY) != roundf(time, PATH_FLOAT_ACCURACY):
+            self.lastTime = roundf(time, PATH_FLOAT_ACCURACY)
+            self.updated = False
+            c = self.oldData.copy()
+            self.oldData = self.data.copy()
+            return [self.lastTime, c]
+        else:
+            return [False, self.data]
     def getData(self, key):
         '''Gets a properity's set of data, given the key'''
         return self.data[key]
@@ -70,14 +84,16 @@ class SingleSprite:
         if key == "p": return mergeCoordRotationPath(iterateThroughPath(self.data["c"]), iterateThroughSingle(self.data["r"]))
         if key == "a": return [max(0, min(len(self.imageUUIDs)-1, round(item))) for item in iterateThroughSingle(self.data["a"])]
         if key in "rshtbw" and len(key) == 1: return iterateThroughSingle(self.data[key])
-    def getStateAt(self, key, time):
+    def getStateAt(self, key, time, overrideData = ""):
         '''Returns a state of a given property for a given time, given the key and time'''
-        if key == "c": return findStateThroughPath(self.data["c"], time)
+        if overrideData == "": data = self.data
+        else: data = overrideData
+        if key == "c": return findStateThroughPath(data["c"], time)
         if key == "p":
-            cx, cy = findStateThroughPath(self.data["c"], time) 
-            return (cx, cy, findStateThroughSingle(self.data["r"], time))
-        if key == "a": return max(0, min(len(self.imageUUIDs)-1, round(findStateThroughSingle(self.data["a"],time))))
-        if key in "rshtbw" and len(key) == 1: return findStateThroughSingle(self.data[key], time)
+            cx, cy = findStateThroughPath(data["c"], time) 
+            return (cx, cy, findStateThroughSingle(data["r"], time))
+        if key == "a": return max(0, min(len(self.imageUUIDs)-1, round(findStateThroughSingle(data["a"],time))))
+        if key in "rshtbw" and len(key) == 1: return findStateThroughSingle(data[key], time)
     def generateFullSequence(self):
         '''Generates a full state sequence for all properties for the entire duration of importance'''
         p = self.generateSequence("p")
@@ -143,8 +159,9 @@ class SingleSprite:
         self.data = data
         self.name = self.data["name"]
         self.uuid = self.data["uuid"]
-        self.color = self.data["color"]
         self.imageUUIDs = self.data["images"]
+        try: self.color = self.data["color"]
+        except: self.color = generatePastelDark()
 
 def dataCheck(key, data):
     '''Modifies the original given data with all checked values (rounding and connections)'''
@@ -238,9 +255,9 @@ def findStateThroughPath(compact, time):
             if bottom < 0: 
                 bottom = 0
                 break
-        while connections[top+1] == "S":
+        while connections[top+1] == "S" and top+1 < len(connections)-1:
             top += 1
-            if top+1 > len(connections)-1: 
+            if top+1 > len(connections)-1:
                 break
         segment = selectiveBezierPathCoords([compact[point*3+1] for point in range(bottom, top+2)], math.ceil((compact[(low+1)*3]-compact[low*3])*RENDER_FPS), low-bottom)
         return protectedBoundary(segment, round((time-compact[low*3])*RENDER_FPS), (0,0))

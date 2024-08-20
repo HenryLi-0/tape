@@ -11,22 +11,28 @@ Here are the parts:
 
 
 '''Calculation'''
-PATH_FLOAT_ACCURACY = 3 #This is how many digits after the decimal point the intersection calculator will save for
+PATH_FLOAT_ACCURACY = 3 #This is how many digits after the decimal point some calculations will save for
 RENDER_FPS = 30 #This is the rendering FPS, also used for steps per second in path calculations
 
 '''Visuals'''
 INTERFACE_FPS = 60 # The interface window will be called every 1/INTERFACE_FPS seconds
-TICK_MS = round((1/INTERFACE_FPS)*1000)
+TICK_MS = 1 #round((1/INTERFACE_FPS)*1000)
 OCCASIONAL_TICK_MS = 5000 # Highly recommended to keep above 1 second, as it runs processes that do not need updates every tick
+
+SKETCH_MAX_REGIONS = 21 # The maximum allowed regions of the sketch screen (total 21) allowed to be updated per call to update. Recommended to not change.
+DEBUG_BACKGROUND = False # When true, turns the background red and green, helpful for debugging region updating related issues
+
+hexColorToRGBA = lambda hexcolor: tuple(int(hexcolor[i:i+2], 16) for i in (1, 3, 5)) + (255,)
 
 BACKGROUND_COLOR = "#241530" #Background color
 FRAME_COLOR = "#381f4d" #Borders and Frame color
 SELECTED_COLOR = "#9e6cc9" #Selected Element color
 TIMELINE_COLOR = "#6d3999" #Timeline color
-SPECIAL_COLOR = "#ab570e" #Special color
-SELECTED_SPECIAL_COLOR = "#db6d0d" #Selected special color
 
-hexColorToRGBA = lambda hexcolor: tuple(int(hexcolor[i:i+2], 16) for i in (1, 3, 5)) + (255,)
+BACKGROUND_COLOR_RGBA       = hexColorToRGBA(BACKGROUND_COLOR      )
+FRAME_COLOR_RGBA            = hexColorToRGBA(FRAME_COLOR           )
+SELECTED_COLOR_RGBA         = hexColorToRGBA(SELECTED_COLOR        )
+TIMELINE_COLOR_RGBA         = hexColorToRGBA(TIMELINE_COLOR        )
 
 '''Saving'''
 import os, time
@@ -38,7 +44,10 @@ FORMAT_TIME = lambda x: time.strftime("%I:%M:%S %p %m/%d/%Y", time.localtime(x))
 DEFAULT_PROJECT_NAME = "Untitled Project"
 
 '''Keybinds'''
-EDITOR_VISUAL_KEYBINDS = {
+KEYBIND_DIFFERENCE = 0.2 # Minimum allowed differance in time between keybinds
+
+KB_IGNORE = ["Win_L"]
+KB_EV_PROPERTY = {
     1 : "C",
     2 : "R",
     3 : "A",
@@ -48,26 +57,30 @@ EDITOR_VISUAL_KEYBINDS = {
     7 : "B",
     8 : "W"
 }
-KB_EDITOR_VISUAL_LINEAR_CONNECTION = ["Q", "q"]
-KB_EDITOR_VISUAL_SMOOTH_CONNECTION = ["W", "w"]
-KB_CREATE = ["A", "a"]
-KB_DELETE = ["S", "s"]
-KB_EDITOR_VISUAL_OFFSET_LEFT = ["Z", "z"]
-KB_EDITOR_VISUAL_OFFSET_RIGHT = ["X", "x"]
-KB_TIMELINE_OFFSET_LEFT = ["Left"]
-KB_TIMELINE_OFFSET_RIGHT = ["Right"]
-KB_ANIMATION_POINT_POSITION_EDIT = ["D", "d"]
-KB_SPRITE_LIST_OFFSET_UP = ["Up"]
-KB_SPRITE_LIST_OFFSET_DOWN = ["Down"]
+KB_CREATE                = lambda keys: (len(keys) == 1) and ("A" in keys or "a" in keys)
+KB_DELETE                = lambda keys: (len(keys) == 1) and ("S" in keys or "s" in keys)
+KB_EV_LINEAR_CONNECTION  = lambda keys: (len(keys) == 1) and ("Q" in keys or "q" in keys)
+KB_EV_SMOOTH_CONNECTION  = lambda keys: (len(keys) == 1) and ("W" in keys or "w" in keys)
+KB_EV_OFFSET_LEFT        = lambda keys: (len(keys) == 1) and ("Z" in keys or "z" in keys)
+KB_EV_OFFSET_RIGHT       = lambda keys: (len(keys) == 1) and ("X" in keys or "x" in keys)
+KB_A_POINT_POSITION_EDIT = lambda keys: (len(keys) == 1) and ("D" in keys or "d" in keys)
+KB_T_OFFSET_LEFT         = lambda keys: (len(keys) == 1) and ("Left"  in keys)
+KB_T_OFFSET_RIGHT        = lambda keys: (len(keys) == 1) and ("Right" in keys)
+KB_S_LIST_OFFSET_UP      = lambda keys: (len(keys) == 1) and ("Up"    in keys)
+KB_S_LIST_OFFSET_DOWN    = lambda keys: (len(keys) == 1) and ("Down"  in keys)
 
 '''Constants - DO NOT CHANGE!!!'''
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 
    Editing certain constants will break things! You have been warned!'''
 from PIL import Image, ImageFont
-import numpy
+import numpy, math
+from subsystems.simplefancy import *
 
 # Version
 VERSION = "v1.0.0"
+
+ALL_REGIONS = [(x,y) for x in range(7) for y in range(3)]
+ROTATE_AROUND_ORIGIN = lambda x,y,d: [(x/abs(x))*math.cos(math.atan(y/x)+(d*math.pi/50))*math.sqrt(x*x+y*y), (x/abs(x))*math.sin(math.atan(y/x)+(d*math.pi/50))*math.sqrt(x*x+y*y)]
 
 # Imagery
 LOADING_IMAGE = Image.open(os.path.join("resources", "loading.png")).convert("RGBA") # 1366x697, Solid, Loading Screen
@@ -101,36 +114,17 @@ EDITOR_SPACING = lambda x: x*20+15
 - Entire Screen: `(0,0) to (1365,697)`: size `(1366,698)`
 '''
 
-D_FRAME_ANIMATION_PATH = os.path.join("resources", "themed", "frame_animation.png")
-D_FRAME_TIMELINE_PATH = os.path.join("resources", "themed", "frame_timeline.png")
-D_FRAME_TIMELINE_READER_PATH = os.path.join("resources", "themed", "frame_timeline_reader.png")
-D_FRAME_EDITOR_PATH = os.path.join("resources", "themed", "frame_editor.png")
-D_FRAME_EDITOR_VISUALS_PATH = os.path.join("resources", "themed", "frame_editor_visuals.png")
-D_FRAME_EDITOR_VISUALS_GRAPH_PATH = os.path.join("resources", "themed", "frame_editor_visuals_graph.png")
-D_FRAME_EDITOR_VISUALS_GRAPH_BAR_PATH = os.path.join("resources", "themed", "frame_editor_visuals_graph_bar.png")
-D_FRAME_OPTIONS_PATH = os.path.join("resources", "themed", "frame_options.png")
-D_FRAME_OPTIONS_BUTTON_PATH = os.path.join("resources", "themed", "frame_options_button.png")
+FRAME_ANIMATION_INSTRUCTIONS = generateThemedBorderRectangleInstructions(( 903, 507), FRAME_COLOR_RGBA)
+FRAME_TIMELINE_INSTRUCTIONS  = genereateSpecificThemedBorderRectangleInstructions("timeline", FRAME_COLOR_RGBA)
+FRAME_EDITOR_INSTRUCTIONS    = generateThemedBorderRectangleInstructions(( 388, 507), FRAME_COLOR_RGBA)
+FRAME_EDITOR_V_INSTRUCTIONS  = genereateSpecificThemedBorderRectangleInstructions(  "editor", FRAME_COLOR_RGBA)
+FRAME_OPTIONS_INSTRUCTIONS   = genereateSpecificThemedBorderRectangleInstructions( "options", FRAME_COLOR_RGBA)
+FRAME_TIMELINE_READER_ARRAY = generateColorBox((3,117), SELECTED_COLOR_RGBA)
+FRAME_EDITOR_VISUALS_GRAPH_ARRAY = genereateSpecificThemedBorderRectangleInstructions( "graph", SELECTED_COLOR_RGBA)
+FRAME_EDITOR_VISUALS_GRAPH_BAR_ARRAY = generateColorBox((3,236), FRAME_COLOR_RGBA)
+FRAME_OPTIONS_BUTTON_ON_ARRAY  = generateInwardsBorderBox((120, 59), 3, SELECTED_COLOR_RGBA, BACKGROUND_COLOR_RGBA)
+FRAME_OPTIONS_BUTTON_OFF_ARRAY = generateInwardsBorderBox((120, 59), 3,    FRAME_COLOR_RGBA, BACKGROUND_COLOR_RGBA)
 
-FRAME_ANIMATION = Image.open(os.path.join("resources", "themed", "u_frame_animation.png")).convert("RGBA")
-FRAME_ANIMATION_ARRAY = numpy.array(FRAME_ANIMATION)
-FRAME_TIMELINE = Image.open(os.path.join("resources", "themed", "u_frame_timeline.png")).convert("RGBA")
-FRAME_TIMELINE_ARRAY = numpy.array(FRAME_TIMELINE)
-FRAME_TIMELINE_READER = Image.open(os.path.join("resources", "themed", "u_frame_timeline_reader.png")).convert("RGBA")
-FRAME_TIMELINE_READER_ARRAY = numpy.array(FRAME_TIMELINE_READER)
-FRAME_EDITOR = Image.open(os.path.join("resources", "themed", "u_frame_editor.png")).convert("RGBA")
-FRAME_EDITOR_ARRAY = numpy.array(FRAME_EDITOR)
-FRAME_EDITOR_VISUALS = Image.open(os.path.join("resources", "themed", "u_frame_editor_visuals.png")).convert("RGBA")
-FRAME_EDITOR_VISUALS_ARRAY = numpy.array(FRAME_EDITOR_VISUALS)    
-FRAME_EDITOR_VISUALS_GRAPH = Image.open(os.path.join("resources", "themed", "u_frame_editor_visuals_graph.png")).convert("RGBA")
-FRAME_EDITOR_VISUALS_GRAPH_ARRAY = numpy.array(FRAME_EDITOR_VISUALS_GRAPH)
-FRAME_EDITOR_VISUALS_GRAPH_BAR = Image.open(os.path.join("resources", "themed", "u_frame_editor_visuals_graph_bar.png")).convert("RGBA")
-FRAME_EDITOR_VISUALS_GRAPH_BAR_ARRAY = numpy.array(FRAME_EDITOR_VISUALS_GRAPH_BAR)
-FRAME_OPTIONS = Image.open(os.path.join("resources", "themed", "u_frame_options.png")).convert("RGBA")
-FRAME_OPTIONS_ARRAY = numpy.array(FRAME_OPTIONS) 
-FRAME_OPTIONS_BUTTON_ON = Image.open(os.path.join("resources", "themed", "u_frame_options_button_on.png")).convert("RGBA")
-FRAME_OPTIONS_BUTTON_ON_ARRAY = numpy.array(FRAME_OPTIONS_BUTTON_ON)
-FRAME_OPTIONS_BUTTON_OFF = Image.open(os.path.join("resources", "themed", "u_frame_options_button_off.png")).convert("RGBA")
-FRAME_OPTIONS_BUTTON_OFF_ARRAY = numpy.array(FRAME_OPTIONS_BUTTON_OFF)
 GEAR = Image.open(os.path.join("resources", "gear.png")).convert("RGBA")
 GEAR_ARRAY = numpy.array(GEAR)
 PLAY_BUTTON = Image.open(os.path.join("resources", "play.png")).convert("RGBA")
