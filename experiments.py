@@ -226,6 +226,7 @@ if time >= 3600: x=f"{math.floor(time/3600)}h "+x
 print(x)
 '''
 
-from subsystems.sprite import findStateThroughPath
-compact = [0.0, (0.0, 0.0), 'S', 1.0, (20.0, 0.0), 'S', 3.2, (338.0, 330.0), 'S']
+from subsystems.sprite import findStateThroughPath, iterateThroughPath
+compact = [0.0, (0.0, 0.0), 'S', 1.0, (338.0, 0.0), 'S', 3.2, (338.0, 330.0), 'S']
 print(findStateThroughPath(compact, 2.1))
+print(iterateThroughPath(compact, True))
