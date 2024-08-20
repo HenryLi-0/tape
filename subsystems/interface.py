@@ -820,9 +820,14 @@ class Interface:
             self.projectName = projectData["project name"]
             self.interactableVisualObjects[-83][1].updateText(self.projectName)
             self.projectUUID = projectData["UUID"]
-            self.projectCreatedOn = projectData["created on"]
-            self.projectLastSaved = projectData["last saved"]
-            self.projectStartTime = round(time.time() - projectData["time spent"])
+            try:
+                self.projectCreatedOn = projectData["created on"]
+                self.projectLastSaved = projectData["last saved"]
+                self.projectStartTime = round(time.time() - projectData["time spent"])
+            except: 
+                self.projectCreatedOn = round(time.time())
+                self.projectLastSaved = round(time.time())
+                self.projectStartTime = round(time.time())
             #sprite data
             spriteData = project[1]
             for uuid in list(spriteData.keys()):

@@ -159,8 +159,9 @@ class SingleSprite:
         self.data = data
         self.name = self.data["name"]
         self.uuid = self.data["uuid"]
-        self.color = self.data["color"]
         self.imageUUIDs = self.data["images"]
+        try: self.color = self.data["color"]
+        except: self.color = generatePastelDark()
 
 def dataCheck(key, data):
     '''Modifies the original given data with all checked values (rounding and connections)'''
@@ -254,9 +255,9 @@ def findStateThroughPath(compact, time):
             if bottom < 0: 
                 bottom = 0
                 break
-        while connections[top+1] == "S":
+        while connections[top+1] == "S" and top+1 < len(connections)-1:
             top += 1
-            if top+1 > len(connections)-1: 
+            if top+1 > len(connections)-1:
                 break
         segment = selectiveBezierPathCoords([compact[point*3+1] for point in range(bottom, top+2)], math.ceil((compact[(low+1)*3]-compact[low*3])*RENDER_FPS), low-bottom)
         return protectedBoundary(segment, round((time-compact[low*3])*RENDER_FPS), (0,0))

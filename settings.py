@@ -28,15 +28,11 @@ BACKGROUND_COLOR = "#241530" #Background color
 FRAME_COLOR = "#381f4d" #Borders and Frame color
 SELECTED_COLOR = "#9e6cc9" #Selected Element color
 TIMELINE_COLOR = "#6d3999" #Timeline color
-SPECIAL_COLOR = "#ab570e" #Special color
-SELECTED_SPECIAL_COLOR = "#db6d0d" #Selected special color
 
 BACKGROUND_COLOR_RGBA       = hexColorToRGBA(BACKGROUND_COLOR      )
 FRAME_COLOR_RGBA            = hexColorToRGBA(FRAME_COLOR           )
 SELECTED_COLOR_RGBA         = hexColorToRGBA(SELECTED_COLOR        )
 TIMELINE_COLOR_RGBA         = hexColorToRGBA(TIMELINE_COLOR        )
-SPECIAL_COLOR_RGBA          = hexColorToRGBA(SPECIAL_COLOR         )
-SELECTED_SPECIAL_COLOR_RGBA = hexColorToRGBA(SELECTED_SPECIAL_COLOR)
 
 '''Saving'''
 import os, time
