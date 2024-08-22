@@ -18,9 +18,15 @@ One option is clearly better here, you decide which... (clearly the second one) 
 
 Ok, time to get started!
 
+### Images:
+
+![](</demo.png>)
+
+You can also find a video of it [here!](https://www.youtube.com/watch?v=9hZ3eRs_Sic)
+
 ### Getting Started:
 
-First, make sure you have all the neccesary python modules to run this! (Any modules that don't come with python are listed below!) Then, download the latest release from the releases tab, and run `main.py`! Check `MANUAL.md` for a longer user manual on how to use this, and check `CODEGUIDE.md` if you're interested in where to find code!
+First, make sure you have all the neccesary python modules installed to run this! (Any modules that don't come with python are listed below!) Then, either clone this repository, or download a recent release (either v1 or v1.1) from the releases tab, and run [`main.py`](/main.py)! Check [`MANUAL.md`](/MANUAL.md) for a longer user manual on how to use this, and check [`CODEGUIDE.md`](/CODEGUIDE.md) if you're interested in where to find code!
 
 ### Modules Used (that dont come with python):
 - numpy
