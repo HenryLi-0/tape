@@ -1,15 +1,32 @@
-# Tape - Usage Manual
+# Tape v2.x - Usage Manual
 
 ---
 
+Welcome to the Usage Manual for Tape v2.x! Tape v2.x is an overly unnecessary way to animate an image to move across your screen. Tape v2.x is a full rewrite of Tape v1.x, and approaches the idea in a different way!
+
+Tape v2.x, unlike Tape v1.x, is a node based animation editor using node structures to define the animation. This means that there is a node work area, where nodes, drag-and-drop-able boxes can be placed. Most nodes have inputs and outputs, while some may only have one. Additionally, some may have fields that the user can type into or select. 
+
+
+## Layout:
+*This section describes the UI and possibly how to navigate to certain areas!*
+
+- TO-DO: layout docs
+
+
+
+## Nodes:
+*This section details what each node does and what inputs/outputs/fields it uses!*
+
+- TO-DO: add node docs
+
+
+
+
+## Controls:
+*This section describes general controls!*
+
 ### General:
 
-- A: Creation
-- S: Deletion
-- Z: Move Left or Up
-- X: Move Right or Down
-- Up: Move up
-- Down: Move down
 - Mouse Scroll: Zoom or move up/down
 
 ### Default Keybinds
@@ -18,77 +35,19 @@
 - Left Mouse Click: Interact
 - Control_L or Return/Enter: Submit/Finish
 
-**Editor (Sprites):**
-- A: Create a sprite (at mouse location if inside section, else at bottom)
-- S: Deletes selected sprite
-- Z: Move selected sprite up
-- X: Move selected sprite down
-- Up: Scroll Up
-- Down: Scroll Down
-- Mouse Scroll: Scroll
 
-**Editor (Visual):**
-- Graph Tabs
-    - 1: Coordinates
-    - 2: Rotations
-    - 3: Apperance
-    - 4: Size
-    - 5: Hue
-    - 6: Transparency
-    - 7: Brightness
-    - 8: Blur
-- Points
-    - Q: Linear Connection
-    - W: Smooth Connection
-    - A: Create Point (At mouse position)
-    - S: Delete (selected) Point
-    - Z: Move graph left
-    - X: Move graph right
-    - Mouse Scroll: Change zoom (centered at mouse)
-- Coordinate Editor
-    - D: Move selected point's waypoint to mouse location
 
-**Timeline:**
-- Left: Move timeline left
-- Right: Move timeline right
-- Mouse Scroll: Change zoom (centered at mouse)
 
-### Buttons and Other UI Stuff
-
-**Special Buttons**
-- Editor > Sprites
-    - Add: Creates a new sprite at the bottom of the sprites list
-    - Delete: Deletes selected sprite
-- Editor > Visuals:
-    - Add: Imports an image
-    - Points: Draggable points in a point-based editor
-- Editor > Projects
-    - Export GIF: Saves the animation to GIF
-    - Export MP4: Saves the animation to MP4
-- Timeline
-    - Play/Pause: Play/pause the animation
-    - Save: Saves project
-    - Open: Opens project
-- Options
-    - Sprite, Visuals, Project: Switches to respective editor tab
-    - Settings: Opens `SETTINGS.py`
-
-**Others**
-- Timeline
-    - Colored bars represent different sprites and their "importance" ranges
-    - Draggable timeline bar
-- Options
-    - Displayed are the mouse position (replaced with relative animation mouse position when in animation section), FPS, and the interacting object ID (brightens when mouse is pressed)
-
-### Warnings:
-- Opening projects from past versions may crash! The opening/saving code will try to stay the same throughout versions, but there is no guarantee that the project will always open properly through different versions
-- It's highly recommended to save your project before exporting! Exporting will lag the window! (It will appear stuck, but let it run, assuming it didn't crash due to a bug!)
+## Warnings:
+- Tape v2.x is a full rewrite from Tape v1.x, meaning that any projects created in Tape v1.x will almost certaintly NOT work in Tape v2.x! If you want to access Tape v1.x projects, use a version of Tape v1.x to open it.
+- Opening projects from past versions may crash! The opening/saving code will try to stay the same throughout versions, but there is no guarantee that the project will always open properly through different versions.
+- It's highly recommended to save your project before exporting as exporting can lag the window! (It may appear stuck, but let it run, assuming it didn't crash due to a bug!)
 - Report any strange bugs/unexpected behavior in issues on GitHub! The repository can be found here: https://github.com/HenryLi-0/tape
 
 ---
 
 ### Version Info:
 
-Tape Version: v1.1.0
+Tape Version: pre-v2.0.0
 
-Last Updated: 8/19/2024
+Last Updated: 12/24/2024
