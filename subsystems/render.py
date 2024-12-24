@@ -1,10 +1,9 @@
 '''This file contains functions for rendering related purposes'''
 
-from PIL import ImageTk, Image, ImageEnhance
+from PIL import Image, ImageEnhance
 import numpy, math
-from settings import *
 
-#Convert
+# Convert
 
 def imageToArray(img:Image):
     '''Converts an Image into a numpy array'''
@@ -88,7 +87,7 @@ def merge(img1:Image.Image|numpy.ndarray, img2:Image.Image|numpy.ndarray):
     img2 = numpy.array(img2)
     return img1 // 2 + img2 // 2
 
-def placeOver(img1:numpy.ndarray, img2:numpy.ndarray, position:list|tuple, center = False):
+def arrayPlaceOver(img1:numpy.ndarray, img2:numpy.ndarray, position:list|tuple, center = False):
     '''Modifies image 1 (background) as an array of image 2 (overlay) placed on top of image 1 (background), given as numpy arrays'''
     if center: position = (round(position[0]-img2.shape[1]*0.5),round(position[1]-img2.shape[0]*0.5))
     img1H, img1W = img1.shape[:2] 
@@ -120,10 +119,10 @@ def placeOver(img1:numpy.ndarray, img2:numpy.ndarray, position:list|tuple, cente
         blendedRGB = (overlayRGB*alpha_overlay[:, :, None]+backgroundRGB*(1-alpha_overlay[:, :, None])).astype(numpy.uint8)    
         img1[startY:endY, startX:endX, :3] = blendedRGB
         img1[startY:endY, startX:endX, 3] = (combined_alpha * 255).astype(numpy.uint8)
-    
+
     return True
 
-def dPlaceOver(img1:numpy.ndarray, img2: numpy.ndarray, position:list|tuple):
+def dArrayPlaceOver(img1:numpy.ndarray, img2: numpy.ndarray, position:list|tuple):
     '''Dangerously returns an overlayed version of image 1 (background) as an array of image 2 (overlay) placed on top of image 1 (background), given as numpy arrays, by directly adding it'''
     if img1.shape == img2.shape: img1 += img2
     else:
@@ -137,68 +136,84 @@ def dPlaceOver(img1:numpy.ndarray, img2: numpy.ndarray, position:list|tuple):
             '''So, you really messed up... told you it was dangerous...'''
             pass
 
-def rotateDeg(img: numpy.ndarray, degrees:float):
-    '''Returns an array of a rotated version of the given image by (degrees) degrees, using the 0 up CCW rotation system'''
-    return numpy.array(Image.fromarray(img).rotate(degrees,expand=True))
+def placeOver(img1: Image, img2: Image, position:list|tuple, center = False):
+    '''Modifies image 1 (background) as an array of image 2 (overlay) placed on top of image 1 (background), given as PIL images'''
+    if center: X, Y = (position[0] - round(img2.width/2), position[1] - round(img2.height/2))
+    else: X, Y = position
+    if (X < img1.width) and (Y < img1.height) and (X + img2.width > 0) and (Y + img2.height > 0):
+        if (X < 0) or (Y < 0) or (X + img2.width > img1.width) or (Y + img2.height > img1.height):
+            SX = math.floor(max(X, 0))
+            SY = math.floor(max(Y, 0))
+            crop = img2.crop((
+                max(-X, 0),
+                max(-Y, 0),
+                max(-X, 0) + (math.floor(min(X + img2.width, img1.width)) - SX),
+                max(-Y, 0) + (math.floor(min(Y + img2.height, img1.height)) - SY)
+            ))
+            img1.paste(crop, (SX, SY), crop)
+        else:
+            img1.paste(img2, (round(X), round(Y)), img2)
+    return True
 
-def rotateDegHundred(img: numpy.ndarray, cent:float):
-    '''Returns an array of a rotated version of the given image by (cent) cents, using the 0 up CCW rotation system. 100 cents = 360 degrees, 1 cent = 3.6 degrees'''
-    return numpy.array(Image.fromarray(img).rotate(cent*3.6,expand=True))
+def rotateDeg(img: Image, degrees:float):
+    '''Returns a copy of the Image as a rotated version of the given Image by (degrees) degrees, using the 0 up CCW rotation system'''
+    return img.rotate(degrees,expand=True)
 
-def setSize(img: numpy.ndarray, size):
-    '''Returns a copy of the given image scaled by size, given the size change (given with 50 as normal, >50 scale up, <50 scale down)'''
-    '''EDITING WARNING: IF CHANGED, MUST UPDATE THE REGION LOGIC.'''
-    y, x = img.shape[:2]
-    return numpy.array(Image.fromarray(img).resize((max(1, (round(x*(size/50)**2))),max(1, round(y*(size/50)**2)))))
+def rotateDegHundred(img: Image, cent:float):
+    '''Returns a copy of the given Image as a rotated version of the given Image by (cent) cents, using the 0 up CCW rotation system. 100 cents = 360 degrees, 1 cent = 3.6 degrees'''
+    return img.rotate(cent*3.6,expand=True)
 
-def setSizeSize(img: numpy.ndarray, size):
-    '''Returns a copy of the given image with set size size, given the exact target sizes'''
-    return numpy.array(Image.fromarray(img).resize((max(1,size[0]), max(1,size[1])), Image.Resampling.NEAREST))
+def setSize(img: Image, size:float):
+    '''Returns a copy of the given Image scaled by size, given the size change (given with 100 as normal, >100 scale up, <100 scale down)'''
+    x, y = img.width, img.height
+    return img.resize((max(1, (round(x*(size/100)))),max(1, round(y*(size/100)))),Image.Resampling.NEAREST)
 
-def setSizeSizeBlur(img: numpy.ndarray, size):
-    '''Returns a copy of the given image with set size size, given the exact target sizes, resampling is hamming!'''
-    return numpy.array(Image.fromarray(img).resize((size[0], size[1]), Image.Resampling.HAMMING))
+def setSizeSize(img: Image, size:list|tuple):
+    '''Returns a copy of the given Image with set size size, given the exact target sizes'''
+    return img.resize((max(1,size[0]), max(1,size[1])), Image.Resampling.NEAREST)
 
-def setColorEffect(img: numpy.ndarray, colorEffect):
-    '''Returns a copy of the given image with a color shift, given the shift value (given 0-100)'''
-    imgc = img.copy()
+def setSizeSizeBlur(img: Image, size:float):
+    '''Returns a copy of the given Image with set size size, given the exact target sizes, resampling is hamming!'''
+    return img.resize((size[0], size[1]), Image.Resampling.HAMMING)
+
+def setColorEffect(img: Image, colorEffect:float):
+    '''Returns a copy of the given Image with a color shift, given the shift value (given 0-100)'''
+    imgc = imageToArray(img)
     imgc[:, :, 0:2] += numpy.uint8(colorEffect/100*255)
-    return imgc
+    return arrayToImage(imgc)
 
-def setTransparency(img: numpy.ndarray, transparency):
-    '''Returns a copy of the given image with transparency multiplied, given the transparency value (given 0-100, 0 = clear, 100 = normal)'''
+def setTransparency(img: Image, transparency:float):
+    '''Returns a copy of the given Image with transparency multiplied, given the transparency value (given 0-100, 0 = clear, 100 = normal)'''
     if transparency == 100: return img
-    imgc = img.copy()
+    imgc = imageToArray(img)
     imgMask = imgc[:, :, 3] * (transparency/100)
     imgc[:, :, 3] = imgMask
-    return imgc
+    return arrayToImage(imgc)
 
-def setBrightness(img: numpy.ndarray, brightness):
-    '''Returns a copy of the given image with brightness changed, given the brightness value (>50 = brighter, <50 = darker)'''
-    imgc = ImageEnhance.Brightness(Image.fromarray(img))
-    imgc = imgc.enhance((brightness+50)/100)
-    return numpy.array(imgc)
+def setBrightnessEffect(img: Image, brightness:float):
+    '''Returns a copy of the given Image with brightness changed, given the brightness value (>50 = brighter, <50 = darker)'''
+    return ImageEnhance.Brightness(img).enhance((brightness+100)/100)
 
-def setBlur(img: numpy.ndarray, pixelation):
-    '''Returns a copy of the given image blured, given the blur value (given 0-100, 0 = normal, 100 = very pixelated)'''
+def setBlur(img: Image, pixelation:float):
+    '''Returns a copy of the given Image blured, given the blur value (given 0-100, 0 = normal, 100 = very pixelated)'''
     if pixelation <= 1: return img
-    y, x = img.shape[:2]
-    imgc = numpy.array(Image.fromarray(img).resize((max(1, (round(x/pixelation*(x/100)))),max(1, round(y/pixelation*(y/100))))))
-    return numpy.array(Image.fromarray(imgc).resize((round(x),round(y))))
+    x, y = img.width, img.height
+    imgc = img.resize((max(1, (round(x/pixelation*(x/100)))),max(1, round(y/pixelation*(y/100)))))
+    return imgc.resize((round(x),round(y)))
 
-def setLimitedSize(img: numpy.ndarray, size):
-    '''Returns the a copy of the image scaled to fix inside a (size x size) shape'''
-    y, x, = img.shape[:2]
+def setLimitedSize(img: Image, size:int):
+    '''Returns a copy of the given Image scaled to fix inside a (size x size) shape'''
+    x, y = img.width, img.height
     scaleFactor = size/x if x>y else size/y
-    return numpy.array(Image.fromarray(img).resize((max(1, (round(x*scaleFactor))),max(1, round(y*scaleFactor)))))
+    return img.resize((max(1, (round(x*scaleFactor))),max(1, round(y*scaleFactor))))
 
-def setLimitedSizeSize(img: numpy.ndarray, size:tuple|list):
-    '''Returns the a copy of the image scaled to fix inside a size shape'''
-    y, x = img.shape[:2]
+def setLimitedSizeSize(img: Image, size:tuple|list):
+    '''Returns a copy of the given Image scaled to fix inside a size shape'''
+    x, y = img.width, img.height
     scaleFactor = size[0]/x
     if size[1]/y < scaleFactor: scaleFactor = size[1]/y
-    return numpy.array(Image.fromarray(img).resize((max(1, (round(x*scaleFactor))),max(1, round(y*scaleFactor))), Image.Resampling.NEAREST))
+    return img.resize((max(1, (round(x*scaleFactor))),max(1, round(y*scaleFactor))), Image.Resampling.NEAREST)
 
-def resizeImage(img: numpy.ndarray, size:tuple|list):
-    '''Returns the a copy of the image scaled to shape size'''
-    return numpy.array(Image.fromarray(img).resize(size, Image.Resampling.NEAREST))
+def resizeImage(img: Image, size:tuple|list):
+    '''Returns a copy of the given Image scaled to shape size'''
+    return img.resize(size, Image.Resampling.NEAREST)
