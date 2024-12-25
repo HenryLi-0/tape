@@ -21,7 +21,7 @@ class LabelWrapper:
             for instruction in instructions:
                 placeOver(self.blank, instruction[0], instruction[1])
 
-    def update(self, image:numpy.ndarray):
+    def update(self, image:Image):
         '''Updates the label's image to the given array.'''
         img = ImageTk.PhotoImage(image)
         self.section.configure(image = img)

@@ -191,7 +191,7 @@ def setTransparency(img: Image, transparency:float):
     return arrayToImage(imgc)
 
 def setBrightnessEffect(img: Image, brightness:float):
-    '''Returns a copy of the given Image with brightness changed, given the brightness value (>50 = brighter, <50 = darker)'''
+    '''Returns a copy of the given Image with brightness changed, given the brightness value (<0 = darker, 0 = normal, >0 = brighter)'''
     return ImageEnhance.Brightness(img).enhance((brightness+100)/100)
 
 def setBlur(img: Image, pixelation:float):

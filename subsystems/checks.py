@@ -11,7 +11,7 @@ from subsystems.bay         import *
 from subsystems.counter     import *
 from subsystems.fancy       import *
 from subsystems.interface   import *
-from subsystems.pathing     import *
+from subsystems.point     import *
 from subsystems.render      import *
 from subsystems.visuals     import *
 from subsystems.window      import *

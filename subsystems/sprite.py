@@ -2,7 +2,7 @@
 
 from settings import *
 import numpy, math, uuid
-from subsystems.pathing import smoothChangeAt, straightChangeAt, roundf, timelyBezierPathCoords, selectiveBezierPathCoords, straightPathCoords, mergeCoordRotationPath, betweenP
+from subsystems.point import smoothChangeAt, straightChangeAt, roundf, timelyBezierPathCoords, selectiveBezierPathCoords, straightPathCoords, mergeCoordRotationPath, betweenP
 from subsystems.render import rotateDegHundred, setSize, setColorEffect, setTransparency, setBrightness, setBlur
 from subsystems.fancy import generatePastelDark
 from settings import FLOAT_ACCURACY, RENDER_FPS

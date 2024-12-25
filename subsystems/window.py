@@ -48,6 +48,8 @@ class Window:
 
         self.processFunctions = {
             " " : self.interface.processNone,
+            "a" : self.interface.processExampleA,
+            "b" : self.interface.processExampleB,
         }
         self.processFunctionsRegions = list(self.processFunctions.keys())
 
@@ -85,7 +87,6 @@ class Window:
         '''window processes that happen less frequently (once every 5 seconds)'''
         print("windowOccaionalProcess")
         self.window.title(f"Tape - Editing: {self.interface.s.ticks}")
-        self.interface.scheduleAllRegions()
         print(self.getFPS())
 
         for region in self.processFunctionsRegions:

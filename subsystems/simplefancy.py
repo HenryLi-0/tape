@@ -16,7 +16,7 @@ def generateColorBox(size:list|tuple = (25,25),color:list|tuple = (255,255,255,2
     '''Generates a box of (size) size of (color) color'''
     array = numpy.empty((size[1], size[0], 4), dtype=numpy.uint8)
     array[:, :] = color
-    return array
+    return arrayToImage(array)
 
 def generateUnrestrictedColorBox(size:list|tuple = (25,25),color:list|tuple = (255,255,255,255)):
     '''Generates a box of (size) size of (color) color without restrictions'''
@@ -33,9 +33,10 @@ def generateBorderBox(size:list|tuple = (25,25), outlineW:int = 1, color:list|tu
     array[:, -outlineW:, :] = color
     return arrayToImage(array)
 
-def generateInwardsBorderBox(size:list|tuple = (25,25), outlineW:int = 1, color:list|tuple = (255,255,255,255)):
+def generateInwardsBorderBox(size:list|tuple = (25,25), outlineW:int = 1, color:list|tuple = (255,255,255,255), fill:list|tuple = (0,0,0,0)):
     '''Generates a inwards bordered box with a transparent inside, with transparent space of (size - outline), and an (outlineW) px thick outline of (color) color surrounding it'''
     array = numpy.zeros((size[1], size[0], 4), dtype=numpy.uint8)
+    array[:,:,:] = fill
     array[:outlineW, :, :] = color
     array[-outlineW:, :, :] = color
     array[:, :outlineW, :] = color

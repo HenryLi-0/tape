@@ -1,7 +1,7 @@
 '''This file contains classes all about the visual objects the user sees'''
 
 import time, numpy, random, math
-from subsystems.pathing import bezierPathCoords, straightPathCoords, addP, subtractP, mergeCoordRotationPath, pointNextCoordRotationPath, roundf
+from subsystems.point import addP, subtractP, roundf
 from subsystems.render import placeOver
 from subsystems.fancy import displayText, generateColorBox, generateIcon
 from settings import *

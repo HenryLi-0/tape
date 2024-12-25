@@ -43,6 +43,7 @@ FORMAT_TIME = lambda x: time.strftime("%I:%M:%S %p %m/%d/%Y", time.localtime(x))
 DEFAULT_PROJECT_NAME = "Untitled Project"
 
 '''Keybinds'''
+KEYBIND_DIFFERENCE = 0.2
 KB_IGNORE   = ["Win_L"]                                                                     # Keys to ignore
 KB_CONFIRM  = ["Return", "Control_L"]                                                       # Keys to confirm
 KB_ACTIVATE = ["space", "Return"]                                                           # Keys to activate/trigger
@@ -84,11 +85,11 @@ SECTIONS_DATA = {
     "a": [(  22,  22),( 671, 675),( 650, 654),(   0,   0),( 650, 654)],
     "b": [( 694,  22),(1343, 675),( 650, 654),(   0,   0),( 650, 654)],
 }
-FULL_BACKGROUND = setBrightnessEffect(getImageRGBAFromPath(os.path.join("resources", "backgrounds", "sample_full_background.png")), 10)
+FULL_BACKGROUND = setBrightnessEffect(getImageRGBAFromPath(os.path.join("resources", "loading.png")), -10)
 SECTIONS_FRAME_INSTRUCTIONS = {
     " ": [[FULL_BACKGROUND, (0,0)]],
-    "a": generateThemedBorderRectangleInstructions(( 650, 654), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,10), ( -22,-22)),
-    "b": generateThemedBorderRectangleInstructions(( 650, 654), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,10), (-694,-22)),
+    "a": generateThemedBorderRectangleInstructions(( 650, 654), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25), ( -22,-22)),
+    "b": generateThemedBorderRectangleInstructions(( 650, 654), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25), (-694,-22)),
 }
 SECTIONS = list(SECTIONS_DATA.keys())
 # Imagery
@@ -111,7 +112,7 @@ EMPTY_IMAGE = Image.fromarray(numpy.zeros((1, 1, 4), dtype=numpy.uint8), "RGBA")
 EMPTY_IMAGE_ARRAY = numpy.array(EMPTY_IMAGE)
 
 # Fonts
-FONTS_ALL = ["Comfortaa-Medium.ttf", "Orbitron-VariableFont_wght.ttf", "Tiny5-Regular.ttf", "TurretRoad-Medium.ttf", "ZenDots-Regular.ttf"]
+FONTS_ALL = ["Comfortaa-Medium.ttf", "Orbitron-VariableFont_wght.ttf", "Tiny5-Regular.ttf"]
 FONT_PATH = os.path.join("resources", "fonts", FONTS_ALL[0])
 FONT_LARGE = ImageFont.truetype(FONT_PATH, 24)
 FONT_MEDIUM = ImageFont.truetype(FONT_PATH, 15)
