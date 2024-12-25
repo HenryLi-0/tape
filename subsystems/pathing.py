@@ -2,7 +2,7 @@
 
 from settings import FLOAT_ACCURACY
 import math
-from point import *
+from subsystems.point import *
 
 #SMOOTH PATHING TIME YIPPEE (very satsifying)
 

@@ -1,6 +1,6 @@
 from subsystems.point import *
 from subsystems.pathing import *
-import random, uuid
+import random, uuid, os
 from PIL import Image
 
 
@@ -90,9 +90,13 @@ class FileLocation(Node):
         else:
             fileType = fileLocation.get()[index:]
             if fileType in [".txt", ".png", ".jpg", ".jpeg"]:
-                self.fileLocation = fileLocation
+                if os.path.exists(fileLocation.get()):
+                    self.fileLocation = fileLocation
+                else:
+                    self.error.error = f"File doesn't exist!"
             else:
                 self.error.error = f"File extension {fileType} invalid! (for safety reasons)"
+        return None
     def get(self):
         # TO-DO: finish 
         pass
