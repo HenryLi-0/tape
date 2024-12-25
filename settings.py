@@ -47,17 +47,7 @@ KEYBIND_DIFFERENCE = 0.2
 KB_IGNORE   = ["Win_L"]                                                                     # Keys to ignore
 KB_CONFIRM  = ["Return", "Control_L"]                                                       # Keys to confirm
 KB_ACTIVATE = ["space", "Return"]                                                           # Keys to activate/trigger
-KB_CREATE                = lambda keys: (len(keys) == 1) and ("A" in keys or "a" in keys)
-KB_DELETE                = lambda keys: (len(keys) == 1) and ("S" in keys or "s" in keys)
-KB_EV_LINEAR_CONNECTION  = lambda keys: (len(keys) == 1) and ("Q" in keys or "q" in keys)
-KB_EV_SMOOTH_CONNECTION  = lambda keys: (len(keys) == 1) and ("W" in keys or "w" in keys)
-KB_EV_OFFSET_LEFT        = lambda keys: (len(keys) == 1) and ("Z" in keys or "z" in keys)
-KB_EV_OFFSET_RIGHT       = lambda keys: (len(keys) == 1) and ("X" in keys or "x" in keys)
-KB_A_POINT_POSITION_EDIT = lambda keys: (len(keys) == 1) and ("D" in keys or "d" in keys)
-KB_T_OFFSET_LEFT         = lambda keys: (len(keys) == 1) and ("Left"  in keys)
-KB_T_OFFSET_RIGHT        = lambda keys: (len(keys) == 1) and ("Right" in keys)
-KB_S_LIST_OFFSET_UP      = lambda keys: (len(keys) == 1) and ("Up"    in keys)
-KB_S_LIST_OFFSET_DOWN    = lambda keys: (len(keys) == 1) and ("Down"  in keys)
+KB_CREATE   = lambda keys: (len(keys) == 1) and ("A" in keys or "a" in keys)
 
 '''Constants - DO NOT CHANGE!!!'''
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 
@@ -68,15 +58,18 @@ from subsystems.simplefancy import *
 from subsystems.render import *
 
 # Version
-VERSION = "v1.0.0"
+VERSION = "pre-v2.0.0"
 SYS_IVOS = [-999,-998,-997,-996]
 
 ROTATE_AROUND_ORIGIN = lambda x,y,d: [(x/abs(x))*math.cos(math.atan(y/x)+(d*math.pi/50))*math.sqrt(x*x+y*y), (x/abs(x))*math.sin(math.atan(y/x)+(d*math.pi/50))*math.sqrt(x*x+y*y)]
 
 # Sections
 '''
-- Example A Area: `(  22,  22) to ( 671, 675)` : size `( 650, 654)`
-- Example B Area: `( 694,  22) to (1343, 675)` : size `( 650, 654)`
+- Animation Interface: `(  23,  36) to ( 925, 542)`: size `( 903, 507)`
+- Timeline Interface:  `(  23, 558) to ( 925, 680)`: size `( 903, 123)`
+- Editor Interface:    `( 953,  36) to (1340, 542)`: size `( 388, 507)`
+- Options Interface:   `( 953, 558) to (1340, 680)`: size `( 388, 123)`
+- Entire Screen:       `(  0,    0) to (1365, 697)`: size `(1366, 698)`
 
 Region ID : Top Left, Bottom Right, Size, Keep In Relative Top Left, Keep In Relative Bottom Right
 '''
@@ -92,6 +85,7 @@ SECTIONS_FRAME_INSTRUCTIONS = {
     "b": generateThemedBorderRectangleInstructions(( 650, 654), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25), (-694,-22)),
 }
 SECTIONS = list(SECTIONS_DATA.keys())
+
 # Imagery
 LOADING_IMAGE = Image.open(os.path.join("resources", "loading.png")).convert("RGBA") # 1366x697, Solid, Loading Screen
 LOADING_IMAGE_ARRAY = numpy.array(LOADING_IMAGE)
@@ -120,59 +114,31 @@ FONT_SMALL_MEDIUM = ImageFont.truetype(FONT_PATH, 12)
 FONT_SMALL = ImageFont.truetype(FONT_PATH, 10)
 EDITOR_SPACING = lambda x: x*20+15
 
-# Blank Interface Sections
-'''
-- Animation Interface: `(23,36) to (925,542)`: size `(903,507)`
-- Timeline Interface: `(23,558) to (925,680)`: size `(903,123)`
-- Editor Interface: `(953,36) to (1340,542)`: size `(388,507)`
-- Options Interface: `(953,558) to (1340,680)`: size `(388,123)`
-- Entire Screen: `(0,0) to (1365,697)`: size `(1366,698)`
-'''
-
-FRAME_ANIMATION_INSTRUCTIONS = generateThemedBorderRectangleInstructions(( 903, 507), FRAME_COLOR_RGBA)
-FRAME_TIMELINE_INSTRUCTIONS  = generateSpecificThemedBorderRectangleInstructions("timeline", FRAME_COLOR_RGBA)
-FRAME_EDITOR_INSTRUCTIONS    = generateThemedBorderRectangleInstructions(( 388, 507), FRAME_COLOR_RGBA)
-FRAME_EDITOR_V_INSTRUCTIONS  = generateSpecificThemedBorderRectangleInstructions(  "editor", FRAME_COLOR_RGBA)
-FRAME_OPTIONS_INSTRUCTIONS   = generateSpecificThemedBorderRectangleInstructions( "options", FRAME_COLOR_RGBA)
-FRAME_TIMELINE_READER_ARRAY = generateColorBox((3,117), SELECTED_COLOR_RGBA)
-FRAME_EDITOR_VISUALS_GRAPH_ARRAY = generateSpecificThemedBorderRectangleInstructions( "graph", SELECTED_COLOR_RGBA)
-FRAME_EDITOR_VISUALS_GRAPH_BAR_ARRAY = generateColorBox((3,236), FRAME_COLOR_RGBA)
-FRAME_OPTIONS_BUTTON_ON_ARRAY  = generateInwardsBorderBox((120, 59), 3, SELECTED_COLOR_RGBA, BACKGROUND_COLOR_RGBA)
-FRAME_OPTIONS_BUTTON_OFF_ARRAY = generateInwardsBorderBox((120, 59), 3,    FRAME_COLOR_RGBA, BACKGROUND_COLOR_RGBA)
-
-GEAR = Image.open(os.path.join("resources", "gear.png")).convert("RGBA")
-GEAR_ARRAY = numpy.array(GEAR)
-PLAY_BUTTON = Image.open(os.path.join("resources", "play.png")).convert("RGBA")
-PLAY_BUTTON_ARRAY = numpy.array(PLAY_BUTTON)
-PAUSE_BUTTON = Image.open(os.path.join("resources", "pause.png")).convert("RGBA")
-PAUSE_BUTTON_ARRAY = numpy.array(PAUSE_BUTTON)
 
 # Cursors
+CURSOR_ARROW =  getImageRGBAFromPath(os.path.join("resources", "cursor_arrow.png"))
+CURSOR_SELECT = getImageRGBAFromPath(os.path.join("resources", "cursor_select.png"))
 
-CURSOR_ARROW = Image.open(os.path.join("resources", "cursor_arrow.png")).convert("RGBA")
-CURSOR_ARROW_ARRAY = numpy.array(CURSOR_ARROW)
-CURSOR_SELECT = Image.open(os.path.join("resources", "cursor_select.png")).convert("RGBA")
-CURSOR_SELECT_ARRAY = numpy.array(CURSOR_SELECT)
+ORB_IDLE =                  getImageRGBAFromPath(os.path.join("resources", "orb_idle.png"))
+ORB_SELECTED =              getImageRGBAFromPath(os.path.join("resources", "orb_selected.png"))
+POINT_IDLE =                getImageRGBAFromPath(os.path.join("resources", "point_idle.png"))
+POINT_SELECTED =            getImageRGBAFromPath(os.path.join("resources", "point_selected.png"))
+RECTANGULAR_RED_BUTTON =    getImageRGBAFromPath(os.path.join("resources", "rectangular_red_button.png"))
+RECTANGULAR_GREEN_BUTTON =  getImageRGBAFromPath(os.path.join("resources", "rectangular_green_button.png"))
 
-ORB_IDLE = Image.open(os.path.join("resources", "orb_idle.png")).convert("RGBA")
-ORB_IDLE_ARRAY = numpy.array(ORB_IDLE)
-ORB_SELECTED = Image.open(os.path.join("resources", "orb_selected.png")).convert("RGBA")
-ORB_SELECTED_ARRAY = numpy.array(ORB_SELECTED)
-POINT_IDLE = Image.open(os.path.join("resources", "point_idle.png")).convert("RGBA")
-POINT_IDLE_ARRAY = numpy.array(POINT_IDLE)
-POINT_SELECTED = Image.open(os.path.join("resources", "point_selected.png")).convert("RGBA")
-POINT_SELECTED_ARRAY = numpy.array(POINT_SELECTED)
-RECTANGULAR_RED_BUTTON_ARRAY = numpy.array(Image.open(os.path.join("resources", "rectangular_red_button.png")).convert("RGBA"))
-RECTANGULAR_GREEN_BUTTON_ARRAY = numpy.array(Image.open(os.path.join("resources", "rectangular_green_button.png")).convert("RGBA"))
-UP_ARROW_ARRAY = numpy.array(Image.open(os.path.join("resources", "up_arrow.png")).convert("RGBA"))
-PATH_POINT_IDLE_ARRAY = numpy.array(Image.open(os.path.join("resources", "path_point_idle.png")).convert("RGBA"))
-PATH_POINT_SELECTED_ARRAY = numpy.array(Image.open(os.path.join("resources", "path_point_selected.png")).convert("RGBA"))
-PLUS_SIGN_ARRAY = numpy.array(Image.open(os.path.join("resources", "plus.png")).convert("RGBA"))
-TRASHCAN_ARRAY = numpy.array(Image.open(os.path.join("resources", "trashcan.png")).convert("RGBA"))
-IMPORT_ARRAY = numpy.array(Image.open(os.path.join("resources", "import.png")).convert("RGBA"))
-SAVE_ICON_ARRAY = numpy.array(Image.open(os.path.join("resources", "save.png")).convert("RGBA"))
-LOAD_ICON_ARRAY = numpy.array(Image.open(os.path.join("resources", "load.png")).convert("RGBA"))
-RENDER_GIF_ICON_ARRAY = numpy.array(Image.open(os.path.join("resources", "render_gif.png")).convert("RGBA"))
-RENDER_MP4_ICON_ARRAY = numpy.array(Image.open(os.path.join("resources", "render_mp4.png")).convert("RGBA"))
+# Icons
+GEAR =                  getImageRGBAFromPath(os.path.join("resources", "icon", "gear.png"))
+PLAY_BUTTON =           getImageRGBAFromPath(os.path.join("resources", "icon", "play.png"))
+PAUSE_BUTTON =          getImageRGBAFromPath(os.path.join("resources", "icon", "pause.png"))
+UP_ARROW =              getImageRGBAFromPath(os.path.join("resources", "up_arrow.png"))
+PATH_POINT_IDLE =       getImageRGBAFromPath(os.path.join("resources", "path_point_idle.png"))
+PATH_POINT_SELECTED =   getImageRGBAFromPath(os.path.join("resources", "path_point_selected.png"))
+PLUS_SIGN =             getImageRGBAFromPath(os.path.join("resources", "icon", "plus.png"))
+TRASHCAN =              getImageRGBAFromPath(os.path.join("resources", "icon", "trashcan.png"))
+IMPORT =                getImageRGBAFromPath(os.path.join("resources", "icon", "import.png"))
+SAVE_ICON =             getImageRGBAFromPath(os.path.join("resources", "icon", "save.png"))
+LOAD_ICON =             getImageRGBAFromPath(os.path.join("resources", "icon", "load.png"))
+RENDER_GIF_ICON =       getImageRGBAFromPath(os.path.join("resources", "icon", "render_gif.png"))
+RENDER_MP4_ICON =       getImageRGBAFromPath(os.path.join("resources", "icon", "render_mp4.png"))
 
 PROPERTY_DISPLAY_NAMES = ["Coordinates","Rotational","Apperance","Size","Hue","Transparency","Brightness","Blur"]
