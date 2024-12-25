@@ -17,8 +17,153 @@ Tape v2.x, unlike Tape v1.x, is a node based animation editor using node structu
 ## Nodes:
 *This section details what each node does and what inputs/outputs/fields it uses!*
 
-- TO-DO: add node docs
+**NEEDS TO UPDATE WITH NEW STUFF (EX. MUSIC, ADVANCED MUSIC, CALCULATION, ETC.)**
 
+**Simple**
+- Numbers: a number FILL IN, or removes units
+  - IN:
+    - Unit(Number)
+    - FILL IN
+  - Representation: (n)
+- Random: a random number
+  - IN: Number, Number (range) (optional, default 0-1)
+  - OUT: a random number within range
+- File Location: a file location, can be directory or file path
+  - Representation: ("C:/...")
+- Coordinate: two numbers
+  - In: 
+    - Number, Number
+    - FILL IN
+  - Out: (x,y) (coordinate)
+  - Representation: (x,y)
+- Unit: a number with a unit, can does convert units reasonably
+  - Representation: Unit(Number)
+  - Varitents:
+    - Angles
+    - Pixels
+    - Time
+
+**Operations**
+- Addition:
+  - In/Out: oh god
+    - Number, Number -> Number+Number
+    - Unit(Number), Unit(Number) -> Unit(Number)
+    - Coordinate, Coordinate -> Coordinate+Coordinate
+    - Frame(Number, Time), Time -> Frame(Number, Time+Time)
+    - Frame(Number, Time), Number -> Frame(Number+Number, Time)
+    - Frame(Angle, Time), Time -> Frame(Angle, Time+Time)
+    - Frame(Angle, Time), Number -> Frame(Angle+Angle, Time)
+    - Frame(Pixel, Time), Time -> Frame(Pixel, Time+Time)
+    - Frame(Pixel, Time), Number -> Frame(Pixel+Pixel, Time)
+    - Frame(Coordinate, Time), Time -> Frame(Coordinate, Time+Time)
+    - Frame(Coordinate, Time), Coordinate -> Frame(Coordinate+Coordinate, Time)
+    - Path(...) + Path(...) -> Path(...) (when times overlap, values will be added)
+  - Representation: +
+- Multiplication:
+  - In/Out: oh god
+    - Number, Number -> Number*Number
+    - Unit(Number), Number -> Unit(Number*Number)
+    - Coordinate, Number -> Coordinate*Number
+  - Representation: *
+
+**Pathing**
+- Frame: a value and time grouped
+  - In: value and time
+  - Out: a frame
+  - Varients (for clarity):
+    - Frame(Number, Time)
+    - Frame(Coordinate, Time)
+- Path:
+  - In: n frames, same frame type, approach
+    - Ex. Approach, Frame(Coordinate, Time), ... -> Path(Frame(Coordinate, Time), ...) (calculated with approach)
+    - Approach: bezier (smooth connections through all), smooth slide ends (start slow, speed up, approach end slow), smooth slide all (smooth slide ends but its for all of them), linear (just boop boop boop, lines)
+  - Optional In: Number (starting offset (default: 0)), Path(Frame(Number, Time)) (speed path (default: x1))
+  - Out: a path, timed!
+  - Varients:
+    - Path(Frame(Number, Time), ...) (calculated with approach)
+    - Path(Frame(Angle, Time), ...) (calculated with approach)
+    - Path(Frame(Pixel, Time), ...) (calculated with approach)
+    - Path(Frame(Coordinate, Time), ...) (calculated with approach)
+- Axis Merge: converts axis paths to a single coordinate path
+  - In: Path(Frame(Pixel, Time), ...), Path(Frame(Pixel, Time), ...)
+  - Out: Path(Frame(Coordinate, Time), ...)
+- Path At Time:
+  - In: Path(Any, Time)
+  - Out: Any, the value of Path(Any, Time) at Time Time
+- Path Merger:
+  - In: n number of paths (Path(Any, Time), ...)
+  - Out: a single combined path (Path(Any, Time))
+
+**IO**
+- Image Import:
+  - In: 
+    - File Location (should be a single image of an image type, ex. *.PNG)
+    - FILL IN
+  - Out: image for use
+- Folder Import:
+  - In:
+    - File Location (should be a directory with at least one image of an image type, ex. DIRECTORY/*.PNG)
+    - Number (image index)
+    - FILL IN
+  - Out: image for use
+
+**Logic**
+- Time:
+  - Out: Time, which is Seconds(animation time), which is of type Unit(Number)
+- Reroute (all 4 rotation configs):
+  - In: ANY
+  - Out: IN
+- Less Than:
+  - In:
+    - Number, Number
+    - Unit(Number), Unit(Number)
+  - Out:
+    - truth value if input 1 is less than input 2
+- Greater Than:
+  - In:
+    - Number, Number
+    - Unit(Number), Unit(Number)
+  - Out:
+    - truth value if input 1 is greater than input 2
+- Equal:
+  - In:
+    - Number, Number
+    - Unit(Number), Unit(Number)
+    - above, with optional tolerance (Number OR Unit(Number)) (default 0)
+  - Out:
+    - truth value, if input 1 is within tolerance to input 2
+- If:
+  - In: Truth, Any (True), Any (False) 
+  - Out: Any(True) if Truth True, Any(False) if Truth not True
+
+
+**Displays**
+- SPRITE:
+  - In:
+    - CRASHTBW values
+      - Coordinate (Coordinate)
+      - Rotation (Number) OR Angle(Number)
+      - Apperance (Image)
+      - Size (Number)
+      - Hue (Number)
+      - Transparency (Number)
+      - Brightness (Number)
+      - Weird/Blur (Number)
+  - Out:
+    - CRASHTBW values (same as above)
+- CAMERA:
+  - In:
+    - CRASHTBW values
+      - Coordinate (Coordinate)
+      - Rotation (Number) OR Angle(Number)
+      - Apperance (Image)
+      - Size (Number)
+      - Hue (Number)
+      - Transparency (Number)
+      - Brightness (Number)
+      - Weird/Blur (Number)
+  - Out:
+    - CRASHTBW values (same as above)
 
 
 
