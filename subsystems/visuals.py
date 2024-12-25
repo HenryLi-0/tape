@@ -101,112 +101,121 @@ class FixedRegionPositionalBox:
 
 '''Visual Objects'''
 
-from settings import ORB_IDLE_ARRAY, ORB_SELECTED_ARRAY, CURSOR_SELECT_ARRAY
+from settings import ORB_IDLE_ARRAY, ORB_SELECTED_ARRAY
 
-class PathWorker: 
-    '''Format inputs as a set-like of [bezier?, [coords], steps]'''
-    def get(pathData):
-        return bezierPathCoords(pathData[0], pathData[1]) if pathData[0] else straightPathCoords(pathData[0], pathData[1])
-    
-class PathVisualObject:
-    '''A path.'''
-    def __init__(self, id, name):
-        self.id = id
-        self.name = name
-        self.path = [(0,0,0)]
-    def tick(self, window, points):
-        '''Takes in a set of points and draws the path'''
-        self.path = bezierPathCoords(points, 10)
-        self.path = mergeCoordRotationPath(self.path, pointNextCoordRotationPath(self.path))
-        for coord in self.path:
-            placeOver(window, CURSOR_SELECT_ARRAY, (coord[0], coord[1]), True)
-
-class OrbVisualObject:
-    '''A movable point.'''
-    def __init__(self, name):
-        self.type = "orb"
-        self.name = name
-        self.positionO = CircularPositionalBox(50)
-        self.positionO.setPosition((random.randrange(0,903), random.randrange(0,507)))
-    def tick(self, window, active):
-        placeOver(window, ORB_SELECTED_ARRAY if active else ORB_IDLE_ARRAY, self.positionO.getPosition(), True)
-        placeOver(window, displayText(self.name, "m"), self.positionO.getPosition(), True)
-    def updatePos(self, rmx, rmy):
-        self.positionO.setPosition((rmx, rmy))
-    def keepInFrame(self, minX, minY, maxX, maxY):
-        pos = self.positionO.getPosition()
-        if pos[0] < minX or maxX < pos[0] or pos[1] < minY or maxY < pos[1]:
-            self.positionO.setPosition((max(0,min(pos[0],maxX)), max(0,min(pos[1],maxY))))
-    def getInteractable(self, rmx, rmy):
-        return self.positionO.getInteract(rmx, rmy)
-
-class ButtonVisualObject:
-    '''A button.'''
-    def __init__(self, name, pos:tuple|list, img:numpy.ndarray, img2:numpy.ndarray):
-        self.type = "button"
-        self.name = name
-        self.img = img
-        self.img2 = img2
-        self.positionO = RectangularPositionalBox((img.shape[1],img.shape[0]), pos[0], pos[1])
-    def tick(self, window, active):
-        placeOver(window, self.img2 if active else self.img, self.positionO.getPosition(), False)
-    def updatePos(self, rmx, rmy):
-        pass
-    def keepInFrame(self, minX, minY, maxX, maxY):
-        pos = self.positionO.getPosition()
-        if pos[0] < minX or maxX < pos[0] or pos[1] < minY or maxY < pos[1]:
-            self.positionO.setPosition((max(0,min(pos[0],maxX)), max(0,min(pos[1],maxY))))
-    def getInteractable(self,rmx,rmy):
-        return self.positionO.getInteract(rmx, rmy)
-    
-class EditableTextBoxVisualObject:
-    '''An editable text box.'''
-    def __init__(self, name, pos:tuple|list, startTxt= "", intOnly = False):
-        self.type = "textbox"
-        self.name = name
-        self.txt = str(startTxt)
-        self.txtImg = displayText(self.txt, "m")
-        self.intOnly = intOnly
-        self.positionO = RectangularPositionalBox((max(self.txtImg.shape[1],10),max(self.txtImg.shape[0],23)), pos[0], pos[1])
-        self.underlineIdle = generateColorBox((self.positionO.getBBOX()[0],3), FRAME_COLOR_RGBA)
-        self.underlineActive = generateColorBox((self.positionO.getBBOX()[0],3), SELECTED_COLOR_RGBA)
-    def tick(self, img, active):
-        temp = generateColorBox(addP(self.positionO.getBBOX(), (0,3)), FRAME_COLOR_RGBA if active else BACKGROUND_COLOR_RGBA)
-        placeOver(temp, self.underlineActive if active else self.underlineIdle, (0, self.positionO.getBBOX()[1]))
-        placeOver(img, temp, self.positionO.getPosition())
-        placeOver(img, self.txtImg, self.positionO.getPosition(), False)
-    def updateText(self, txt):
-        if self.txt!=str(txt):
-            self.txt = str(txt)
-            if self.intOnly:
-                if txt == "" or len(str(txt)) == 0:
-                    self.txt = "0"
-                else:
-                    temp = list(str(txt))
-                    for item in temp:
-                        if item not in "0123456789":
-                            while item in temp: temp.remove(item)
-                        self.txt = "".join(temp)
-            self.txtImg = displayText(self.txt, "m")
-            self.positionO.setBBOX((max(self.txtImg.shape[1]+3,10),max(self.txtImg.shape[0],23)))
-            self.underlineIdle = generateColorBox((self.positionO.getBBOX()[0],3), FRAME_COLOR_RGBA)
-            self.underlineActive = generateColorBox((self.positionO.getBBOX()[0],3), SELECTED_COLOR_RGBA)
-    def updatePos(self, rmx, rmy):
-        pass
+class VisualObject:
+    '''Basic template for Visual Objects'''
     def keepInFrame(self, minX, minY, maxX, maxY):
         pos = self.positionO.getPosition()
         if pos[0] < minX or maxX < pos[0] or pos[1] < minY or maxY < pos[1]:
             self.positionO.setPosition((max(minX,min(pos[0],maxX)), max(minY,min(pos[1],maxY))))
-    def getInteractable(self,rmx,rmy):
+    def getInteractable(self, rmx, rmy):
         return self.positionO.getInteract(rmx, rmy)
+    def keyAction(self, keys):
+        pass
+
+# class PathWorker: 
+#     '''Format inputs as a set-like of [bezier?, [coords], steps]'''
+#     def get(pathData):
+#         return bezierPathCoords(pathData[0], pathData[1]) if pathData[0] else straightPathCoords(pathData[0], pathData[1])
     
-class DummyVisualObject:
-    '''I sit around doing nothing. Like that one group member in randomly assigned class projects. That person didn't deserve that 100, did they now? (joke)'''
-    def __init__(self, name, pos:tuple|list):
+# class PathVisualObject:
+#     '''A path.'''
+#     def __init__(self, id, name):
+#         self.id = id
+#         self.name = name
+#         self.path = [(0,0,0)]
+#     def tick(self, window, points):
+#         '''Takes in a set of points and draws the path'''
+#         self.path = bezierPathCoords(points, 10)
+#         self.path = mergeCoordRotationPath(self.path, pointNextCoordRotationPath(self.path))
+#         for coord in self.path:
+#             placeOver(window, CURSOR_SELECT_ARRAY, (coord[0], coord[1]), True)
+
+class OrbVisualObject(VisualObject):
+    '''A movable point.'''
+    def __init__(self, name, pos:tuple|list = (random.randrange(0,903), random.randrange(0,507))):
+        self.type = "orb"
+        self.name = name
+        self.lastInteraction = time.time()
+        self.positionO = CircularPositionalBox(50)
+        self.positionO.setPosition(pos)
+    def tick(self, img, visualactive, active):
+        if active: self.lastInteraction = time.time()
+        placeOver(img, ORB_SELECTED if visualactive else ORB_IDLE, self.positionO.getPosition(), True)
+        placeOver(img, displayText(self.name, "s"), self.positionO.getPosition(), True)
+    def updatePos(self, rmx, rmy):
+        self.positionO.setPosition((rmx, rmy))
+
+
+class ButtonVisualObject(VisualObject):
+    '''A button.'''
+    def __init__(self, name, pos:tuple|list, img:Image, img2:Image):
+        self.type = "button"
+        self.name = name
+        self.lastInteraction = time.time()
+        self.img = img
+        self.img2 = img2
+        self.positionO = RectangularPositionalBox((img.width,img.height), pos[0], pos[1])
+    def tick(self, img, visualactive, active):
+        if active: self.lastInteraction = time.time()
+        placeOver(img, self.img2 if active else self.img, self.positionO.getPosition(), False)
+    def updatePos(self, rmx, rmy):
+        pass
+    
+class EditableTextBoxVisualObject(VisualObject):
+    '''An editable text box.'''
+    def __init__(self, name, pos:tuple|list, startTxt= "", intOnly = False):
+        self.type = "textbox"
+        self.name = name
+        self.lastInteraction = time.time()
+        self.txt = str(startTxt)
+        self.txtImg = displayText(self.txt, "m")
+        self.intOnly = intOnly
+        self.positionO = RectangularPositionalBox((max(self.txtImg.width,10),max(self.txtImg.height,23)), pos[0], pos[1])
+        self.underlineIdle = generateColorBox((self.positionO.getBBOX()[0],3), FRAME_COLOR_RGBA)
+        self.underlineActive = generateColorBox((self.positionO.getBBOX()[0],3), SELECTED_COLOR_RGBA)
+    def tick(self, img, visualactive, active):
+        if active: self.lastInteraction = time.time()
+        temp = generateColorBox(addP(self.positionO.getBBOX(), (0,3)), FRAME_COLOR_RGBA if visualactive else BACKGROUND_COLOR_RGBA)
+        placeOver(temp, self.underlineActive if visualactive else self.underlineIdle, (0, self.positionO.getBBOX()[1]))
+        placeOver(img, temp, self.positionO.getPosition())
+        placeOver(img, self.txtImg, self.positionO.getPosition(), False)
+    def updateText(self, txt):
+        if self.intOnly:
+            if txt == "" or len(str(txt)) == 0:
+                self.txt = "0"
+            else:
+                temp = list(str(txt))
+                for item in temp:
+                    if item not in "0123456789":
+                        while item in temp: temp.remove(item)
+                    self.txt = "".join(temp)
+        self.txtImg = displayText(self.txt, "m")
+        self.positionO.setBBOX((max(self.txtImg.width+3,10),max(self.txtImg.height,23)))
+        self.underlineIdle = generateColorBox((self.positionO.getBBOX()[0],3), FRAME_COLOR_RGBA)
+        self.underlineActive = generateColorBox((self.positionO.getBBOX()[0],3), SELECTED_COLOR_RGBA)
+    def keyAction(self, keys):
+        self.lastInteraction = time.time()
+        prevtxt = self.txt
+        for key in keys:
+            if key in KB_CONFIRM: break
+            if key == -1:self.txt = self.txt[0:-1]
+            else: self.txt += chr(key)
+        if prevtxt != self.txt:
+            self.updateText(self.txt)
+    def updatePos(self, rmx, rmy):
+        pass
+
+class DummyVisualObject(VisualObject):
+    '''I sit around doing nothing and can store data. A little better that one group member in randomly assigned class projects. That person didn't deserve that 100, did they now? (joke)'''
+    def __init__(self, name, pos:tuple|list, data = None):
         self.type = "dummy"
         self.name = name
+        self.lastInteraction = time.time()
         self.positionO = RectangularPositionalBox((0,0), pos[0], pos[1])
-    def tick(self, window, active):
+        self.data = data
+    def tick(self, img, visualactive, actives):
         pass
     def updatePos(self, rmx, rmy):
         pass
@@ -215,111 +224,161 @@ class DummyVisualObject:
     def getInteractable(self,rmx,rmy):
         return False
 
-class PointVisualObject:
-    '''A smaller movable point OFFSET BY X29,Y242 FOR GRAPH. MEANT FOR THE GRAPH AND THE GRAPH ONLY.'''
-    def __init__(self, name, pos:tuple|list=(random.randrange(0,20), random.randrange(0,20))):
-        self.type = "point"
-        self.name = name
-        self.positionO = CircularPositionalBox(15)
-        self.positionO.setPosition(pos)
-        self.pointData = ""
-    def tick(self, window, active):
-        place = addP(self.positionO.getPosition(), (29,242))
-        if 27<=place[0] and 221<=place[1] and place[0]<=383 and place[1]<=477:
-            placeOver(window, POINT_SELECTED_ARRAY if active else POINT_IDLE_ARRAY, place, True)
-        if type(self.pointData)in [int, float]:
-            if active: placeOver(window, displayText(str(roundf(self.pointData, PATH_FLOAT_ACCURACY)), "m"), addP(self.positionO.getPosition(), (29,222)), True)
-        else:
-            if active: placeOver(window, displayText(str(self.pointData), "m"), addP(self.positionO.getPosition(), (29,222)), True)
-        if active: return self.pointData
-    def updatePos(self, rmx, rmy):
-        self.positionO.setPosition((rmx, rmy))
-    def setPointData(self, data):
-        self.pointData = data
-    def keepInFrame(self, minX, minY, maxX, maxY):
-        pos = self.positionO.getPosition()
-        if pos[0] < minX or maxX < pos[0] or pos[1] < minY or maxY < pos[1]:
-            self.positionO.setPosition((round(max(0,min(pos[0],maxX))), round(max(0,min(pos[1],maxY)))))
-    def getInteractable(self, rmx, rmy):
-        return self.positionO.getInteract(rmx, rmy)
-
-class PointConnectionVisualObject:
-    '''A graph connection between two points on a graph. MEANT FOR THE GRAPH AND THE GRAPH ONLY.'''
-    def __init__(self, name, regionA, regionB):
-        self.type = "connection"
-        self.name = name
-        self.positionO = FixedRegionPositionalBox(regionA, regionB)
-        self.pathData = []
-    def tick(self, window, active, graphOffset, graphScale):
-        if len(self.pathData) > 0:
-            previousTargetX = (self.pathData[0][0]-graphOffset)*25/(graphScale+0.000001)
-            previousTargetY = 100-self.pathData[0][1]*2.23
-            for point in self.pathData:
-                target = ((point[0]-graphOffset)*25/(graphScale+0.000001),100-point[1]*2.23)
-                if 0 < target[0] and target[0] < 337 and (abs(target[0]-previousTargetX) > 5 or abs(target[1]-previousTargetY) > 5):
-                    placeOver(window, PATH_POINT_SELECTED_ARRAY if active else PATH_POINT_IDLE_ARRAY, addP(target, (29,364)), True)
-                    previousTargetX, previousTargetY = target
-            self.setShapeTime((self.pathData[0][0],self.pathData[0][1]),(self.pathData[-1][0],self.pathData[-1][1]), graphOffset, graphScale)
-        else:
-            self.setShapeTime((0,0),(0,0), graphOffset, graphScale)
-    def updatePos(self, rmx, rmy):
-        self.positionO.setPosition((rmx, rmy))
-    def setPathData(self, data):
-        self.pathData = data
-    def setShapeTime(self, pointA, pointB, graphOffset, graphScale):
-        a = ((pointA[0]-graphOffset)*25/(graphScale+0.000001), 243)
-        b = ((pointB[0]-graphOffset)*25/(graphScale+0.000001), 475)
-        self.positionO.setRegion(a,b)
-    def keepInFrame(self, minX, minY, maxX, maxY):
-        pos = self.positionO.getPosition()
-        if pos[0] < minX or maxX < pos[0] or pos[1] < minY or maxY < pos[1]:
-            self.positionO.setPosition((round(max(0,min(pos[0],maxX))), round(max(0,min(pos[1],maxY)))))
-    def getInteractable(self, rmx, rmy):
-        return self.positionO.getInteract(rmx, rmy)
-    
-class IconVisualObject:
+class IconVisualObject(VisualObject):
     '''An icon, basically a fancy button.'''
     # generateIcon(img, active = False, size = (29,29), color = "")
-    def __init__(self, name, pos:tuple|list, icon:numpy.ndarray, size:tuple|list = (29,29)):
+    def __init__(self, name, pos:tuple|list, icon:Image, size:tuple|list = (29,29)):
         self.type = "icon"
         self.name = name
+        self.lastInteraction = time.time()
         self.img = generateIcon(icon, False, size)
         self.img2 = generateIcon(icon, True, size)
-        self.positionO = RectangularPositionalBox((self.img.shape[1],self.img.shape[0]), pos[0], pos[1])
-    def tick(self, img, active):
-        placeOver(img, self.img2 if active else self.img, self.positionO.getPosition(), False)
+        self.positionO = RectangularPositionalBox((self.img.width,self.img.height), pos[0], pos[1])
+    def tick(self, img, visualactive, active):
+        if active: self.lastInteraction = time.time()
+        placeOver(img, self.img2 if visualactive else self.img, self.positionO.getPosition(), False)
         if active: placeOver(img, displayText(self.name, "s", (0,0,0,200)), self.positionO.getPosition(), False)
     def updatePos(self, rmx, rmy):
         pass
+
+class ToggleVisualObject(VisualObject):
+    '''A toggle, basically a fancy button/icon, but this time with two faces, on and off that switch on rising detection of clicks!'''
+    # generateIcon(img, active = False, size = (29,29), color = "")
+    def __init__(self, name, pos:tuple|list, iconOn:Image, iconOff:Image, size:tuple|list = (29,29), runOn = lambda: 0, runOff = lambda: 0):
+        self.type = "icon"
+        self.name = name
+        self.lastInteraction = time.time()
+        self.img = generateIcon(iconOn, False, size)
+        self.img2 = generateIcon(iconOff, False, size)
+        self.positionO = RectangularPositionalBox((self.img.width,self.img.height), pos[0], pos[1])
+        self.active = 0
+        self.state = False
+        self.runOn = runOn
+        self.runOff = runOff
+    def tick(self, img, visualactive, active):
+        if active: self.lastInteraction = time.time()
+        if active: self.active +=1
+        else: self.active = 0
+        if self.active == 1:
+            self.state = not(self.state)
+            if self.state == True: self.runOn()
+            if self.state == False: self.runOff()
+        placeOver(img, self.img2 if self.state else self.img, self.positionO.getPosition(), False)
+        if active: placeOver(img, displayText(self.name, "s", (0,0,0,200)), self.positionO.getPosition(), False)
+    def setToggle(self, runOn, runOff):
+        self.runOn = runOn
+        self.runOff = runOff
+    def updatePos(self, rmx, rmy):
+        pass
+
+class HorizontalSliderVisualObject(VisualObject):
+    '''A slider!!! No way!!! (horizontal)'''
+    def __init__(self, name, pos:tuple|list=(random.randrange(0,20), random.randrange(0,20)), length = random.randrange(50,100), sliderRange = [1,100]):
+        self.type = "slider"
+        self.name = name
+        self.lastInteraction = time.time()
+        self.originalPos = pos
+        self.length = length
+        self.positionO = CircularPositionalBox(15)
+        self.positionO.setPosition(addP(pos, (10,10)))
+        self.displayScalar = sliderRange[1]-sliderRange[0]
+        self.sliderRange = sliderRange
+        self.bar = generateColorBox((length, 20), (0,0,0,0))
+        placeOver(self.bar, generateColorBox((length, 2), hexColorToRGBA(FRAME_COLOR)), (0,9))
+        placeOver(self.bar, generateColorBox((3, 20), hexColorToRGBA(FRAME_COLOR)), (0,0))
+        placeOver(self.bar, generateColorBox((3, 20), hexColorToRGBA(FRAME_COLOR)), (length-3,0))
+        self.updatePos(-9999999, 0)
+    def tick(self, img, visualactive, active):
+        if active: self.lastInteraction = time.time()
+        placeOver(img, self.bar, self.originalPos)
+        placeOver(img, POINT_SELECTED if visualactive else POINT_IDLE, self.positionO.getPosition(), True)
+        if visualactive: placeOver(img, displayText(str(round((self.positionO.getX()-self.originalPos[0])/self.length*self.displayScalar+self.sliderRange[0])), "s", (0,0,0,150), (255,255,255,255)), addP(self.positionO.getPosition(), (0,25)), True)
+    def getData(self):
+        return round((self.positionO.getX()-self.originalPos[0])/self.length*self.displayScalar+self.sliderRange[0])
+    def setData(self, extent):
+        self.updatePos(self.originalPos[0] + (extent-self.sliderRange[0])/self.displayScalar*self.length, 0)
+    def updatePos(self, rmx, rmy):
+        self.positionO.setX(max(self.originalPos[0], min(rmx, self.originalPos[0] + self.length)))
     def keepInFrame(self, minX, minY, maxX, maxY):
         pos = self.positionO.getPosition()
         if pos[0] < minX or maxX < pos[0] or pos[1] < minY or maxY < pos[1]:
-            self.positionO.setPosition((max(minX,min(pos[0],maxX)), max(minY,min(pos[1],maxY))))
-    def getInteractable(self,rmx,rmy):
+            self.positionO.setPosition((round(max(minX,min(pos[0],maxX))), round(max(minY,min(pos[1],maxY)))))
+    def getInteractable(self, rmx, rmy):
         return self.positionO.getInteract(rmx, rmy)
-    
-class TextButtonPushVisualObject:
+
+class VerticalSliderVisualObject(VisualObject):
+    '''A slider!!! No way!!! (vertical)'''
+    def __init__(self, name, pos:tuple|list=(random.randrange(0,20), random.randrange(0,20)), length = random.randrange(50,100), sliderRange = [1,100]):
+        self.type = "slider"
+        self.name = name
+        self.lastInteraction = time.time()
+        self.originalPos = pos
+        self.length = length
+        self.positionO = CircularPositionalBox(15)
+        self.positionO.setPosition(addP(pos, (10,10)))
+        self.displayScalar = sliderRange[1]-sliderRange[0]
+        self.sliderRange = sliderRange
+        self.bar = generateColorBox((20, length), (0,0,0,0))
+        placeOver(self.bar, generateColorBox((2, length), hexColorToRGBA(FRAME_COLOR)), (9,0))
+        placeOver(self.bar, generateColorBox((20, 3), hexColorToRGBA(FRAME_COLOR)), (0,0))
+        placeOver(self.bar, generateColorBox((20, 3), hexColorToRGBA(FRAME_COLOR)), (0, length-3))
+        self.updatePos(0, -9999999)
+    def tick(self, img, visualactive, active):
+        if active: self.lastInteraction = time.time()
+        placeOver(img, self.bar, self.originalPos)
+        placeOver(img, POINT_SELECTED if visualactive else POINT_IDLE, self.positionO.getPosition(), True)
+        if visualactive: placeOver(img, displayText(str(round((self.positionO.getY()-self.originalPos[1])/self.length*self.displayScalar+self.sliderRange[0])), "s", (0,0,0,150), (255,255,255,255)), addP(self.positionO.getPosition(), (0,25)), True)
+    def getData(self):
+        return round((self.positionO.getY()-self.originalPos[1])/self.length*self.displayScalar+self.sliderRange[0])
+    def setData(self, extent):
+        self.updatePos(0, self.originalPos[1] + (extent-self.sliderRange[0])/self.displayScalar*self.length)
+    def updatePos(self, rmx, rmy):
+        self.positionO.setY(max(self.originalPos[1], min(rmy, self.originalPos[1] + self.length)))
+    def keepInFrame(self, minX, minY, maxX, maxY):
+        pos = self.positionO.getPosition()
+        if pos[0] < minX or maxX < pos[0] or pos[1] < minY or maxY < pos[1]:
+            self.positionO.setPosition((round(max(minX,min(pos[0],maxX))), round(max(minY,min(pos[1],maxY)))))
+    def getInteractable(self, rmx, rmy):
+        return self.positionO.getInteract(rmx, rmy)
+
+class CheckboxVisualObject(VisualObject):
+    '''A checkbox, basically a simple toggle.'''
+    def __init__(self, name, pos:tuple|list, size:tuple|list = (29,29), state = False):
+        self.type = "checkbox"
+        self.name = name
+        self.lastInteraction = time.time()
+        self.img = generateIcon(generateColorBox(size, (255,0,0,255)), False, size)
+        self.img2 = generateIcon(generateColorBox(size, (0,255,0,255)), False, size)
+        self.positionO = RectangularPositionalBox((self.img.width,self.img.height), pos[0], pos[1])
+        self.active = 0
+        self.state = state
+    def tick(self, img, visualactive, active):
+        if active: self.lastInteraction = time.time()
+        if active: self.active +=1
+        else: self.active = 0
+        if self.active == 1: self.state = not(self.state)
+        placeOver(img, self.img2 if self.state else self.img, self.positionO.getPosition(), False)
+    def updatePos(self, rmx, rmy):
+        pass
+
+class TextButtonPushVisualObject(VisualObject):
     '''A button, but it has text! and it resets itself after some ticks!'''
-    def __init__(self, name, text:numpy.ndarray, pos:tuple|list, time = 60):
+    def __init__(self, name, text:numpy.ndarray, pos:tuple|list, ticks = 60):
         self.type = "button"
         self.name = name
+        self.lastInteraction = time.time()
         temp = displayText(str(text), "m")
-        self.img = generateIcon(temp, False, (temp.shape[1],temp.shape[0]))
-        self.img2 = generateIcon(temp, True, (temp.shape[1],temp.shape[0]))
-        self.positionO = RectangularPositionalBox((self.img.shape[1],self.img.shape[0]), pos[0], pos[1])
+        self.img = generateIcon(temp, False, (temp.width, temp.height))
+        self.img2 = generateIcon(temp, True, (temp.width, temp.height))
+        self.positionO = RectangularPositionalBox((self.img.width,self.img.height), pos[0], pos[1])
         self.lastPressed = 9999999
         self.state = False
-        self.time = time
-    def tick(self, img, active):
+        self.time = ticks
+    def tick(self, img, visualactive, active):
+        if active: self.lastInteraction = time.time()
         if active: self.lastPressed = 0
         else: self.lastPressed += 1
         self.state = (self.time > self.lastPressed)
         placeOver(img, self.img2 if self.state else self.img, self.positionO.getPosition(), False)
     def updatePos(self, rmx, rmy):
         pass
-    def keepInFrame(self, minX, minY, maxX, maxY):
-        pos = self.positionO.getPosition()
-        if pos[0] < minX or maxX < pos[0] or pos[1] < minY or maxY < pos[1]:
-            self.positionO.setPosition((max(minX,min(pos[0],maxX)), max(minY,min(pos[1],maxY))))
-    def getInteractable(self,rmx,rmy):
-        return self.positionO.getInteract(rmx, rmy)

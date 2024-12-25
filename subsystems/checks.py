@@ -7,26 +7,17 @@ import os, numpy, uuid, ast, time, math
 from settings import *
 
 '''Test import all subsystems'''
-
+from subsystems.bay         import *
+from subsystems.counter     import *
+from subsystems.fancy       import *
+from subsystems.interface   import *
+from subsystems.pathing     import *
+from subsystems.render      import *
+from subsystems.visuals     import *
+from subsystems.window      import *
 
 class Check:
     def check():
-        # Program/Subsystem Files
-        import subsystems.bay
-        import subsystems.counter
-        import subsystems.fancy
-        import subsystems.interface
-        import subsystems.pathing
-        import subsystems.render
-        import subsystems.visuals
-        import subsystems.window
-        # Resource Files
-        
-        # Cache
-
-        # Tests?
-
-
         print("Finished Checks")
 
     def error(message):

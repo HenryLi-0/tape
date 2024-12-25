@@ -5,7 +5,7 @@ import numpy, math, uuid
 from subsystems.pathing import smoothChangeAt, straightChangeAt, roundf, timelyBezierPathCoords, selectiveBezierPathCoords, straightPathCoords, mergeCoordRotationPath, betweenP
 from subsystems.render import rotateDegHundred, setSize, setColorEffect, setTransparency, setBrightness, setBlur
 from subsystems.fancy import generatePastelDark
-from settings import PATH_FLOAT_ACCURACY, RENDER_FPS
+from settings import FLOAT_ACCURACY, RENDER_FPS
 
 class SingleSprite:
     '''
@@ -67,8 +67,8 @@ class SingleSprite:
         self.updated = True
     def getUpdated(self, time):
         '''Returns the old time if the sprite has changed data since the given time, otherwise returns False'''
-        if self.updated or roundf(self.lastTime, PATH_FLOAT_ACCURACY) != roundf(time, PATH_FLOAT_ACCURACY):
-            self.lastTime = roundf(time, PATH_FLOAT_ACCURACY)
+        if self.updated or roundf(self.lastTime, FLOAT_ACCURACY) != roundf(time, FLOAT_ACCURACY):
+            self.lastTime = roundf(time, FLOAT_ACCURACY)
             self.updated = False
             c = self.oldData.copy()
             self.oldData = self.data.copy()
@@ -167,11 +167,11 @@ def dataCheck(key, data):
     '''Modifies the original given data with all checked values (rounding and connections)'''
     dataLen = round(len(data)/3)
     for i in range(dataLen):
-        data[i*3] = roundf(data[i*3], PATH_FLOAT_ACCURACY)
+        data[i*3] = roundf(data[i*3], FLOAT_ACCURACY)
         if key in "rashtbw " and len(key) == 1:
-            data[i*3+1] = roundf(data[i*3+1], PATH_FLOAT_ACCURACY)
+            data[i*3+1] = roundf(data[i*3+1], FLOAT_ACCURACY)
         if key == "c":
-            data[i*3+1] = (roundf(data[i*3+1][0], PATH_FLOAT_ACCURACY), roundf(data[i*3+1][1], PATH_FLOAT_ACCURACY))
+            data[i*3+1] = (roundf(data[i*3+1][0], FLOAT_ACCURACY), roundf(data[i*3+1][1], FLOAT_ACCURACY))
         if data[i*3+2] == None and i != dataLen-1:
             data[i*3+2] = "L"
     if dataLen == 0:
@@ -190,9 +190,9 @@ def iterateThroughSingle(compact, partition = False):
         if compact[i*3+2] == "L": add = straightChangeAt(compact[i*3+1], compact[(i+1)*3+1], (compact[(i+1)*3]-compact[i*3])*RENDER_FPS)
         if compact[i*3+2] == "S": add = smoothChangeAt(compact[i*3+1], compact[(i+1)*3+1], (compact[(i+1)*3]-compact[i*3])*RENDER_FPS)
         if partition:
-            sequence.append([(compact[i*3] + roundf(ie/RENDER_FPS, PATH_FLOAT_ACCURACY), add[ie]) for ie in range(len(add))])
+            sequence.append([(compact[i*3] + roundf(ie/RENDER_FPS, FLOAT_ACCURACY), add[ie]) for ie in range(len(add))])
         else:
-            for state in add: sequence.append(roundf(state, PATH_FLOAT_ACCURACY))
+            for state in add: sequence.append(roundf(state, FLOAT_ACCURACY))
     return sequence
 
 def findStateThroughSingle(compact, time):
@@ -218,7 +218,7 @@ def iterateThroughPath(compact, partion = False):
     while i < len(timeStamps)-1:
         if connections[i] == "L": 
             add = straightPathCoords([compact[i*3+1], compact[(i+1)*3+1]], round((compact[(i+1)*3]-compact[i*3])*RENDER_FPS))
-            if partion: path.append([(compact[i*3] + roundf(ie/RENDER_FPS, PATH_FLOAT_ACCURACY), add[ie]) for ie in range(len(add))])
+            if partion: path.append([(compact[i*3] + roundf(ie/RENDER_FPS, FLOAT_ACCURACY), add[ie]) for ie in range(len(add))])
         if connections[i] == "S":
             temp = [i]
             while connections[i+1] == "S" and i+1<len(connections)-1:
@@ -229,7 +229,7 @@ def iterateThroughPath(compact, partion = False):
             add = timelyBezierPathCoords([protectedBoundary(compact,iee*3+1) for iee in temp], [round((timeStamps[temp[ie]]-timeStamps[temp[ie-1]])*RENDER_FPS) for ie in range(1,len(temp))], partion)
             if partion:
                 for iee in range(len(add)):
-                    path.append([(compact[(temp[0]+iee)*3] + roundf(ie/RENDER_FPS, PATH_FLOAT_ACCURACY), add[iee][ie]) for ie in range(len(add[iee]))])
+                    path.append([(compact[(temp[0]+iee)*3] + roundf(ie/RENDER_FPS, FLOAT_ACCURACY), add[iee][ie]) for ie in range(len(add[iee]))])
         if not(partion):
             for coord in add: path.append(coord)
         i+=1
@@ -247,7 +247,7 @@ def findStateThroughPath(compact, time):
         timeC = (time-compact[low*3])/(compact[(low+1)*3]-compact[low*3]+0.000001)
         timeC = max(0, min(timeC, 1))
         cx, cy = betweenP(compact[low*3+1], compact[(low+1)*3+1])(timeC)
-        return (roundf(cx, PATH_FLOAT_ACCURACY), roundf(cy, PATH_FLOAT_ACCURACY))
+        return (roundf(cx, FLOAT_ACCURACY), roundf(cy, FLOAT_ACCURACY))
     if connections[low] == "S":
         bottom, top = low, low
         while connections[bottom-1] == "S":

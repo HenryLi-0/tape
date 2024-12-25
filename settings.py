@@ -11,16 +11,17 @@ Here are the parts:
 
 
 '''Calculation'''
-PATH_FLOAT_ACCURACY = 3 #This is how many digits after the decimal point some calculations will save for
+FLOAT_ACCURACY = 3 #This is how many digits after the decimal point some calculations will save for
 RENDER_FPS = 30 #This is the rendering FPS, also used for steps per second in path calculations
 
 '''Visuals'''
 INTERFACE_FPS = 60 # The interface window will be called every 1/INTERFACE_FPS seconds
-TICK_MS = 1 #round((1/INTERFACE_FPS)*1000)
-OCCASIONAL_TICK_MS = 5000 # Highly recommended to keep above 1 second, as it runs processes that do not need updates every tick
+FPS_DAMPENING = 1 # The number of seconds between FPS calculations
+TICK_MS = 1 # Extra delay between frames, must be 1 or greater
+OCCASIONAL_TICK_MS = 5000 # Should keep above 1 second, as it runs processes that do not need updates every tick
 
-SKETCH_MAX_REGIONS = 21 # The maximum allowed regions of the sketch screen (total 21) allowed to be updated per call to update. Recommended to not change.
-DEBUG_BACKGROUND = False # When true, turns the background red and green, helpful for debugging region updating related issues
+SHOW_CROSSHAIR = False # Shows a crosshair for the mouse's position
+LAST_INTERACTION_KEY_TIME = 1 # Amount of seconds for last interaction to be active after key activation
 
 hexColorToRGBA = lambda hexcolor: tuple(int(hexcolor[i:i+2], 16) for i in (1, 3, 5)) + (255,)
 
@@ -37,26 +38,14 @@ TIMELINE_COLOR_RGBA         = hexColorToRGBA(TIMELINE_COLOR        )
 '''Saving'''
 import os, time
 PATH_SAVE_DEFAULT = os.path.join("tapes")
-EXPORT_IMAGE_DATA = True
-CLEAR_ON_OPEN = True
 
 FORMAT_TIME = lambda x: time.strftime("%I:%M:%S %p %m/%d/%Y", time.localtime(x))
 DEFAULT_PROJECT_NAME = "Untitled Project"
 
 '''Keybinds'''
-KEYBIND_DIFFERENCE = 0.2 # Minimum allowed differance in time between keybinds
-
-KB_IGNORE = ["Win_L"]
-KB_EV_PROPERTY = {
-    1 : "C",
-    2 : "R",
-    3 : "A",
-    4 : "S",
-    5 : "H",
-    6 : "T",
-    7 : "B",
-    8 : "W"
-}
+KB_IGNORE   = ["Win_L"]                                                                     # Keys to ignore
+KB_CONFIRM  = ["Return", "Control_L"]                                                       # Keys to confirm
+KB_ACTIVATE = ["space", "Return"]                                                           # Keys to activate/trigger
 KB_CREATE                = lambda keys: (len(keys) == 1) and ("A" in keys or "a" in keys)
 KB_DELETE                = lambda keys: (len(keys) == 1) and ("S" in keys or "s" in keys)
 KB_EV_LINEAR_CONNECTION  = lambda keys: (len(keys) == 1) and ("Q" in keys or "q" in keys)
@@ -73,15 +62,35 @@ KB_S_LIST_OFFSET_DOWN    = lambda keys: (len(keys) == 1) and ("Down"  in keys)
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 
    Editing certain constants will break things! You have been warned!'''
 from PIL import Image, ImageFont
-import numpy, math
+import numpy
 from subsystems.simplefancy import *
+from subsystems.render import *
 
 # Version
 VERSION = "v1.0.0"
+SYS_IVOS = [-999,-998,-997,-996]
 
-ALL_REGIONS = [(x,y) for x in range(7) for y in range(3)]
 ROTATE_AROUND_ORIGIN = lambda x,y,d: [(x/abs(x))*math.cos(math.atan(y/x)+(d*math.pi/50))*math.sqrt(x*x+y*y), (x/abs(x))*math.sin(math.atan(y/x)+(d*math.pi/50))*math.sqrt(x*x+y*y)]
 
+# Sections
+'''
+- Example A Area: `(  22,  22) to ( 671, 675)` : size `( 650, 654)`
+- Example B Area: `( 694,  22) to (1343, 675)` : size `( 650, 654)`
+
+Region ID : Top Left, Bottom Right, Size, Keep In Relative Top Left, Keep In Relative Bottom Right
+'''
+SECTIONS_DATA = {
+    " ": [(   0,   0),(1366, 698),(1366, 698),(   0,   0),(1366, 698)],
+    "a": [(  22,  22),( 671, 675),( 650, 654),(   0,   0),( 650, 654)],
+    "b": [( 694,  22),(1343, 675),( 650, 654),(   0,   0),( 650, 654)],
+}
+FULL_BACKGROUND = setBrightnessEffect(getImageRGBAFromPath(os.path.join("resources", "backgrounds", "sample_full_background.png")), 10)
+SECTIONS_FRAME_INSTRUCTIONS = {
+    " ": [[FULL_BACKGROUND, (0,0)]],
+    "a": generateThemedBorderRectangleInstructions(( 650, 654), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,10), ( -22,-22)),
+    "b": generateThemedBorderRectangleInstructions(( 650, 654), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,10), (-694,-22)),
+}
+SECTIONS = list(SECTIONS_DATA.keys())
 # Imagery
 LOADING_IMAGE = Image.open(os.path.join("resources", "loading.png")).convert("RGBA") # 1366x697, Solid, Loading Screen
 LOADING_IMAGE_ARRAY = numpy.array(LOADING_IMAGE)
@@ -98,11 +107,16 @@ PLACEHOLDER_IMAGE_5_ARRAY = numpy.array(PLACEHOLDER_IMAGE_5)
 MISSING_IMAGE_PATH = os.path.join("resources", "missing.png")
 MISSING_IMAGE = Image.open(os.path.join("resources", "missing.png")).convert("RGBA")
 MISSING_IMAGE_ARRAY = numpy.array(MISSING_IMAGE)
+EMPTY_IMAGE = Image.fromarray(numpy.zeros((1, 1, 4), dtype=numpy.uint8), "RGBA")
+EMPTY_IMAGE_ARRAY = numpy.array(EMPTY_IMAGE)
 
 # Fonts
-FONT_LARGE = ImageFont.truetype(os.path.join("resources", "Comfortaa-Medium.ttf"), 24)
-FONT_MEDIUM = ImageFont.truetype(os.path.join("resources", "Comfortaa-Medium.ttf"), 15)
-FONT_SMALL = ImageFont.truetype(os.path.join("resources", "Comfortaa-Medium.ttf"), 10)
+FONTS_ALL = ["Comfortaa-Medium.ttf", "Orbitron-VariableFont_wght.ttf", "Tiny5-Regular.ttf", "TurretRoad-Medium.ttf", "ZenDots-Regular.ttf"]
+FONT_PATH = os.path.join("resources", "fonts", FONTS_ALL[0])
+FONT_LARGE = ImageFont.truetype(FONT_PATH, 24)
+FONT_MEDIUM = ImageFont.truetype(FONT_PATH, 15)
+FONT_SMALL_MEDIUM = ImageFont.truetype(FONT_PATH, 12)
+FONT_SMALL = ImageFont.truetype(FONT_PATH, 10)
 EDITOR_SPACING = lambda x: x*20+15
 
 # Blank Interface Sections
@@ -115,12 +129,12 @@ EDITOR_SPACING = lambda x: x*20+15
 '''
 
 FRAME_ANIMATION_INSTRUCTIONS = generateThemedBorderRectangleInstructions(( 903, 507), FRAME_COLOR_RGBA)
-FRAME_TIMELINE_INSTRUCTIONS  = genereateSpecificThemedBorderRectangleInstructions("timeline", FRAME_COLOR_RGBA)
+FRAME_TIMELINE_INSTRUCTIONS  = generateSpecificThemedBorderRectangleInstructions("timeline", FRAME_COLOR_RGBA)
 FRAME_EDITOR_INSTRUCTIONS    = generateThemedBorderRectangleInstructions(( 388, 507), FRAME_COLOR_RGBA)
-FRAME_EDITOR_V_INSTRUCTIONS  = genereateSpecificThemedBorderRectangleInstructions(  "editor", FRAME_COLOR_RGBA)
-FRAME_OPTIONS_INSTRUCTIONS   = genereateSpecificThemedBorderRectangleInstructions( "options", FRAME_COLOR_RGBA)
+FRAME_EDITOR_V_INSTRUCTIONS  = generateSpecificThemedBorderRectangleInstructions(  "editor", FRAME_COLOR_RGBA)
+FRAME_OPTIONS_INSTRUCTIONS   = generateSpecificThemedBorderRectangleInstructions( "options", FRAME_COLOR_RGBA)
 FRAME_TIMELINE_READER_ARRAY = generateColorBox((3,117), SELECTED_COLOR_RGBA)
-FRAME_EDITOR_VISUALS_GRAPH_ARRAY = genereateSpecificThemedBorderRectangleInstructions( "graph", SELECTED_COLOR_RGBA)
+FRAME_EDITOR_VISUALS_GRAPH_ARRAY = generateSpecificThemedBorderRectangleInstructions( "graph", SELECTED_COLOR_RGBA)
 FRAME_EDITOR_VISUALS_GRAPH_BAR_ARRAY = generateColorBox((3,236), FRAME_COLOR_RGBA)
 FRAME_OPTIONS_BUTTON_ON_ARRAY  = generateInwardsBorderBox((120, 59), 3, SELECTED_COLOR_RGBA, BACKGROUND_COLOR_RGBA)
 FRAME_OPTIONS_BUTTON_OFF_ARRAY = generateInwardsBorderBox((120, 59), 3,    FRAME_COLOR_RGBA, BACKGROUND_COLOR_RGBA)
@@ -131,6 +145,8 @@ PLAY_BUTTON = Image.open(os.path.join("resources", "play.png")).convert("RGBA")
 PLAY_BUTTON_ARRAY = numpy.array(PLAY_BUTTON)
 PAUSE_BUTTON = Image.open(os.path.join("resources", "pause.png")).convert("RGBA")
 PAUSE_BUTTON_ARRAY = numpy.array(PAUSE_BUTTON)
+
+# Cursors
 
 CURSOR_ARROW = Image.open(os.path.join("resources", "cursor_arrow.png")).convert("RGBA")
 CURSOR_ARROW_ARRAY = numpy.array(CURSOR_ARROW)

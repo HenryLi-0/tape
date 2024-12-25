@@ -291,7 +291,7 @@ class Interface:
                 self.timelineOffset -= (self.timelineScale-timelineScalePrevious)*(self.mx-71)/25
             if mPressed:
                 self.animationTime = (self.mx-71)*(self.timelineScale+0.000001)/25+self.timelineOffset
-                self.animationTime = roundf(round(self.animationTime * RENDER_FPS) / RENDER_FPS, PATH_FLOAT_ACCURACY)
+                self.animationTime = roundf(round(self.animationTime * RENDER_FPS) / RENDER_FPS, FLOAT_ACCURACY)
                 if self.animationTime < 0: self.animationTime = 0
         self.timelineScale = 0.001 if self.timelineScale < 0.001 else self.timelineScale
         self.timelineScale = 2000 if 2000 < self.timelineScale else self.timelineScale

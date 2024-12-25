@@ -1,7 +1,16 @@
 '''This file contains functions related to fancy rendering, but does not import from setting'''
 
-from PIL import Image, ImageDraw
+from PIL import Image
 import numpy, random, colorsys
+from subsystems.render import *
+
+def getArrayImageRGBAFromPath(path):
+    '''Given a path, opens the image, converts it to RGBA, and returns it as a numpy array.'''
+    return numpy.array(Image.open(path).convert("RGBA"))
+
+def getImageRGBAFromPath(path):
+    '''Given a path, opens the image, converts it to RGBA, and returns the Image.'''
+    return Image.open(path).convert("RGBA")
 
 def generateColorBox(size:list|tuple = (25,25),color:list|tuple = (255,255,255,255)):
     '''Generates a box of (size) size of (color) color'''
@@ -22,17 +31,16 @@ def generateBorderBox(size:list|tuple = (25,25), outlineW:int = 1, color:list|tu
     array[-outlineW:, :, :] = color
     array[:, :outlineW, :] = color
     array[:, -outlineW:, :] = color
-    return array
+    return arrayToImage(array)
 
-def generateInwardsBorderBox(size:list|tuple = (25,25), outlineW:int = 1, color:list|tuple = (255,255,255,255), fill: list|tuple = (0,0,0,0)):
-    '''Generates a inwards bordered box with a transparent or given color inside, with inside space of (size - outline), and an (outlineW) px thick outline of (color) color surrounding it'''
+def generateInwardsBorderBox(size:list|tuple = (25,25), outlineW:int = 1, color:list|tuple = (255,255,255,255)):
+    '''Generates a inwards bordered box with a transparent inside, with transparent space of (size - outline), and an (outlineW) px thick outline of (color) color surrounding it'''
     array = numpy.zeros((size[1], size[0], 4), dtype=numpy.uint8)
-    array[:, :] = fill
     array[:outlineW, :, :] = color
     array[-outlineW:, :, :] = color
     array[:, :outlineW, :] = color
     array[:, -outlineW:, :] = color
-    return array
+    return arrayToImage(array)
 
 def generatePastelDark():
     '''Randomly generates a dark pastel color'''
@@ -62,11 +70,12 @@ def generateCircle(radius, color):
                 array[y,x] = color
             else:
                 array[y,x] = (0,0,0,0)
-    return array
+    return arrayToImage(array)
 
-def generateThemedBorderRectangleInstructions(size:list|tuple = (25,25),borderColor:list|tuple = (255,255,255,255)):
+def generateThemedBorderRectangleInstructions(size:list|tuple = (25,25),borderColor:list|tuple = (255,255,255,255), background:Image = None, backgroundOffset:list|tuple = (0,0)):
     '''Generates Instructions for a Themed Border Rectangle'''
     instructions = []
+    if background != None: instructions.append([background, backgroundOffset])
     row = generateColorBox((size[0],3), borderColor)
     col = generateColorBox((3,size[1]), borderColor)
     instructions.append([row, (0,0)])
@@ -75,36 +84,6 @@ def generateThemedBorderRectangleInstructions(size:list|tuple = (25,25),borderCo
     instructions.append([col, (size[0]-3,0)])
     return instructions
 
-def genereateSpecificThemedBorderRectangleInstructions(section, borderColor:list|tuple = (255,255,255,255)):
+def generateSpecificThemedBorderRectangleInstructions(section, borderColor:list|tuple = (255,255,255,255)):
     '''Generates Instructions for a specific section's Themed Border Rectangle'''
-    if section == "timeline":
-        instructions = []
-        instructions.append([generateInwardsBorderBox(( 43, 43), 3, borderColor), (  0,  0)])
-        instructions.append([generateInwardsBorderBox(( 43, 43), 3, borderColor), (  0, 40)])
-        instructions.append([generateInwardsBorderBox(( 43, 43), 3, borderColor), (  0, 80)])
-        instructions.append([generateInwardsBorderBox((855,123), 3, borderColor), ( 48,  0)])
-        return instructions
-    elif section == "editor":
-        instructions = []
-        instructions.append([generateInwardsBorderBox((189, 95), 3, borderColor), (  0,  0)])
-        instructions.append([generateInwardsBorderBox((189, 48), 3, borderColor), (  0,104)])
-        instructions.append([generateInwardsBorderBox((189, 48), 3, borderColor), (  0,162)])
-        instructions.append([generateInwardsBorderBox((388,288), 3, borderColor), (  0,219)])
-        instructions.append([generateInwardsBorderBox((189,210), 3, borderColor), (199,  0)])
-        return instructions
-    elif section == "options":
-        instructions = []
-        instructions.append([generateInwardsBorderBox((120, 58), 3, borderColor), (  7, 0)])
-        instructions.append([generateInwardsBorderBox((120, 58), 3, borderColor), (134, 0)])
-        instructions.append([generateInwardsBorderBox((120, 58), 3, borderColor), (261, 0)])
-        instructions.append([generateInwardsBorderBox((309, 58), 3, borderColor), (  7,65)])
-        instructions.append([generateInwardsBorderBox(( 58, 58), 3, borderColor), (323,65)])
-        return instructions
-    elif section == "graph":
-        from subsystems.render import placeOver
-        temp = generateColorBox((388,288), (0,0,0,0))
-        placeOver(temp, generateColorBox((  3,236), borderColor), ( 29, 23))
-        placeOver(temp, generateColorBox((336,  3), borderColor), ( 29,256))
-        return temp
-    else:
-        return []
+    return None

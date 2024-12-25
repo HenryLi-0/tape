@@ -1,6 +1,6 @@
 '''This file contains functions for generating paths and other movements.'''
 
-from settings import PATH_FLOAT_ACCURACY
+from settings import FLOAT_ACCURACY
 import math
 
 #SMOOTH PATHING TIME YIPPEE (very satsifying)
@@ -49,14 +49,14 @@ def roundf(float: float, digits: int):
 
 def roundp(point: tuple|list):
     '''Returns the rounded (x,y) point with PATH_FLOAT_ACCURACY digits after the decimal point'''
-    return (roundf(point[0],PATH_FLOAT_ACCURACY), roundf(point[1],PATH_FLOAT_ACCURACY))
+    return (roundf(point[0],FLOAT_ACCURACY), roundf(point[1],FLOAT_ACCURACY))
 
 def pointAt(coord1: tuple|list, coord2: tuple|list):
     '''Returns the degrees of point 1 looking at point 2, using the "0 up CCW" rotation'''
     dx=coord2[0]-coord1[0]
     dx=0.0000001 if dx == 0 else dx
     dy=coord2[1]-coord1[1]
-    return roundf(-(math.atan(dy/dx)/math.pi)*180-90 if dx>0 else -(math.atan(dy/dx)/math.pi)*180+90, PATH_FLOAT_ACCURACY)
+    return roundf(-(math.atan(dy/dx)/math.pi)*180-90 if dx>0 else -(math.atan(dy/dx)/math.pi)*180+90, FLOAT_ACCURACY)
 
 # Bezier Maths
 
@@ -185,6 +185,6 @@ def tcoordVelocity(tcoords: tuple|list):
         path = [(tcoords[0][0], 0)]
         for i in range(1, len(tcoords)):
             change = subtractP(tcoords[i][1],tcoords[i-1][1])
-            path.append((tcoords[i][0],roundf(math.sqrt(change[0]**2 + change[1]**2), PATH_FLOAT_ACCURACY)))
+            path.append((tcoords[i][0],roundf(math.sqrt(change[0]**2 + change[1]**2), FLOAT_ACCURACY)))
         return path
     else: return [(0, 0)]
