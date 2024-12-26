@@ -5,7 +5,7 @@ from subsystems.settings import *
 
 class Coordinate(Node):
     '''
-        A coordinate representing a location on a 2D plane
+        A coordinate representing a location on a 2D plane.
 
         Requires:
         - `x` represents the x coordinate.
@@ -13,11 +13,74 @@ class Coordinate(Node):
     '''
     def __init__(self, x:Number|Pixel = Number(0), y:Number|Pixel = Number(0)):
         super().__init__()
-        if type(x) == Number: xcoord = x
+        if type(x) == Number: xcoord = x*ANIMATION_WIDTH.get()
         elif type(x) == Pixel: xcoord = x
-        self.coordinate = [x,y]
+        else: self.addError("Invalid x!")
+        if type(y) == Number: ycoord = y*ANIMATION_HEIGHT.get()
+        elif type(y) == Pixel: ycoord = y
+        else: self.addError("Invalid y!")
+        self.x = xcoord
+        self.y = ycoord
     def get(self):
         return self
-    
-    # TO-DO: FINISH
 
+
+'''PATHING'''
+
+class Frame(Node):
+    '''
+        A frame, representing a coordinate or value at a set period in time.
+        Requires:
+        - `value` represents a value or coordinate.
+        - `time` represents the time after the start.
+    '''
+    def __init__(self, value:Coordinate|Number|Angle|Pixel = Coordinate(Number(0),Number(0)), time:Time = Seconds(0)):
+        super().__init__()
+        self.type = type(value)
+        self.value = value
+        if issubclass(type(time), Time): self.time = time
+        else: self.addError("Inputted Time is not a Time!")
+    def get(self):
+        pass # TO-DO: FINISH
+
+
+
+class PathType(Node):
+    '''
+        A class that consists of all types of Paths for Pathing.
+    '''
+    def __init__(self, *frames: Frame):
+        super().__init__()
+        for frame in frames:
+            if frame.type != frames[0].type:
+                self.addError("Frames are not of consistent type!")
+                break
+    def path(self, *frames: Frame):
+        pass
+    def get(self) -> list[Frame]:
+        return self.path()
+
+class LinearPathType(PathType):
+    def path(self, *frames: Frame):
+        pass # TO-DO: FINISH
+
+class BezierPathType(PathType):
+    def path(self, *frames: Frame):
+        pass # TO-DO: FINISH
+
+class SmoothApproachesPathType(PathType):
+    def path(self, *frames: Frame):
+        pass # TO-DO: FINISH
+
+class SmoothFullPathType(PathType):
+    def path(self, *frames: Frame):
+        pass # TO-DO: FINISH
+
+
+
+class Path(Node):
+    '''
+        A 
+    '''
+    def __init__(self):
+        super().__init__()

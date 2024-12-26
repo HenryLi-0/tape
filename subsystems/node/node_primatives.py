@@ -8,13 +8,17 @@ from PIL import Image
 class ActiveError:
     def __init__(self, error = None):
         self.error = error
+    def addError(self, error):
+        pass # TO-DO: error manager of sorts
 
 class Node:
     def __init__(self):
         self.id = uuid.uuid4()
         self.error = ActiveError()
+    def addError(self, error):
+        self.error(error)
     def getError(self):
-        return self.error.error
+        return self.error
     def get(self):
         return None
 
@@ -88,16 +92,16 @@ class FileLocation(Node):
         super().__init__() 
         index = fileLocation.get().rfind(".")
         if index == -1:
-            self.error.error = "File extension missing!"
+            self.addError("File extension missing!")
         else:
             fileType = fileLocation.get()[index:]
             if fileType in [".txt", ".png", ".jpg", ".jpeg"]:
                 if os.path.exists(fileLocation.get()):
                     self.fileLocation = fileLocation
                 else:
-                    self.error.error = f"File doesn't exist!"
+                    self.addError(f"File {fileLocation.get()} doesn't exist!")
             else:
-                self.error.error = f"File extension {fileType} invalid! (for safety reasons)"
+                self.addError(f"File extension {fileType} invalid! (for safety reasons)")
         return None
     def get(self):
         # TO-DO: finish 
@@ -130,7 +134,7 @@ class Degrees(Angle):
         if type(angle) == Number:       self.value = angle
         elif type(angle) == Degrees:    self.value = Number(angle.get().get())
         elif type(angle) == Radians:    self.value = Number(angle.get().get()/math.pi*180)
-        else: self.error.error = "Invalid input!"
+        else: self.addError("Invalid input!")
     def get(self) -> Angle:
         return self.value
 
@@ -144,7 +148,7 @@ class Radians(Angle):
         if type(angle) == Number:       self.value = angle
         elif type(angle) == Degrees:    self.value = Number(angle.get().get()/180*math.pi)
         elif type(angle) == Radians:    self.value = Number(angle.get().get())
-        else: self.error.error = "Invalid input!"
+        else: self.addError("Invalid input!")
     def get(self) -> Angle:
         return self.value
 
@@ -172,7 +176,7 @@ class Milliseconds(Time):
         elif type(time) == Minutes:      self.value = Number(time.get().get()*1000*60)
         elif type(time) == Hours:        self.value = Number(time.get().get()*1000*60*60)
         elif type(time) == Days:         self.value = Number(time.get().get()*1000*60*60*24)
-        else: self.error.error = "Invalid input!"
+        else: self.addError("Invalid input!")
     def get(self) -> Time:
         return self.value
 
@@ -189,7 +193,7 @@ class Seconds(Time):
         elif type(time) == Minutes:      self.value = Number(time.get().get()*60)
         elif type(time) == Hours:        self.value = Number(time.get().get()*60*60)
         elif type(time) == Days:         self.value = Number(time.get().get()*60*60*24)
-        else: self.error.error = "Invalid input!"
+        else: self.addError("Invalid input!")
     def get(self) -> Time:
         return self.value
 
@@ -206,7 +210,7 @@ class Minutes(Time):
         elif type(time) == Minutes:      self.value = Number(time.get().get())
         elif type(time) == Hours:        self.value = Number(time.get().get()*60)
         elif type(time) == Days:         self.value = Number(time.get().get()*60*24)
-        else: self.error.error = "Invalid input!"
+        else: self.addError("Invalid input!")
     def get(self) -> Time:
         return self.value
 
@@ -223,7 +227,7 @@ class Hours(Time):
         elif type(time) == Minutes:      self.value = Number(time.get().get()/60)
         elif type(time) == Hours:        self.value = Number(time.get().get())
         elif type(time) == Days:         self.value = Number(time.get().get()*24)
-        else: self.error.error = "Invalid input!"
+        else: self.addError("Invalid input!")
     def get(self) -> Time:
         return self.value
 
@@ -240,11 +244,6 @@ class Days(Time):
         elif type(time) == Minutes:      self.value = Number(time.get().get()/60/24)
         elif type(time) == Hours:        self.value = Number(time.get().get()/24)
         elif type(time) == Days:         self.value = Number(time.get().get())
-        else: self.error.error = "Invalid input!"
+        else: self.addError("Invalid input!")
     def get(self) -> Time:
         return self.value
-
-
-
-'''OPERATIONS'''
-

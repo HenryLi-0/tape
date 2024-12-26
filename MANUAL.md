@@ -76,8 +76,8 @@ Tape v2.x, unlike Tape v1.x, is a node based animation editor using node structu
     - Frame(Coordinate, Time)
 - Path:
   - In: n frames, same frame type, approach
-    - Ex. Approach, Frame(Coordinate, Time), ... -> Path(Frame(Coordinate, Time), ...) (calculated with approach)
-    - Approach: bezier (smooth connections through all), smooth slide ends (start slow, speed up, approach end slow), smooth slide all (smooth slide ends but its for all of them), linear (just boop boop boop, lines)
+    - Ex. Type, Frame(Coordinate, Time), ... -> Path(Frame(Coordinate, Time), ...) (calculated with approach)
+    - Type: bezier (smooth connections through all), smooth slide ends (start slow, speed up, approach end slow), smooth slide all (smooth slide ends but its for all of them), linear (just boop boop boop, lines)
   - Optional In: Number (starting offset (default: 0)), Path(Frame(Number, Time)) (speed path (default: x1))
   - Out: a path, timed!
   - Varients:

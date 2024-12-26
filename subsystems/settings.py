@@ -1,16 +1,16 @@
 '''This file contains modifiable settings!'''
 
-SETTINGS = {
-    "ANIMATION_WIDTH" : [[int], 1920],
-    "ANIMATION_HEIGHT": [[int], 1080],
-}
+class Setting:
+    def __init__(self, valid, value):
+        self.valid = valid
+        self.value = value
+    def set(self, value):
+        if type(value) in self.valid:
+            self.value = value
+    def get(self):
+        return self.value
+    
 
-def setSetting(key, value):
-    if (key in SETTINGS) and (type(value) in SETTINGS[key][0]):
-        SETTINGS[key][1] = value
+ANIMATION_WIDTH  = Setting([int], 1920)
+ANIMATION_HEIGHT = Setting([int], 1080)
 
-def getSetting(key):
-    if key in SETTINGS:
-        return SETTINGS[key]
-    else:
-        return None
