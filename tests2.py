@@ -1,4 +1,4 @@
-from subsystems.node import *
+from subsystems.node.node_primatives import *
 
 # node1 = Number(0)
 # node2 = Number(10)
