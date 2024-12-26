@@ -1,6 +1,6 @@
 from subsystems.point import *
 from subsystems.pathing import *
-import random, uuid, os
+import random, uuid, os, math
 from PIL import Image
 
 
@@ -20,7 +20,9 @@ class Node:
 
 
 
-'''Simple'''
+
+
+'''SIMPLE/BASIC'''
 
 class Number(Node):
     '''
@@ -54,12 +56,12 @@ class String(Node):
 
 class Random(Node):
     '''
-        A random number, with range [a,b], includes both end points
+        A random number, with range [a,b], includes both end points.
 
         Requires:
-        - `lowerLimit` defines the minimum possible output
-        - `upperLimit` defines the maximum possible output
-        - `onlyIntegers` defines whether or not only integers are returned`
+        - `lowerLimit` defines the minimum possible output.
+        - `upperLimit` defines the maximum possible output.
+        - `onlyIntegers` defines whether or not only integers are returned.
         
     '''
     def __init__(self, lowerLimit:Number = Number(0), upperLimit:Number = Number(1), onlyIntegers:Boolean = Boolean(False)):
@@ -101,37 +103,50 @@ class FileLocation(Node):
         # TO-DO: finish 
         pass
 
-class Coordinate(Node):
-    '''
-        A coordinate representing a location on a 2D plane
-
-        Requires:
-        - `x` represents the x coordinate
-        - `y` represents the y coordinate
-    '''
-    def __init__(self, x:Number = Number(0), y:Number = Number(0)):
-        super().__init__()
-        self.coordinate = [x,y]
-    def get(self):
-        return self.coordinate
-
 
 
 '''Units'''
 
 class Unit(Node):
+    '''
+        A class for all types of Units to inherit from.
+    '''
     pass
-    # i have no clue what to do here
 
 
 class Angle(Unit):
+    '''
+        A class for all types of Angle units to inherit from.
+    '''
     pass
 
 class Degrees(Angle):
-    pass
+    '''
+        A unit of angle, representing 1/360th of a circle.
+        - `angle` is either a Angle type or a Number type object. Angle types will be converted, while Numbers will be in degrees.
+    '''
+    def __init__(self, angle:Angle|Number = Number(0)):
+        super().__init__()
+        if type(angle) == Number:       self.value = angle
+        elif type(angle) == Degrees:    self.value = Number(angle.get().get())
+        elif type(angle) == Radians:    self.value = Number(angle.get().get()/math.pi*180)
+        else: self.error.error = "Invalid input!"
+    def get(self) -> Angle:
+        return self.value
 
 class Radians(Angle):
-    pass
+    '''
+        A unit of angle, where 2*PI radians represents a complete circle.
+        - `angle` is either a Time type or a Number type object. Angle types will be converted, while Numbers will be in radians.
+    '''
+    def __init__(self, angle:Angle|Number = Number(0)):
+        super().__init__()
+        if type(angle) == Number:       self.value = angle
+        elif type(angle) == Degrees:    self.value = Number(angle.get().get()/180*math.pi)
+        elif type(angle) == Radians:    self.value = Number(angle.get().get())
+        else: self.error.error = "Invalid input!"
+    def get(self) -> Angle:
+        return self.value
 
 
 class Pixel(Unit):
@@ -139,23 +154,121 @@ class Pixel(Unit):
 
 
 class Time(Unit):
+    '''
+        A class for all types of Time units to inherit from.
+    '''
     pass
 
 class Milliseconds(Time):
-    pass
+    '''
+        A unit of time, representing 1/1000th of a second.
+        - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in milliseconds.
+    '''
+    def __init__(self, time:Time|Number = Number(0)):
+        super().__init__()
+        if type(time) == Number:         self.value = time
+        elif type(time) == Milliseconds: self.value = Number(time.get().get())
+        elif type(time) == Seconds:      self.value = Number(time.get().get()*1000)
+        elif type(time) == Minutes:      self.value = Number(time.get().get()*1000*60)
+        elif type(time) == Hours:        self.value = Number(time.get().get()*1000*60*60)
+        elif type(time) == Days:         self.value = Number(time.get().get()*1000*60*60*24)
+        else: self.error.error = "Invalid input!"
+    def get(self) -> Time:
+        return self.value
 
 class Seconds(Time):
-    pass
+    '''
+        A unit of time, representing a second.
+        - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in seconds.
+    '''
+    def __init__(self, time:Time|Number = Number(0)):
+        super().__init__()
+        if type(time) == Number:         self.value = time
+        elif type(time) == Milliseconds: self.value = Number(time.get().get()/1000)
+        elif type(time) == Seconds:      self.value = Number(time.get().get())
+        elif type(time) == Minutes:      self.value = Number(time.get().get()*60)
+        elif type(time) == Hours:        self.value = Number(time.get().get()*60*60)
+        elif type(time) == Days:         self.value = Number(time.get().get()*60*60*24)
+        else: self.error.error = "Invalid input!"
+    def get(self) -> Time:
+        return self.value
 
 class Minutes(Time):
-    pass
+    '''
+        A unit of time, representing a minute.
+        - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in minutes.
+    '''
+    def __init__(self, time:Time|Number = Number(0)):
+        super().__init__()
+        if type(time) == Number:         self.value = time
+        elif type(time) == Milliseconds: self.value = Number(time.get().get()/1000/60)
+        elif type(time) == Seconds:      self.value = Number(time.get().get()/60)
+        elif type(time) == Minutes:      self.value = Number(time.get().get())
+        elif type(time) == Hours:        self.value = Number(time.get().get()*60)
+        elif type(time) == Days:         self.value = Number(time.get().get()*60*24)
+        else: self.error.error = "Invalid input!"
+    def get(self) -> Time:
+        return self.value
 
 class Hours(Time):
-    pass
+    '''
+        A unit of time, representing an hour.
+        - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in hours.
+    '''
+    def __init__(self, time:Time|Number = Number(0)):
+        super().__init__()
+        if type(time) == Number:         self.value = time
+        elif type(time) == Milliseconds: self.value = Number(time.get().get()/1000/60/60)
+        elif type(time) == Seconds:      self.value = Number(time.get().get()/60/60)
+        elif type(time) == Minutes:      self.value = Number(time.get().get()/60)
+        elif type(time) == Hours:        self.value = Number(time.get().get())
+        elif type(time) == Days:         self.value = Number(time.get().get()*24)
+        else: self.error.error = "Invalid input!"
+    def get(self) -> Time:
+        return self.value
 
 class Days(Time):
-    pass
+    '''
+        A unit of time, representing a day.
+        - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in days.
+    '''
+    def __init__(self, time:Time|Number = Number(0)):
+        super().__init__()
+        if type(time) == Number:         self.value = time
+        elif type(time) == Milliseconds: self.value = Number(time.get().get()/1000/60/60/24)
+        elif type(time) == Seconds:      self.value = Number(time.get().get()/60/60/24)
+        elif type(time) == Minutes:      self.value = Number(time.get().get()/60/24)
+        elif type(time) == Hours:        self.value = Number(time.get().get()/24)
+        elif type(time) == Days:         self.value = Number(time.get().get())
+        else: self.error.error = "Invalid input!"
+    def get(self) -> Time:
+        return self.value
 
 
 
-'''Operations'''
+'''Location'''
+
+class Coordinate(Node):
+    '''
+        A coordinate representing a location on a 2D plane
+
+        Requires:
+        - `x` represents the x coordinate.
+        - `y` represents the y coordinate.
+    '''
+    def __init__(self, x:Number|Pixel = Number(0), y:Number|Pixel = Number(0)):
+        super().__init__()
+        if type(x) == Number: xcoord = x
+        elif type(x) == Pixel: xcoord = x
+        self.coordinate = [x,y]
+    def get(self):
+        return self
+    
+    # TO-DO: FINISH
+
+
+
+
+
+'''OPERATIONS'''
+

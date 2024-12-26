@@ -30,18 +30,19 @@ Tape v2.x, unlike Tape v1.x, is a node based animation editor using node structu
   - OUT: a random number within range
 - File Location: a file location, can be directory or file path
   - Representation: ("C:/...")
-- Coordinate: two numbers
-  - In: 
-    - Number, Number
-    - FILL IN
-  - Out: (x,y) (coordinate)
-  - Representation: (x,y)
 - Unit: a number with a unit, can does convert units reasonably
   - Representation: Unit(Number)
   - Varitents:
     - Angles
     - Pixels
     - Time
+- Coordinate: two numbers
+  - In: 
+    - Number, Number (will act as percent of the screen)
+    - Pixels, Pixels (will act as a precise coordinate)
+    - FILL IN (will act as percent of the screen)
+  - Out: (x,y) (exact coordinate)
+  - Representation: (x,y)
 
 **Operations**
 - Addition:
