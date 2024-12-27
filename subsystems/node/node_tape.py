@@ -49,38 +49,43 @@ class PathType(Node):
     '''
         A class that consists of all types of Paths for Pathing.
     '''
-    def __init__(self, *frames: Frame):
+    def __init__(self):
         super().__init__()
+    def path(self, *frames:Frame):
+        pass
+    def get(self, *frames:Frame) -> list[Frame]:
         for frame in frames:
             if frame.type != frames[0].type:
                 self.addError("Frames are not of consistent type!")
                 break
-    def path(self, *frames: Frame):
-        pass
-    def get(self) -> list[Frame]:
-        return self.path()
+        return self.path(*frames)
 
 class LinearPathType(PathType):
-    def path(self, *frames: Frame):
+    def path(self, *frames:Frame):
         pass # TO-DO: FINISH
 
 class BezierPathType(PathType):
-    def path(self, *frames: Frame):
+    def path(self, *frames:Frame):
         pass # TO-DO: FINISH
 
 class SmoothApproachesPathType(PathType):
-    def path(self, *frames: Frame):
+    def path(self, *frames:Frame):
         pass # TO-DO: FINISH
 
 class SmoothFullPathType(PathType):
-    def path(self, *frames: Frame):
+    def path(self, *frames:Frame):
         pass # TO-DO: FINISH
 
 
 
 class Path(Node):
     '''
-        A 
+        A path is the interpolated information of any number of frames, given an approach of calculation.
+        Requires:
+        - `pathType` is a PathType that represents the method used to calculate to Path.
+        - `frames` is any number of Frames of the type.
     '''
-    def __init__(self):
+    def __init__(self, pathType:PathType, *frames:Frame):
         super().__init__()
+        
+    

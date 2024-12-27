@@ -1,22 +1,23 @@
 from subsystems.point import *
 from subsystems.pathing import *
-import random, uuid, os, math
+import random, uuid, os, math, time
 from PIL import Image
 
 
 
 class ActiveError:
     def __init__(self, error = None):
-        self.error = error
+        self.errors = []
+        self.addError(error)
     def addError(self, error):
-        pass # TO-DO: error manager of sorts
-
+        self.errors.append(f"{time.time()} - {error}")
+        
 class Node:
     def __init__(self):
         self.id = uuid.uuid4()
         self.error = ActiveError()
     def addError(self, error):
-        self.error(error)
+        self.error(f"{self.id}\n   {error}")
     def getError(self):
         return self.error
     def get(self):
@@ -83,29 +84,33 @@ class Random(Node):
 
 class FileLocation(Node):
     '''
-        A file location 
+        A file or directory location.
 
         Requires:
-        - `` file location
+        - `location` represents the file location
     '''
-    def __init__(self, fileLocation:String = String("C:/")):
+    def __init__(self, location:String):
         super().__init__() 
-        index = fileLocation.get().rfind(".")
+        index = location.get().rfind(".")
         if index == -1:
-            self.addError("File extension missing!")
+            if os.path.exists(location.get()):
+                self.fileLocation = location
+                self.extension = "/folder"
+            else:
+                self.addError(f"Directory {location.get} doesn't exist!")
         else:
-            fileType = fileLocation.get()[index:]
+            fileType = location.get()[index:]
             if fileType in [".txt", ".png", ".jpg", ".jpeg"]:
-                if os.path.exists(fileLocation.get()):
-                    self.fileLocation = fileLocation
+                if os.path.exists(location.get()):
+                    self.fileLocation = location
+                    self.extension = fileType
                 else:
-                    self.addError(f"File {fileLocation.get()} doesn't exist!")
+                    self.addError(f"File {location.get()} doesn't exist!")
             else:
                 self.addError(f"File extension {fileType} invalid! (for safety reasons)")
         return None
-    def get(self):
-        # TO-DO: finish 
-        pass
+    def get(self) -> str:
+        return self.fileLocation
 
 
 
@@ -127,6 +132,7 @@ class Angle(Unit):
 class Degrees(Angle):
     '''
         A unit of angle, representing 1/360th of a circle.
+        Requires:
         - `angle` is either a Angle type or a Number type object. Angle types will be converted, while Numbers will be in degrees.
     '''
     def __init__(self, angle:Angle|Number = Number(0)):
@@ -141,6 +147,7 @@ class Degrees(Angle):
 class Radians(Angle):
     '''
         A unit of angle, where 2*PI radians represents a complete circle.
+        Requires:
         - `angle` is either a Time type or a Number type object. Angle types will be converted, while Numbers will be in radians.
     '''
     def __init__(self, angle:Angle|Number = Number(0)):
@@ -166,6 +173,7 @@ class Time(Unit):
 class Milliseconds(Time):
     '''
         A unit of time, representing 1/1000th of a second.
+        Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in milliseconds.
     '''
     def __init__(self, time:Time|Number = Number(0)):
@@ -183,6 +191,7 @@ class Milliseconds(Time):
 class Seconds(Time):
     '''
         A unit of time, representing a second.
+        Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in seconds.
     '''
     def __init__(self, time:Time|Number = Number(0)):
@@ -200,6 +209,7 @@ class Seconds(Time):
 class Minutes(Time):
     '''
         A unit of time, representing a minute.
+        Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in minutes.
     '''
     def __init__(self, time:Time|Number = Number(0)):
@@ -217,6 +227,7 @@ class Minutes(Time):
 class Hours(Time):
     '''
         A unit of time, representing an hour.
+        Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in hours.
     '''
     def __init__(self, time:Time|Number = Number(0)):
@@ -234,6 +245,7 @@ class Hours(Time):
 class Days(Time):
     '''
         A unit of time, representing a day.
+        Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in days.
     '''
     def __init__(self, time:Time|Number = Number(0)):
@@ -247,3 +259,39 @@ class Days(Time):
         else: self.addError("Invalid input!")
     def get(self) -> Time:
         return self.value
+
+
+
+
+
+'''IO'''
+
+class ImageImport(Node):
+    '''
+        Imports an image file at the given file location/path.
+        Requires:
+        - `location` represents the image's file location.
+    '''
+    def __init__(self, location:FileLocation):
+        super().__init__()
+        file = location.get()
+        if location.extension in [".png", ".jpg", ".jpeg"]:
+            self.file = Image.open(file).convert("RGBA")
+        else:
+            self.addError(f"File extension {location.extension} is not a supported image file type!")
+    def get(self) -> Image:
+        return self.file
+
+class FolderImport(Node):
+    '''
+        Imports an iterable series of images, given a folder location/path.
+        Requires:
+        - `location` represents the folder containing the image files.
+    '''
+    def __init__(self, location:FileLocation):
+        super().__init__()
+        if location.extension == "/folder":
+            directory = location.get()
+            # TO-DO: finish, and make sure its safe
+        else:
+            self.addError(f"The file location isn't a folder/directory!")
