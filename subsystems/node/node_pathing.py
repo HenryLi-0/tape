@@ -36,10 +36,12 @@ class Frame(Node):
     '''
     def __init__(self, value:Coordinate|Number|Angle|Pixel = Coordinate(Number(0),Number(0)), time:Time = Seconds(0)):
         super().__init__()
-        self.type = type(value)
-        self.value = value
-        if issubclass(type(time), Time): self.time = time
-        else: self.addError("Inputted Time is not a Time!")
+        if issubclass(type(time), Time):
+            self.type = type(value)
+            self.value = value
+            self.time = time
+        else:
+            self.addError("Inputted Time is not a Time!")
     def get(self):
         pass # TO-DO: FINISH
 

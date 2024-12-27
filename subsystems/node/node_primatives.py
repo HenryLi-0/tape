@@ -3,7 +3,7 @@ from subsystems.pathing import *
 import random, uuid, os, math, time
 from PIL import Image
 
-
+'''NODE'''
 
 class ActiveError:
     def __init__(self, error = None):
@@ -22,10 +22,6 @@ class Node:
         return self.error
     def get(self):
         return None
-
-
-
-
 
 '''SIMPLE/BASIC'''
 
@@ -112,9 +108,7 @@ class FileLocation(Node):
     def get(self) -> str:
         return self.fileLocation
 
-
-
-'''Units'''
+'''UNITS'''
 
 class Unit(Node):
     '''
@@ -159,10 +153,8 @@ class Radians(Angle):
     def get(self) -> Angle:
         return self.value
 
-
 class Pixel(Unit):
     pass
-
 
 class Time(Unit):
     '''
@@ -259,10 +251,6 @@ class Days(Time):
         else: self.addError("Invalid input!")
     def get(self) -> Time:
         return self.value
-
-
-
-
 
 '''IO'''
 
