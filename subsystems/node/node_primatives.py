@@ -370,3 +370,10 @@ class EqualTo(Comparison):
             self.addError("Inconsistent type for comparison!")
     def get(self):
         return self.output
+    
+class And(Comparison):
+    def __init__(self, inputA:Boolean, inputB:Boolean):
+        super().__init__()
+        self.output = Boolean(inputA.get() and inputB.get())
+    def get(self):
+        return self.output
