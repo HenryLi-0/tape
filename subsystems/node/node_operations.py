@@ -15,7 +15,7 @@ class Addition(Node):
         super().__init__()
         if type(inputA) == Number and type(inputB) == Number:
             self.value = Number(inputA.get()+inputB.get())
-        elif issubclass(type(inputA), Unit) and type(inputA) == type(inputB):
+        elif issubclass(type(inputA), Unit) and type(inputA) == type(inputB): # TO-DO: ADD UNIT CONVERSION
             self.value = inputA.__class__(inputA.get()+inputB.get())
         elif type(inputA) == Coordinate and type(inputB) == Coordinate:
             self.value = Coordinate(Number(inputA.x+inputB.x), Number(inputA.y+inputB.y))

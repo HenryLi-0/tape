@@ -89,5 +89,6 @@ class Path(Node):
     '''
     def __init__(self, pathType:PathType, *frames:Frame):
         super().__init__()
-        
-    
+        self.path = pathType(*frames)
+    def get(self):
+        return self.path

@@ -12,15 +12,22 @@ from subsystems.node.node_primatives import *
 # print(Milliseconds(Days(Seconds(Milliseconds(Days(Milliseconds(Number(10))))))).get().get())
 # print(Degrees(Radians(Radians(Degrees(Degrees(Radians(Degrees(Number(10)))))))).get().get())
 
-import time
-avg = 0
-i = 0
-n = 1000000
-while i < n:
-    start = time.time()
-    exec(f"node{i} = Number(i)")
-    end = time.time()
-    avg += (end-start)
-    i+=1
-avg /= n
-print(avg)
+# import time
+# avg = 0
+# i = 0
+# n = 1000000
+# while i < n:
+#     start = time.time()
+#     exec(f"node{i} = Number(i)")
+#     end = time.time()
+#     avg += (end-start)
+#     i+=1
+# avg /= n
+# print(avg)
+
+# node = Number(1)
+# print(node.get())
+# print(node)
+# node.__init__(2)
+# print(node.get())
+# print(node)

@@ -29,7 +29,7 @@ class Number(Node):
     '''
         A number.
     '''
-    def __init__(self, start = None):
+    def __init__(self, start:int|float = None):
         super().__init__()
         self.number = start
     def get(self) -> int|float:
@@ -39,7 +39,7 @@ class Boolean(Node):
     '''
         A boolean.
     '''
-    def __init__(self, boolean):
+    def __init__(self, boolean:bool):
         super().__init__()
         self.boolean = boolean
     def get(self) -> bool:
@@ -49,7 +49,7 @@ class String(Node):
     '''
         A string.
     '''
-    def __init__(self, string):
+    def __init__(self, string:str):
         super().__init__()
         self.string = string
     def get(self) -> str:
@@ -114,14 +114,20 @@ class Unit(Node):
     '''
         A class for all types of Units to inherit from.
     '''
-    pass
+    def simplify(unit): # TO-DO: COMPLETE, BUT MAKE IT MORE EFFICIENT!
+        '''
+            Turns a unit to its simpliest form, consist with all other simplified version.
+        '''
+        pass
+        
 
 
 class Angle(Unit):
     '''
         A class for all types of Angle units to inherit from.
     '''
-    pass
+    def simplify(unit):
+        return Degrees(unit)
 
 class Degrees(Angle):
     '''
@@ -153,6 +159,9 @@ class Radians(Angle):
     def get(self) -> Angle:
         return self.value
 
+
+# TO-DO: return Pixel(unit)
+
 class Pixel(Unit):
     pass
 
@@ -160,7 +169,8 @@ class Time(Unit):
     '''
         A class for all types of Time units to inherit from.
     '''
-    pass
+    def simplify(unit):
+        return Seconds(unit)
 
 class Milliseconds(Time):
     '''
@@ -283,3 +293,80 @@ class FolderImport(Node):
             # TO-DO: finish, and make sure its safe
         else:
             self.addError(f"The file location isn't a folder/directory!")
+
+'''LOGIC'''
+
+class Reroute(Node):
+    '''
+        Returns the same node that was given in.
+        Requires:
+        - `inputNode` represents any node type.
+    '''
+    def __init__(self, inputNode:Node):
+        super().__init__()
+        self.inputNode = inputNode
+    def get(self):
+        return self.inputNode
+
+class Comparison(Node):
+    '''
+        A class for all types of logical operations related with booleans.
+    '''
+    pass
+
+class LessThan(Comparison):
+    def __init__(self, inputA:Number|Unit, inputB:Number|Unit):
+        super().__init__()
+        if type(inputA) == type(inputB):
+            if type(inputA) == Number:
+                self.output = Boolean(inputA.get() < inputB.get())
+            elif type(inputA) == Unit:
+                a = inputA.simplify()
+                b = inputB.simplify()
+                if type(a) == type(b):
+                    self.output = Boolean(a.get() < b.get())
+                else:
+                    self.addError(f"Inconsistent Unit dimensions {type(a)} and {type(b)}!")
+                # TO-DO: COMPLETE, BUT MAKE IT MORE EFFICIENT!
+        else:
+            self.addError("Inconsistent type for comparison!")
+    def get(self):
+        return self.output
+
+class GreaterThan(Comparison):
+    def __init__(self, inputA:Number|Unit, inputB:Number|Unit):
+        super().__init__()
+        if type(inputA) == type(inputB):
+            if type(inputA) == Number:
+                self.output = Boolean(inputA.get() > inputB.get())
+            elif type(inputA) == Unit:
+                a = inputA.simplify()
+                b = inputB.simplify()
+                if type(a) == type(b):
+                    self.output = Boolean(a.get() > b.get())
+                else:
+                    self.addError(f"Inconsistent Unit dimensions {type(a)} and {type(b)}!")
+                # TO-DO: COMPLETE, BUT MAKE IT MORE EFFICIENT!
+        else:
+            self.addError("Inconsistent type for comparison!")
+    def get(self):
+        return self.output
+
+class EqualTo(Comparison):
+    def __init__(self, inputA:Number|Unit, inputB:Number|Unit):
+        super().__init__()
+        if type(inputA) == type(inputB):
+            if type(inputA) == Number:
+                self.output = Boolean(inputA.get() == inputB.get())
+            elif type(inputA) == Unit:
+                a = inputA.simplify()
+                b = inputB.simplify()
+                if type(a) == type(b):
+                    self.output = Boolean(a.get() == b.get())
+                else:
+                    self.addError(f"Inconsistent Unit dimensions {type(a)} and {type(b)}!")
+                # TO-DO: COMPLETE, BUT MAKE IT MORE EFFICIENT!
+        else:
+            self.addError("Inconsistent type for comparison!")
+    def get(self):
+        return self.output
