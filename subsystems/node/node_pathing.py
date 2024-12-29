@@ -13,19 +13,26 @@ class Coordinate(Node):
     '''
     def __init__(self, x:Number|Pixel = Number(0), y:Number|Pixel = Number(0)):
         super().__init__()
-        if type(x) == Number: xcoord = x*ANIMATION_WIDTH.get()
-        elif type(x) == Pixel: xcoord = x
+        self.output = None
+        self.x = 0
+        self.y = 0
+        self.set(x, y)
+    def set(self, x:Number|Pixel = Number(0), y:Number|Pixel = Number(0)):
+        self.xNode = x
+        self.yNode = y
+    def get(self):
+        if type(self.xNode) == Number: xcoord = self.xNode*ANIMATION_WIDTH.get()
+        elif type(self.xNode) == Pixel: xcoord = self.xNode
         else: self.addError("Invalid x!")
-        if type(y) == Number: ycoord = y*ANIMATION_HEIGHT.get()
-        elif type(y) == Pixel: ycoord = y
+        if type(self.yNode) == Number: ycoord = self.yNode*ANIMATION_HEIGHT.get()
+        elif type(self.yNode) == Pixel: ycoord = self.yNode
         else: self.addError("Invalid y!")
         self.x = xcoord
         self.y = ycoord
-    def get(self):
         return self
 
 
-'''PATHING'''
+'''PATHING''' # TO-DO: REFACTOR EVERYTHING BELOW HERE!!!
 
 class Frame(Node):
     '''

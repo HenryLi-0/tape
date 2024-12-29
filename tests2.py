@@ -4,10 +4,11 @@ from subsystems.node.node_primatives import *
 # node2 = Number(10)
 # node3 = Boolean(True)
 # node4 = Random(node1, node2, node3)
-# node4.get()
+# while True:
+#     print(node4.get().get())
 
-# node1 = FileLocation(String("C:/Users/henrys/Desktop/Projects/Github Repositories/tape/nonexistence.png"))
-# print(node1.getError())
+# node1 = FileLocation(String("C:/Users/henry/Desktop/Projects/Github Repositories/tape/nonexistence.png"))
+# print(node1.getError().getError())
 
 # print(Milliseconds(Days(Seconds(Milliseconds(Days(Milliseconds(Number(10))))))).get().get())
 # print(Degrees(Radians(Radians(Degrees(Degrees(Radians(Degrees(Number(10)))))))).get().get())
@@ -28,6 +29,6 @@ from subsystems.node.node_primatives import *
 # node = Number(1)
 # print(node.get())
 # print(node)
-# node.__init__(2)
+# node.set(2)
 # print(node.get())
 # print(node)

@@ -11,15 +11,19 @@ class ActiveError:
         self.addError(error)
     def addError(self, error):
         self.errors.append(f"{time.time()} - {error}")
+    def getError(self):
+        return self.errors
         
 class Node:
     def __init__(self):
         self.id = uuid.uuid4()
         self.error = ActiveError()
     def addError(self, error):
-        self.error(f"{self.id}\n   {error}")
+        self.error.addError(f"{self.id}\n   {error}")
     def getError(self):
         return self.error
+    def set(self):
+        pass
     def get(self):
         return None
 
@@ -31,16 +35,22 @@ class Number(Node):
     '''
     def __init__(self, start:int|float = None):
         super().__init__()
+        self.number = None
+        self.set(start)
+    def set(self, start:int|float = None):
         self.number = start
     def get(self) -> int|float:
         return self.number
-    
+
 class Boolean(Node):
     '''
         A boolean.
     '''
     def __init__(self, boolean:bool):
         super().__init__()
+        self.boolean = None
+        self.set(boolean)
+    def set(self, boolean:bool):
         self.boolean = boolean
     def get(self) -> bool:
         return self.boolean
@@ -51,6 +61,9 @@ class String(Node):
     '''
     def __init__(self, string:str):
         super().__init__()
+        self.string = None
+        self.set(string)
+    def set(self, string:str):
         self.string = string
     def get(self) -> str:
         return self.string
@@ -67,16 +80,23 @@ class Random(Node):
     '''
     def __init__(self, lowerLimit:Number = Number(0), upperLimit:Number = Number(1), onlyIntegers:Boolean = Boolean(False)):
         super().__init__()
-        self.lowerLimit = lowerLimit.get()
-        self.upperLimit = upperLimit.get()
-        self.onlyIntegers = onlyIntegers.get()
+        self.output = Number(0)
+        self.set(lowerLimit, upperLimit, onlyIntegers)
+    def set(self, lowerLimit:Number = Number(0), upperLimit:Number = Number(1), onlyIntegers:Boolean = Boolean(False)):
+        self.lowerLimit = lowerLimit
+        self.upperLimit = upperLimit
+        self.onlyIntegers = onlyIntegers
     def get(self) -> Number:
         try:
-            if self.lowerLimit == self.upperLimit: return self.lowerLimit
-            elif self.onlyIntegers: return random.randint(self.lowerLimit, self.upperLimit)
-            else: return random.random()*(self.upperLimit-self.lowerLimit)+self.lowerLimit
+            if self.lowerLimit.get() == self.upperLimit.get():
+                self.output.set(self.lowerLimit.get())
+            elif self.onlyIntegers.get():
+                self.output.set(random.randint(self.lowerLimit.get(), self.upperLimit.get()))
+            else:
+                self.output.set(random.random()*(self.upperLimit.get()-self.lowerLimit.get())+self.lowerLimit.get())
+            return self.output
         except:
-            self.error.error = "Random number failed to generate!"
+            self.addError("Random number failed to generate!")
 
 class FileLocation(Node):
     '''
@@ -86,14 +106,19 @@ class FileLocation(Node):
         - `location` represents the file location
     '''
     def __init__(self, location:String):
-        super().__init__() 
+        super().__init__()
+        self.fileLocation = None
+        self.extension = None
+        self.output = String(None)
+        self.set(location)
+    def set(self, location:String): # TO-DO: CONSIDER MOVING THIS, MAYBE, MAYBE NOT (SAFE FILE HANDLING IS IMPORTANT)
         index = location.get().rfind(".")
         if index == -1:
             if os.path.exists(location.get()):
-                self.fileLocation = location
+                self.fileLocation = location.get()
                 self.extension = "/folder"
             else:
-                self.addError(f"Directory {location.get} doesn't exist!")
+                self.addError(f"Directory {location.get()} doesn't exist!")
         else:
             fileType = location.get()[index:]
             if fileType in [".txt", ".png", ".jpg", ".jpeg"]:
@@ -104,8 +129,9 @@ class FileLocation(Node):
                     self.addError(f"File {location.get()} doesn't exist!")
             else:
                 self.addError(f"File extension {fileType} invalid! (for safety reasons)")
-        return None
-    def get(self) -> str:
+    def get(self) -> String:
+        if self.fileLocation != None:
+            self.output.set(self.fileLocation)
         return self.fileLocation
 
 '''UNITS'''
@@ -119,8 +145,6 @@ class Unit(Node):
             Turns a unit to its simpliest form, consist with all other simplified version.
         '''
         pass
-        
-
 
 class Angle(Unit):
     '''
@@ -138,12 +162,16 @@ class Degrees(Angle):
     '''
     def __init__(self, angle:Angle|Number = Number(0)):
         super().__init__()
-        if type(angle) == Number:       self.value = angle
-        elif type(angle) == Degrees:    self.value = Number(angle.get().get())
-        elif type(angle) == Radians:    self.value = Number(angle.get().get()/math.pi*180)
+        self.output = Number(0)
+        self.set(angle)
+    def set(self, angle:Angle|Number = Number(0)):
+        self.angle = angle
+    def get(self) -> Number:
+        if type(self.angle) == Number:      self.output.set(self.angle.get())
+        elif type(self.angle) == Degrees:   self.output.set(self.angle.get().get())
+        elif type(self.angle) == Radians:   self.output.set(self.angle.get().get()/math.pi*180)
         else: self.addError("Invalid input!")
-    def get(self) -> Angle:
-        return self.value
+        return self.output
 
 class Radians(Angle):
     '''
@@ -154,18 +182,42 @@ class Radians(Angle):
     '''
     def __init__(self, angle:Angle|Number = Number(0)):
         super().__init__()
-        if type(angle) == Number:       self.value = angle
-        elif type(angle) == Degrees:    self.value = Number(angle.get().get()/180*math.pi)
-        elif type(angle) == Radians:    self.value = Number(angle.get().get())
+        self.output = Number(0)
+        self.set(angle)
+    def set(self, angle:Angle|Number = Number(0)):
+        self.angle = angle
+    def get(self) -> Number:
+        if type(self.angle) == Number:      self.output.set(self.angle.get())
+        elif type(self.angle) == Degrees:   self.output.set(self.angle.get().get()/180*math.pi)
+        elif type(self.angle) == Radians:   self.output.set(self.angle.get().get())
         else: self.addError("Invalid input!")
-    def get(self) -> Angle:
-        return self.value
+        return self.output
 
-
-# TO-DO: return Pixel(unit)
+class Distance(Unit):
+    '''
+        A class for all types of Distance units to inherit from.
+    '''
+    def simplify(unit):
+        return Pixel(unit)
 
 class Pixel(Unit):
-    pass
+    '''
+        A unit of measurement, where one pixel represents one screen pixel.
+
+        Requires:
+        - `angle` is either a Time type or a Number type object. Angle types will be converted, while Numbers will be in radians.
+    '''
+    def __init__(self, distance:Distance|Number = Number(0)):
+        super().__init__()
+        self.output = Number(0)
+        self.set(distance)
+    def set(self, distance:Distance|Number = Number(0)):
+        self.distance = distance
+    def get(self) -> Number:
+        if type(self.distance) == Number:   self.output.set(self.distance.get())
+        elif type(self.distance) == Pixel:  self.output.set(self.distance.get().get())
+        else: self.addError("Invalid input!")
+        return self.output
 
 class Time(Unit):
     '''
@@ -183,15 +235,19 @@ class Milliseconds(Time):
     '''
     def __init__(self, time:Time|Number = Number(0)):
         super().__init__()
-        if type(time) == Number:         self.value = time
-        elif type(time) == Milliseconds: self.value = Number(time.get().get())
-        elif type(time) == Seconds:      self.value = Number(time.get().get()*1000)
-        elif type(time) == Minutes:      self.value = Number(time.get().get()*1000*60)
-        elif type(time) == Hours:        self.value = Number(time.get().get()*1000*60*60)
-        elif type(time) == Days:         self.value = Number(time.get().get()*1000*60*60*24)
+        self.output = Number(0)
+        self.set(time)
+    def set(self, time:Time|Number = Number(0)):
+        self.time = time
+    def get(self) -> Number:
+        if type(self.time) == Number:           self.output.set(self.time.get())
+        elif type(self.time) == Milliseconds:   self.output.set(self.time.get().get())
+        elif type(self.time) == Seconds:        self.output.set(self.time.get().get()*1000)
+        elif type(self.time) == Minutes:        self.output.set(self.time.get().get()*1000*60)
+        elif type(self.time) == Hours:          self.output.set(self.time.get().get()*1000*60*60)
+        elif type(self.time) == Days:           self.output.set(self.time.get().get()*1000*60*60*24)
         else: self.addError("Invalid input!")
-    def get(self) -> Time:
-        return self.value
+        return self.output
 
 class Seconds(Time):
     '''
@@ -202,15 +258,19 @@ class Seconds(Time):
     '''
     def __init__(self, time:Time|Number = Number(0)):
         super().__init__()
-        if type(time) == Number:         self.value = time
-        elif type(time) == Milliseconds: self.value = Number(time.get().get()/1000)
-        elif type(time) == Seconds:      self.value = Number(time.get().get())
-        elif type(time) == Minutes:      self.value = Number(time.get().get()*60)
-        elif type(time) == Hours:        self.value = Number(time.get().get()*60*60)
-        elif type(time) == Days:         self.value = Number(time.get().get()*60*60*24)
+        self.output = Number(0)
+        self.set(time)
+    def set(self, time:Time|Number = Number(0)):
+        self.time = time
+    def get(self) -> Number:
+        if type(self.time) == Number:           self.output.set(self.time.get())
+        elif type(self.time) == Milliseconds:   self.output.set(self.time.get().get()/1000)
+        elif type(self.time) == Seconds:        self.output.set(self.time.get().get())
+        elif type(self.time) == Minutes:        self.output.set(self.time.get().get()*60)
+        elif type(self.time) == Hours:          self.output.set(self.time.get().get()*60*60)
+        elif type(self.time) == Days:           self.output.set(self.time.get().get()*60*60*24)
         else: self.addError("Invalid input!")
-    def get(self) -> Time:
-        return self.value
+        return self.output
 
 class Minutes(Time):
     '''
@@ -221,15 +281,19 @@ class Minutes(Time):
     '''
     def __init__(self, time:Time|Number = Number(0)):
         super().__init__()
-        if type(time) == Number:         self.value = time
-        elif type(time) == Milliseconds: self.value = Number(time.get().get()/1000/60)
-        elif type(time) == Seconds:      self.value = Number(time.get().get()/60)
-        elif type(time) == Minutes:      self.value = Number(time.get().get())
-        elif type(time) == Hours:        self.value = Number(time.get().get()*60)
-        elif type(time) == Days:         self.value = Number(time.get().get()*60*24)
+        self.output = Number(0)
+        self.set(time)
+    def set(self, time:Time|Number = Number(0)):
+        self.time = time
+    def get(self) -> Number:
+        if type(self.time) == Number:           self.output.set(self.time.get())
+        elif type(self.time) == Milliseconds:   self.output.set(self.time.get().get()/1000/60)
+        elif type(self.time) == Seconds:        self.output.set(self.time.get().get()/60)
+        elif type(self.time) == Minutes:        self.output.set(self.time.get().get())
+        elif type(self.time) == Hours:          self.output.set(self.time.get().get()*60)
+        elif type(self.time) == Days:           self.output.set(self.time.get().get()*60*24)
         else: self.addError("Invalid input!")
-    def get(self) -> Time:
-        return self.value
+        return self.output
 
 class Hours(Time):
     '''
@@ -240,15 +304,19 @@ class Hours(Time):
     '''
     def __init__(self, time:Time|Number = Number(0)):
         super().__init__()
-        if type(time) == Number:         self.value = time
-        elif type(time) == Milliseconds: self.value = Number(time.get().get()/1000/60/60)
-        elif type(time) == Seconds:      self.value = Number(time.get().get()/60/60)
-        elif type(time) == Minutes:      self.value = Number(time.get().get()/60)
-        elif type(time) == Hours:        self.value = Number(time.get().get())
-        elif type(time) == Days:         self.value = Number(time.get().get()*24)
+        self.output = Number(0)
+        self.set(time)
+    def set(self, time:Time|Number = Number(0)):
+        self.time = time
+    def get(self) -> Number:
+        if type(self.time) == Number:           self.output.set(self.time.get())
+        elif type(self.time) == Milliseconds:   self.output.set(self.time.get().get()/1000/60/60)
+        elif type(self.time) == Seconds:        self.output.set(self.time.get().get()/60/60)
+        elif type(self.time) == Minutes:        self.output.set(self.time.get().get()/60)
+        elif type(self.time) == Hours:          self.output.set(self.time.get().get())
+        elif type(self.time) == Days:           self.output.set(self.time.get().get()*24)
         else: self.addError("Invalid input!")
-    def get(self) -> Time:
-        return self.value
+        return self.output
 
 class Days(Time):
     '''
@@ -259,15 +327,19 @@ class Days(Time):
     '''
     def __init__(self, time:Time|Number = Number(0)):
         super().__init__()
-        if type(time) == Number:         self.value = time
-        elif type(time) == Milliseconds: self.value = Number(time.get().get()/1000/60/60/24)
-        elif type(time) == Seconds:      self.value = Number(time.get().get()/60/60/24)
-        elif type(time) == Minutes:      self.value = Number(time.get().get()/60/24)
-        elif type(time) == Hours:        self.value = Number(time.get().get()/24)
-        elif type(time) == Days:         self.value = Number(time.get().get())
+        self.output = Number(0)
+        self.set(time)
+    def set(self, time:Time|Number = Number(0)):
+        self.time = time
+    def get(self) -> Number:
+        if type(self.time) == Number:           self.output.set(self.time.get())
+        elif type(self.time) == Milliseconds:   self.output.set(self.time.get().get()/1000/60/60/24)
+        elif type(self.time) == Seconds:        self.output.set(self.time.get().get()/60/60/24)
+        elif type(self.time) == Minutes:        self.output.set(self.time.get().get()/60/24)
+        elif type(self.time) == Hours:          self.output.set(self.time.get().get()/24)
+        elif type(self.time) == Days:           self.output.set(self.time.get().get())
         else: self.addError("Invalid input!")
-    def get(self) -> Time:
-        return self.value
+        return self.output
 
 '''IO'''
 
@@ -280,12 +352,15 @@ class ImageImport(Node):
     '''
     def __init__(self, location:FileLocation):
         super().__init__()
-        file = location.get()
-        if location.extension in [".png", ".jpg", ".jpeg"]:
-            self.file = Image.open(file).convert("RGBA")
-        else:
-            self.addError(f"File extension {location.extension} is not a supported image file type!")
+        self.file = None
+        self.set(location)
+    def set(self, location:FileLocation):
+        self.location = location
     def get(self) -> Image:
+        if self.location.extension in [".png", ".jpg", ".jpeg"]:
+            self.file = Image.open(self.location.get()).convert("RGBA")
+        else:
+            self.addError(f"File extension {self.location.extension} is not a supported image file type!")
         return self.file
 
 class FolderImport(Node):
@@ -297,11 +372,17 @@ class FolderImport(Node):
     '''
     def __init__(self, location:FileLocation):
         super().__init__()
+        
+        self.set(location)
+    def set(self, location:FileLocation):
         if location.extension == "/folder":
             directory = location.get()
             # TO-DO: finish, and make sure its safe
         else:
             self.addError(f"The file location isn't a folder/directory!")
+    def get(self) -> Image:
+        pass # TO-DO: FINISH
+
 
 '''LOGIC'''
 
@@ -314,6 +395,9 @@ class Reroute(Node):
     '''
     def __init__(self, inputNode:Node):
         super().__init__()
+        self.inputNode = None
+        self.set(self, inputNode)
+    def set(self, inputNode:Node):
         self.inputNode = inputNode
     def get(self):
         return self.inputNode
@@ -335,20 +419,24 @@ class LessThan(Comparison):
     '''
     def __init__(self, inputA:Number|Unit, inputB:Number|Unit):
         super().__init__()
-        if type(inputA) == type(inputB):
-            if type(inputA) == Number:
-                self.output = Boolean(inputA.get() < inputB.get())
-            elif type(inputA) == Unit:
-                a = inputA.simplify()
-                b = inputB.simplify()
+        self.output = Boolean(False)
+        self.set(inputA, inputB)
+    def set(self, inputA:Number|Unit, inputB:Number|Unit):
+        self.inputA = inputA
+        self.inputB = inputB
+    def get(self) -> Boolean:
+        if type(self.inputA) == type(self.inputB):
+            if type(self.inputA) == Number:
+                self.output.set(self.inputA.get() < self.inputB.get())
+            elif type(self.inputA) == Unit:
+                a = self.inputA.simplify()
+                b = self.inputB.simplify()
                 if type(a) == type(b):
-                    self.output = Boolean(a.get() < b.get())
+                    self.output.set(a.get() < b.get())
                 else:
                     self.addError(f"Inconsistent Unit dimensions {type(a)} and {type(b)}!")
-                # TO-DO: COMPLETE, BUT MAKE IT MORE EFFICIENT!
         else:
             self.addError("Inconsistent type for comparison!")
-    def get(self) -> Boolean:
         return self.output
 
 class GreaterThan(Comparison):
@@ -361,20 +449,24 @@ class GreaterThan(Comparison):
     '''
     def __init__(self, inputA:Number|Unit, inputB:Number|Unit):
         super().__init__()
-        if type(inputA) == type(inputB):
-            if type(inputA) == Number:
-                self.output = Boolean(inputA.get() > inputB.get())
-            elif type(inputA) == Unit:
-                a = inputA.simplify()
-                b = inputB.simplify()
+        self.output = Boolean(False)
+        self.set(inputA, inputB)
+    def set(self, inputA:Number|Unit, inputB:Number|Unit):
+        self.inputA = inputA
+        self.inputB = inputB
+    def get(self) -> Boolean:
+        if type(self.inputA) == type(self.inputB):
+            if type(self.inputA) == Number:
+                self.output.set(self.inputA.get() > self.inputB.get())
+            elif type(self.inputA) == Unit:
+                a = self.inputA.simplify()
+                b = self.inputB.simplify()
                 if type(a) == type(b):
-                    self.output = Boolean(a.get() > b.get())
+                    self.output.set(a.get() > b.get())
                 else:
                     self.addError(f"Inconsistent Unit dimensions {type(a)} and {type(b)}!")
-                # TO-DO: COMPLETE, BUT MAKE IT MORE EFFICIENT!
         else:
             self.addError("Inconsistent type for comparison!")
-    def get(self) -> Boolean:
         return self.output
 
 class EqualTo(Comparison):
@@ -387,20 +479,24 @@ class EqualTo(Comparison):
     '''
     def __init__(self, inputA:Number|Unit, inputB:Number|Unit):
         super().__init__()
-        if type(inputA) == type(inputB):
-            if type(inputA) == Number:
-                self.output = Boolean(inputA.get() == inputB.get())
-            elif type(inputA) == Unit:
-                a = inputA.simplify()
-                b = inputB.simplify()
+        self.output = Boolean(False)
+        self.set(inputA, inputB)
+    def set(self, inputA:Number|Unit, inputB:Number|Unit):
+        self.inputA = inputA
+        self.inputB = inputB
+    def get(self) -> Boolean:
+        if type(self.inputA) == type(self.inputB):
+            if type(self.inputA) == Number:
+                self.output = Boolean(self.inputA.get() == self.inputB.get())
+            elif type(self.inputA) == Unit:
+                a = self.inputA.simplify()
+                b = self.inputB.simplify()
                 if type(a) == type(b):
                     self.output = Boolean(a.get() == b.get())
                 else:
                     self.addError(f"Inconsistent Unit dimensions {type(a)} and {type(b)}!")
-                # TO-DO: COMPLETE, BUT MAKE IT MORE EFFICIENT!
         else:
             self.addError("Inconsistent type for comparison!")
-    def get(self) -> Boolean:
         return self.output
     
 class And(Comparison):
@@ -413,8 +509,13 @@ class And(Comparison):
     '''
     def __init__(self, inputA:Boolean, inputB:Boolean):
         super().__init__()
-        self.output = Boolean(inputA.get() and inputB.get())
+        self.output = Boolean(False)
+        self.set(inputA, inputB)
+    def set(self, inputA:Boolean, inputB:Boolean):
+        self.inputA = inputA
+        self.inputB = inputB
     def get(self) -> Boolean:
+        self.output.set(self.inputA.get() and self.inputB.get())
         return self.output
 
 class Or(Comparison):
@@ -427,8 +528,13 @@ class Or(Comparison):
     '''
     def __init__(self, inputA:Boolean, inputB:Boolean):
         super().__init__()
-        self.output = Boolean(inputA.get() or inputB.get())
+        self.output = Boolean(False)
+        self.set(inputA, inputB)
+    def set(self, inputA:Boolean, inputB:Boolean):
+        self.inputA = inputA
+        self.inputB = inputB
     def get(self) -> Boolean:
+        self.output.set(self.inputA.get() or self.inputB.get())
         return self.output
 
 class Not(Comparison):
@@ -440,8 +546,12 @@ class Not(Comparison):
     '''
     def __init__(self, inputNode:Boolean):
         super().__init__()
-        self.output = Boolean(not(inputNode.get()))
+        self.output = Boolean(True)
+        self.set(inputNode)
+    def set(self, inputNode:Boolean):
+        self.inputNode = inputNode
     def get(self) -> Boolean:
+        self.output.set(not(self.inputNode.get()))
         return self.output
 
 class If(Comparison):
@@ -455,11 +565,12 @@ class If(Comparison):
     '''
     def __init__(self, inputTrue:Node, inputFalse:Node, boolean:Boolean):
         super().__init__()
+        self.output = None
+        self.set(inputTrue, inputFalse, boolean)
+    def set(self, inputTrue:Node, inputFalse:Node, boolean:Boolean):
         self.inputTrue = inputTrue
         self.inputFalse = inputFalse
         self.boolean = boolean
     def get(self):
-        if self.boolean.get():
-            return self.inputTrue
-        else:
-            return self.inputFalse
+        if self.boolean.get(): return self.inputTrue
+        else: return self.inputFalse
