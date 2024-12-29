@@ -7,6 +7,7 @@ from subsystems.settings import *
 class Addition(Node):
     '''
         A node that adds two nodes together, if logical. The node interprets addition as adding the second input to the first input.
+        
         Requires:
         - `inputA` represents the first input, which addition is operated on.
         - `inputB` represents the second input, which is added to `inputA`.
@@ -33,6 +34,7 @@ class Addition(Node):
 class Multiplication(Node):
     '''
         A node that multiplies two nodes together, if logical. The node interprets multiplication as multiplying the first input by the second input.
+        
         Requires:
         - `inputA` represents the first input, which multiplication is operated on.
         - `inputB` represents the second input, which `inputA` is multiplied by.

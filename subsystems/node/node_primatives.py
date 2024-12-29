@@ -132,6 +132,7 @@ class Angle(Unit):
 class Degrees(Angle):
     '''
         A unit of angle, representing 1/360th of a circle.
+
         Requires:
         - `angle` is either a Angle type or a Number type object. Angle types will be converted, while Numbers will be in degrees.
     '''
@@ -147,6 +148,7 @@ class Degrees(Angle):
 class Radians(Angle):
     '''
         A unit of angle, where 2*PI radians represents a complete circle.
+
         Requires:
         - `angle` is either a Time type or a Number type object. Angle types will be converted, while Numbers will be in radians.
     '''
@@ -175,6 +177,7 @@ class Time(Unit):
 class Milliseconds(Time):
     '''
         A unit of time, representing 1/1000th of a second.
+
         Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in milliseconds.
     '''
@@ -193,6 +196,7 @@ class Milliseconds(Time):
 class Seconds(Time):
     '''
         A unit of time, representing a second.
+
         Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in seconds.
     '''
@@ -211,6 +215,7 @@ class Seconds(Time):
 class Minutes(Time):
     '''
         A unit of time, representing a minute.
+
         Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in minutes.
     '''
@@ -229,6 +234,7 @@ class Minutes(Time):
 class Hours(Time):
     '''
         A unit of time, representing an hour.
+
         Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in hours.
     '''
@@ -247,6 +253,7 @@ class Hours(Time):
 class Days(Time):
     '''
         A unit of time, representing a day.
+
         Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in days.
     '''
@@ -267,6 +274,7 @@ class Days(Time):
 class ImageImport(Node):
     '''
         Imports an image file at the given file location/path.
+
         Requires:
         - `location` represents the image's file location.
     '''
@@ -283,6 +291,7 @@ class ImageImport(Node):
 class FolderImport(Node):
     '''
         Imports an iterable series of images, given a folder location/path.
+
         Requires:
         - `location` represents the folder containing the image files.
     '''
@@ -299,6 +308,7 @@ class FolderImport(Node):
 class Reroute(Node):
     '''
         Returns the same node that was given in.
+
         Requires:
         - `inputNode` represents any node type.
     '''
@@ -312,9 +322,17 @@ class Comparison(Node):
     '''
         A class for all types of logical operations related with booleans.
     '''
-    pass
+    def get(self) -> Boolean:
+        pass
 
 class LessThan(Comparison):
+    '''
+        Compares two values and outputs a Boolean with the truth value of `inputA` being less than `inputB`.
+
+        Requires:
+        - `inputA` represents the first value to be compared.
+        - `inputB` represents the second value to be compared.
+    '''
     def __init__(self, inputA:Number|Unit, inputB:Number|Unit):
         super().__init__()
         if type(inputA) == type(inputB):
@@ -330,10 +348,17 @@ class LessThan(Comparison):
                 # TO-DO: COMPLETE, BUT MAKE IT MORE EFFICIENT!
         else:
             self.addError("Inconsistent type for comparison!")
-    def get(self):
+    def get(self) -> Boolean:
         return self.output
 
 class GreaterThan(Comparison):
+    '''
+        Compares two values and outputs a Boolean with the truth value of `inputA` being greater than `inputB`.
+
+        Requires:
+        - `inputA` represents the first value to be compared.
+        - `inputB` represents the second value to be compared.
+    '''
     def __init__(self, inputA:Number|Unit, inputB:Number|Unit):
         super().__init__()
         if type(inputA) == type(inputB):
@@ -349,10 +374,17 @@ class GreaterThan(Comparison):
                 # TO-DO: COMPLETE, BUT MAKE IT MORE EFFICIENT!
         else:
             self.addError("Inconsistent type for comparison!")
-    def get(self):
+    def get(self) -> Boolean:
         return self.output
 
 class EqualTo(Comparison):
+    '''
+        Compares two values and outputs a Boolean with the truth value of `inputA` being equal to `inputB`.
+
+        Requires:
+        - `inputA` represents the first value to be compared.
+        - `inputB` represents the second value to be compared.
+    '''
     def __init__(self, inputA:Number|Unit, inputB:Number|Unit):
         super().__init__()
         if type(inputA) == type(inputB):
@@ -368,12 +400,66 @@ class EqualTo(Comparison):
                 # TO-DO: COMPLETE, BUT MAKE IT MORE EFFICIENT!
         else:
             self.addError("Inconsistent type for comparison!")
-    def get(self):
+    def get(self) -> Boolean:
         return self.output
     
 class And(Comparison):
+    '''
+        Compares two Booleans and outputs a Boolean if both `inputA` and `inputB` are True.
+
+        Requires:
+        - `inputA` represents the first boolean.
+        - `inputB` represents the second boolean.
+    '''
     def __init__(self, inputA:Boolean, inputB:Boolean):
         super().__init__()
         self.output = Boolean(inputA.get() and inputB.get())
-    def get(self):
+    def get(self) -> Boolean:
         return self.output
+
+class Or(Comparison):
+    '''
+        Compares two Booleans and outputs a Boolean if at least one `inputA` and `inputB` are True.
+
+        Requires:
+        - `inputA` represents the first boolean.
+        - `inputB` represents the second boolean.
+    '''
+    def __init__(self, inputA:Boolean, inputB:Boolean):
+        super().__init__()
+        self.output = Boolean(inputA.get() or inputB.get())
+    def get(self) -> Boolean:
+        return self.output
+
+class Not(Comparison):
+    '''
+        Returns the inverted truth value of the given Boolean.
+
+        Requires:
+        - `inputNode` represents a boolean.
+    '''
+    def __init__(self, inputNode:Boolean):
+        super().__init__()
+        self.output = Boolean(not(inputNode.get()))
+    def get(self) -> Boolean:
+        return self.output
+
+class If(Comparison):
+    '''
+        Returns `inputTrue` if `boolean` is true, otherwise returns `inputFalse`.
+        
+        Requires:
+        - `inputTrue` represents the first node.
+        - `inputFalse` represents the second node.
+        - `boolean` represents a Boolean.
+    '''
+    def __init__(self, inputTrue:Node, inputFalse:Node, boolean:Boolean):
+        super().__init__()
+        self.inputTrue = inputTrue
+        self.inputFalse = inputFalse
+        self.boolean = boolean
+    def get(self):
+        if self.boolean.get():
+            return self.inputTrue
+        else:
+            return self.inputFalse

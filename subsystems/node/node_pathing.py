@@ -30,6 +30,7 @@ class Coordinate(Node):
 class Frame(Node):
     '''
         A frame, representing a coordinate or value at a set period in time.
+
         Requires:
         - `value` represents a value or coordinate.
         - `time` represents the time after the start.
@@ -44,8 +45,6 @@ class Frame(Node):
             self.addError("Inputted Time is not a Time!")
     def get(self):
         pass # TO-DO: FINISH
-
-
 
 class PathType(Node):
     '''
@@ -78,11 +77,10 @@ class SmoothFullPathType(PathType):
     def path(self, *frames:Frame):
         pass # TO-DO: FINISH
 
-
-
 class Path(Node):
     '''
         A path is the interpolated information of any number of frames, given an approach of calculation.
+        
         Requires:
         - `pathType` is a PathType that represents the method used to calculate to Path.
         - `frames` is any number of Frames of the type.
@@ -92,3 +90,48 @@ class Path(Node):
         self.path = pathType(*frames)
     def get(self):
         return self.path
+
+class PathAxisMerger(Node):
+    '''
+        Merges two paths together, one representing the x axis and one representing the y axis, into a single path of coordinates.
+
+        Requires:
+        - `xAxisPath` is a Path representing the x axis.
+        - `yAxisPath` is a Path representing the y axis.
+    '''
+    def __init__(self, xAxisPath:Path, yAxisPath:Path):
+        super().__init__()
+        self.xAxisPath = xAxisPath
+        self.yAxisPath = yAxisPath
+        # TO-DO: FINISH PATH LOGIC
+    def get(self) -> Path:
+        pass # TO-DO: FINISH PATH LOGIC
+
+class PathAtTime(Node):
+    '''
+        Gets the value of a path at a given time.
+
+        Requires:
+        - `path` is a Path of any type.
+        - `time` is a Time, representing the time of which when is a desired value.
+    '''
+    def __init__(self, path:Path, time:Time):
+        super().__init__()
+        self.path = path
+        self.time = time
+        # TO-DO: FINISH PATH LOGIC
+    def get(self):
+        pass # TO-DO: FINISH PATH LOGIC
+
+class PathMerger(Node):
+    '''
+        Merges any number of paths of the same type into one.
+    '''
+    def __init__(self, *paths):
+        super().__init__()
+        for path in paths:
+            pass
+        # TO-DO: FINISH PATH LOGIC
+    def get(self) -> Path:
+        pass # TO-DO: FINISH PATH LOGIC
+

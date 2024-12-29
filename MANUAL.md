@@ -133,6 +133,21 @@ Tape v2.x, unlike Tape v1.x, is a node based animation editor using node structu
     - above, with optional tolerance (Number OR Unit(Number)) (default 0)
   - Out:
     - truth value, if input 1 is within tolerance to input 2
+- And: 
+  - In:
+    - Boolean, Boolean
+  - Out:
+    - truth value of if both booleans in are True
+- Or:
+  - In:
+    - Boolean, Boolean
+  - Out:
+    - truth value of if at least one of the booleans are True
+- Not:
+  - In:
+    - Boolean
+  - Out:
+    - the inverted truth value of the input boolean
 - If:
   - In: Truth, Any (True), Any (False) 
   - Out: Any(True) if Truth True, Any(False) if Truth not True
