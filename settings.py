@@ -65,24 +65,37 @@ ROTATE_AROUND_ORIGIN = lambda x,y,d: [(x/abs(x))*math.cos(math.atan(y/x)+(d*math
 
 # Sections
 '''
-- Animation Interface: `(  23,  36) to ( 925, 542)`: size `( 903, 507)`
-- Timeline Interface:  `(  23, 558) to ( 925, 680)`: size `( 903, 123)`
-- Editor Interface:    `( 953,  36) to (1340, 542)`: size `( 388, 507)`
-- Options Interface:   `( 953, 558) to (1340, 680)`: size `( 388, 123)`
-- Entire Screen:       `(  0,    0) to (1365, 697)`: size `(1366, 698)`
+- Animation Interface:  `(  10,  10) to ( 478, 687)`: size `( 469, 678)`
+- Nodes Interface:      `(  10,  10) to ( 478, 687)`: size `( 469, 678)`
+- Debug Interface:      `(  10,  10) to ( 478, 687)`: size `( 469, 678)`
+- Export Interface:     `(  10,  10) to ( 478, 687)`: size `( 469, 678)`
+- Settings Interface:   `(  10,  10) to ( 478, 687)`: size `( 469, 678)`
+- Tabs Interface:       `(   0,   0) to (   0,   0)`: size `(   0,   0)` # TO-DO: FUTURE
+- Workspace Interface:  `( 485,  10) to (1355, 687)`: size `( 871, 688)`
+- Entire Screen:        `(  0,    0) to (1365, 697)`: size `(1366, 698)`
 
 Region ID : Top Left, Bottom Right, Size, Keep In Relative Top Left, Keep In Relative Bottom Right
 '''
 SECTIONS_DATA = {
     " ": [(   0,   0),(1366, 698),(1366, 698),(   0,   0),(1366, 698)],
-    "a": [(  22,  22),( 671, 675),( 650, 654),(   0,   0),( 650, 654)],
-    "b": [( 694,  22),(1343, 675),( 650, 654),(   0,   0),( 650, 654)],
+    "a": [(  10,  10),( 478, 687),( 469, 678),(   0,   0),( 469, 678)],
+    "n": [(  10,  10),( 478, 687),( 469, 678),(   0,   0),( 469, 678)],
+    "d": [(  10,  10),( 478, 687),( 469, 678),(   0,   0),( 469, 678)],
+    "e": [(  10,  10),( 478, 687),( 469, 678),(   0,   0),( 469, 678)],
+    "s": [(  10,  10),( 478, 687),( 469, 678),(   0,   0),( 469, 678)],
+    # "t": [(   0,   0),(   0,   0),(   0,   0),(   0,   0),(   0,   0)],
+    "w": [( 485,  10),(1355, 687),( 871, 688),(   0,   0),( 871, 688)],
 }
 FULL_BACKGROUND = setBrightnessEffect(getImageRGBAFromPath(os.path.join("resources", "loading.png")), -10)
 SECTIONS_FRAME_INSTRUCTIONS = {
     " ": [[FULL_BACKGROUND, (0,0)]],
-    "a": generateThemedBorderRectangleInstructions(( 650, 654), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25), ( -22,-22)),
-    "b": generateThemedBorderRectangleInstructions(( 650, 654), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25), (-694,-22)),
+    "a": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),(  -10,  -10)),
+    "n": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),(  -10,  -10)),
+    "d": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),(  -10,  -10)),
+    "e": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),(  -10,  -10)),
+    "s": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),(  -10,  -10)),
+    # "t": generateThemedBorderRectangleInstructions((   0,   0), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),(   -0,   -0)),
+    "w": generateThemedBorderRectangleInstructions(( 871, 688), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),( -485,  -10)),
 }
 SECTIONS = list(SECTIONS_DATA.keys())
 

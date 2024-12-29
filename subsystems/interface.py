@@ -12,8 +12,13 @@ from subsystems.point import *
 from subsystems.bay import *
 from subsystems.state import *
 
-from subsystems.section.exampleA import SectionExampleA
-from subsystems.section.exampleB import SectionExampleB
+from subsystems.section.animation_tab   import AnimationTab
+from subsystems.section.nodes_tab       import NodesTab
+from subsystems.section.debug_tab       import DebugTab
+from subsystems.section.export_tab      import ExportTab
+from subsystems.section.settings_tab    import SettingsTab
+# from subsystems.section.tabs            import Tabs
+from subsystems.section.workspace       import Workspace
 
 class Interface:
     def __init__(self):
@@ -40,7 +45,7 @@ class Interface:
 
         keybind = None
         if (interacting == -999 or interacting == -997) and (time.time() - self.s.keybindLastUpdate > KEYBIND_DIFFERENCE):
-            if KB_S_LIST_OFFSET_UP(keyQueue):
+            if KB_CREATE(keyQueue):
                 '''description'''
                 self.s.keybindLastUpdate = time.time()
                 print("example")
@@ -100,7 +105,12 @@ class Interface:
         if not(self.s.interacting in SYS_IVOS):
             self.s.scheduleSectionUpdate(self.s.ivos[self.s.interacting][0])
         self.s.scheduleSectionUpdate("a")
-        self.s.scheduleSectionUpdate("b")
+        self.s.scheduleSectionUpdate("n")
+        self.s.scheduleSectionUpdate("d")
+        self.s.scheduleSectionUpdate("e")
+        self.s.scheduleSectionUpdate("s")
+        # self.s.scheduleSectionUpdate("t")
+        self.s.scheduleSectionUpdate("w")
 
         '''Crosshair'''
         if SHOW_CROSSHAIR:
@@ -112,18 +122,33 @@ class Interface:
 
     def processNone(self, im):
         return im
-
-    def processExampleA(self, im):
-        return SectionExampleA.render(self.s, im)
-    
-    def processExampleB(self, im):
         # placeOver(img, displayText(f"FPS: {self.fps}", "m"), (55,15))
         # placeOver(img, displayText(f"Relative (animation) Mouse Position: ({self.mx-23}, {self.my-36})", "m"), (455,55))
         # placeOver(img, displayText(f"Mouse Pressed: {self.mPressed}", "m", colorTXT = (0,255,0,255) if self.mPressed else (255,0,0,255)), (55,55))
         # placeOver(img, displayText(f"Rising Edge: {self.mRising}", "m", colorTXT = (0,255,0,255) if self.mRising else (255,0,0,255)), (55,95))
         # placeOver(img, displayText(f"Interacting With Element: {self.interacting}", "m"), (455,15))
         # placeOver(img, displayText(f"stringKeyQueue: {self.stringKeyQueue}", "m"), (455,95))
-        return SectionExampleB.render(self.s, im)
+
+    def processAnimationTab(self, im):
+        return AnimationTab.render(self.s, im)
+    
+    def processNodesTab(self, im):
+        return NodesTab.render(self.s, im)
+    
+    def processDebugTab(self, im):
+        return DebugTab.render(self.s, im)
+    
+    def processExportTab(self, im):
+        return ExportTab.render(self.s, im)
+    
+    def processSettingsTab(self, im):
+        return SettingsTab.render(self.s, im)
+    
+    # def processTabs(self, im):
+    #     return Tabs.render(self.s, im)
+
+    def processWorkspace(self, im):
+        return Workspace.render(self.s, im)
 
 
     def renderGIF(self):

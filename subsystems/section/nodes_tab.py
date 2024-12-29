@@ -1,11 +1,11 @@
 from subsystems.section.section import *
 
-class SectionExampleB(Section):
+class NodesTab(Section):
     def render(state: State, im):
-        '''Example B Area: `( 694,  22) to (1343, 675)` : size `( 650, 654)`'''
+        '''Nodes Interface:      `(  10,  10) to ( 478, 687)`: size `( 469, 678)`'''
         img = im.copy()
-        rmx = state.mx - 694
-        rmy = state.my - 22
+        rmx = state.mx - 10
+        rmy = state.my - 10
 
         choice = POINT_IDLE if random.random() > 0.5 else POINT_SELECTED
         for i in range(25):
@@ -15,7 +15,7 @@ class SectionExampleB(Section):
         placeOver(img, displayText("IVO v2! - https://github.com/HenryLi-0/ivo", "s", colorTXT = (round(205+(50*-math.sin(state.ticks/25))),round(205+(50*math.sin(state.ticks/25))),round(205+(50*math.cos(state.ticks/25))),255)), (420,634))
 
         for id in state.ivos:
-            if state.ivos[id][0] == "b":
+            if state.ivos[id][0] == "n":
                 state.ivos[id][1].tick(img, state.interacting==id or ((state.lastInteraction==id) and (abs(time.time() - state.ivos[id][1].lastInteraction) < LAST_INTERACTION_KEY_TIME)), state.interacting==id)
 
         Section.overlayCrosshair(state, img, rmx, rmy)

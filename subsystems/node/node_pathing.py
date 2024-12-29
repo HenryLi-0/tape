@@ -42,8 +42,11 @@ class Frame(Node):
         - `value` represents a value or coordinate.
         - `time` represents the time after the start.
     '''
-    def __init__(self, value:Coordinate|Number|Angle|Pixel = Coordinate(Number(0),Number(0)), time:Time = Seconds(0)):
+    def __init__(self, value:Coordinate|Number|Angle|Pixel, time:Time):
         super().__init__()
+        self.value = None
+        self.time = None
+    def set(self, value:Coordinate|Number|Angle|Pixel, time:Time):
         if issubclass(type(time), Time):
             self.type = type(value)
             self.value = value
@@ -51,11 +54,11 @@ class Frame(Node):
         else:
             self.addError("Inputted Time is not a Time!")
     def get(self):
-        pass # TO-DO: FINISH
+        pass
 
 class PathType(Node):
     '''
-        A class that consists of all types of Paths for Pathing.
+        A class that consists of all types of Paths for Pathing that does the calculations without storing/linking Node data.
     '''
     def __init__(self):
         super().__init__()
@@ -94,8 +97,13 @@ class Path(Node):
     '''
     def __init__(self, pathType:PathType, *frames:Frame):
         super().__init__()
-        self.path = pathType(*frames)
+        output = None
+        self.set(pathType, *frames)
+    def set(self, pathType:PathType, *frames:Frame):
+        self.pathType = pathType
+        self.frames = [*frames]
     def get(self):
+        self.path = self.pathType(*self.frames)
         return self.path
 
 class PathAxisMerger(Node):
@@ -108,6 +116,8 @@ class PathAxisMerger(Node):
     '''
     def __init__(self, xAxisPath:Path, yAxisPath:Path):
         super().__init__()
+        self.output = Path()
+        
         self.xAxisPath = xAxisPath
         self.yAxisPath = yAxisPath
         # TO-DO: FINISH PATH LOGIC

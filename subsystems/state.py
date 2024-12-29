@@ -30,10 +30,11 @@ class State:
             -999 : [" ", DummyVisualObject("dummy", (0,0))], # used for not interacting with anything
             -998 : [" ", DummyVisualObject("dummy", (0,0))], # used for text boxes
 
-            -99 : ["a",ButtonVisualObject("sprites",(7,450),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            -98 : ["a",ButtonVisualObject("visuals",(134,450),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            -97 : ["b",ButtonVisualObject("project",(7,450),FRAME_OPTIONS_BUTTON_OFF_ARRAY,FRAME_OPTIONS_BUTTON_ON_ARRAY)],
-            -96 : ["b",IconVisualObject("Settings",(323,450), GEAR, (52,52))],
+            -99 : ["w",ButtonVisualObject("sprites",(7,450),RECTANGULAR_RED_BUTTON,RECTANGULAR_GREEN_BUTTON)],
+            -98 : ["w",ButtonVisualObject("visuals",(134,450),RECTANGULAR_RED_BUTTON,RECTANGULAR_GREEN_BUTTON)],
+            -97 : ["w",ButtonVisualObject("project",(7,450),RECTANGULAR_RED_BUTTON,RECTANGULAR_GREEN_BUTTON)],
+            -96 : ["w",IconVisualObject("Settings",(323,450), GEAR, (52,52))],
+            -96 : ["w",OrbVisualObject("what",(323,450))],
         }
         '''Control'''
         self.interacting = -999
@@ -68,8 +69,13 @@ class State:
         self.deltaTicks = 1 if self.fps==0 else round(INTERFACE_FPS/self.fps)
         self.ticks += self.deltaTicks
         
-        self.mouseSectionA = self.mouseInSection("a")
-        self.mouseSectionB = self.mouseInSection("b")
+        self.mouseInAnimationTab =  self.mouseInSection("a")
+        self.mouseInNodesTab =      self.mouseInSection("n")
+        self.mouseInDebugTab =      self.mouseInSection("d")
+        self.mouseInExportTab =     self.mouseInSection("e")
+        self.mouseInSettingsTab =   self.mouseInSection("s")
+        # self.mouseInTabs =          self.mouseInSection("t")
+        self.mouseInWorkspace =     self.mouseInSection("w")
 
     def scheduleSectionUpdate(self, section):
         if not(section in self.scheduledSectionUpdate):

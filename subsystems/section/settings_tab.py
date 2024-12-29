@@ -1,11 +1,11 @@
 from subsystems.section.section import *
 
-class SectionExampleA(Section):
+class SettingsTab(Section):
     def render(state: State, im):
-        '''Example A Area: `(  22,  22) to ( 671, 675)` : size `( 650, 654)`'''
+        '''Settings Interface:   `(  10,  10) to ( 478, 687)`: size `( 469, 678)`'''
         img = im.copy()
-        rmx = state.mx - 22
-        rmy = state.my - 22
+        rmx = state.mx - 10
+        rmy = state.my - 10
 
         placeOver(img, displayText(f"FPS: {state.fps}", "m"), (20,20))
         placeOver(img, displayText(f"Interacting With: {state.interacting}", "m"), (20,55))
@@ -16,7 +16,7 @@ class SectionExampleA(Section):
         placeOver(img, displayText(f"Key Queue: {state.risingKeyQueue}", "m"), (20,125))
 
         for id in state.ivos:
-            if state.ivos[id][0] == "a":
+            if state.ivos[id][0] == "s":
                 state.ivos[id][1].tick(img, state.interacting==id or ((state.lastInteraction==id) and (abs(time.time() - state.ivos[id][1].lastInteraction) < LAST_INTERACTION_KEY_TIME)), state.interacting==id)
 
         Section.overlayCrosshair(state, img, rmx, rmy)

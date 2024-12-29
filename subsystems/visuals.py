@@ -101,7 +101,7 @@ class FixedRegionPositionalBox:
 
 '''Visual Objects'''
 
-from settings import ORB_IDLE_ARRAY, ORB_SELECTED_ARRAY
+from settings import ORB_IDLE, ORB_SELECTED
 
 class VisualObject:
     '''Basic template for Visual Objects'''

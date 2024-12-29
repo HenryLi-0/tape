@@ -30,26 +30,18 @@ class Window:
             self.labels[section] = LabelWrapper(self.window, SECTIONS_DATA[section][2], SECTIONS_DATA[section][0], SECTIONS_DATA[section][0], BACKGROUND_COLOR, SECTIONS_FRAME_INSTRUCTIONS[section])
             self.blankLabels[section] = self.labels[section].getBlank()
 
-        # self.b_animation_full =     generateColorBox(( 903, 507), (0,0,0,0))
-        # self.w_animation = {}
-        # for region in ALL_REGIONS:
-        #     self.w_animation[region] = LabelWrapper(self.window, (129, 169), (region[0]*129+23, region[1]*169+36), (region[0]*129+23, region[1]*169+36), "#000000")
-        # self.b_animation = self.w_animation[(0,0)].getBlank()
-        # self.w_timeline  = LabelWrapper(self.window, ( 903, 123), (  23, 558), (  23, 558), BACKGROUND_COLOR, FRAME_TIMELINE_INSTRUCTIONS )
-        # self.b_timeline  = self.w_timeline  .getBlank()
-        # self.w_editor    = LabelWrapper(self.window, ( 388, 507), ( 953,  36), ( 953,  36), BACKGROUND_COLOR, FRAME_EDITOR_INSTRUCTIONS   )
-        # self.b_editor    = self.w_editor    .getBlank()
-        # self.b_editor_v  = followInstructions(       ( 388, 507),                           BACKGROUND_COLOR, FRAME_EDITOR_V_INSTRUCTIONS )
-        # self.w_options   = LabelWrapper(self.window, ( 388, 123), ( 953, 558), ( 953, 558), BACKGROUND_COLOR, FRAME_OPTIONS_INSTRUCTIONS  )
-        # self.b_options   = self.w_options   .getBlank()
-
         '''start interface'''
         self.interface = Interface()
 
         self.processFunctions = {
             " " : self.interface.processNone,
-            "a" : self.interface.processExampleA,
-            "b" : self.interface.processExampleB,
+            "a" : self.interface.processAnimationTab,
+            "n" : self.interface.processNodesTab,
+            "d" : self.interface.processDebugTab,
+            "e" : self.interface.processExportTab,
+            "s" : self.interface.processSettingsTab,
+            # "t" : self.interface.processTabs,
+            "w" : self.interface.processWorkspace,
         }
         self.processFunctionsRegions = list(self.processFunctions.keys())
 
