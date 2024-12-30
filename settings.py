@@ -44,10 +44,11 @@ DEFAULT_PROJECT_NAME = "Untitled Project"
 
 '''Keybinds'''
 KEYBIND_DIFFERENCE = 0.2
-KB_IGNORE   = ["Win_L"]                                                                     # Keys to ignore
-KB_CONFIRM  = ["Return", "Control_L"]                                                       # Keys to confirm
-KB_ACTIVATE = ["space", "Return"]                                                           # Keys to activate/trigger
-KB_CREATE   = lambda keys: (len(keys) == 1) and ("A" in keys or "a" in keys)
+KB_IGNORE   = ["Win_L"]                                                                             # Keys to ignore
+KB_CONFIRM  = ["Return", "Alt_L"]                                                                   # Keys to confirm
+KB_ACTIVATE = ["space", "Return"]                                                                   # Keys to activate/trigger
+KB_TAB_A    = lambda keys: (len(keys) == 2) and ("Control_L" in keys) and ("1" in keys)
+KB_TAB_D    = lambda keys: (len(keys) == 2) and ("Control_L" in keys) and ("3" in keys)
 
 '''Constants - DO NOT CHANGE!!!'''
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 

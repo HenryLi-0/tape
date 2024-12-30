@@ -45,11 +45,16 @@ class Interface:
 
         keybind = None
         if (interacting == -999 or interacting == -997) and (time.time() - self.s.keybindLastUpdate > KEYBIND_DIFFERENCE):
-            if KB_CREATE(keyQueue):
-                '''description'''
+            if KB_TAB_A(keyQueue): # TO-DO: TEMPORARY FOR TESTING, REMOVE
+                '''SWITCH TAB TO ANIMATION'''
                 self.s.keybindLastUpdate = time.time()
-                print("example")
-                keybind = "example"
+                self.s.tab = "a"
+                keybind = "tab a"
+            if KB_TAB_D(keyQueue): # TO-DO: TEMPORARY FOR TESTING, REMOVE
+                '''SWITCH TAB TO DEBUG'''
+                self.s.keybindLastUpdate = time.time()
+                self.s.tab = "d"
+                keybind = "tab d"
 
         if self.s.currentKeybind[1] != keybind and keybind != None:
             keybind = [True, keybind]

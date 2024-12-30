@@ -19,12 +19,13 @@ class State:
         '''Interactable Visual Objects'''
         '''
         Code:
-        a - animation
-        es - editor > sprites
-        ev - editor > visuals
-        evg - editor > visuals > graph
-        ep - editor > project
-        o - options
+        a - animation tab
+        n - nodes tab
+        d - debug tab
+        e - editor tab
+        s - setting tab
+        t - tabs (TO-DO: FUTURE)
+        w - workspace
         '''
         self.ivos = {
             -999 : [" ", DummyVisualObject("dummy", (0,0))], # used for not interacting with anything
@@ -34,7 +35,8 @@ class State:
             -98 : ["w",ButtonVisualObject("visuals",(134,450),RECTANGULAR_RED_BUTTON,RECTANGULAR_GREEN_BUTTON)],
             -97 : ["w",ButtonVisualObject("project",(7,450),RECTANGULAR_RED_BUTTON,RECTANGULAR_GREEN_BUTTON)],
             -96 : ["w",IconVisualObject("Settings",(323,450), GEAR, (52,52))],
-            -96 : ["w",OrbVisualObject("what",(323,450))],
+            -95 : ["w",OrbVisualObject("what",(323,450))],
+            -94 : ["w",EditableTextBoxVisualObject("test", (50,50), "test")]
         }
         '''Control'''
         self.interacting = -999
@@ -51,6 +53,10 @@ class State:
         self.slidersData = []
         '''Updating'''
         self.scheduledSectionUpdate = []
+        '''Tape'''
+        self.tab = "a"
+        self.previousTab = None
+
 
     def mouseInSection(self, section):
         return SECTIONS_DATA[section][0][0] <= self.mx and self.mx <= SECTIONS_DATA[section][1][0] and SECTIONS_DATA[section][0][1] <= self.my and self.my <= SECTIONS_DATA[section][1][1]

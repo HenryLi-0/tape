@@ -52,6 +52,16 @@ class Window:
         if self.mPressed > 0: self.mPressed += 1
         else: self.mPressed = 0
 
+        '''tape'''
+        if self.interface.s.previousTab != self.interface.s.tab:
+            self.labels["a"].hide()
+            self.labels["n"].hide()
+            self.labels["d"].hide()
+            self.labels["e"].hide()
+            self.labels["s"].hide()
+            self.labels[self.interface.s.tab].show()
+            self.interface.s.previousTab = self.interface.s.tab
+
         '''update screens'''
         self.interface.tick(mx,my,self.mPressed, self.fps, self.keysPressed, self.mouseScroll)
         self.mouseScroll = 0
@@ -66,6 +76,7 @@ class Window:
                     self.labels[region].update(self.processFunctions[region](self.blankLabels[region]))
             self.interface.s.scheduledSectionUpdate = []
 
+        '''FPS'''
         now = time.time()
         self.fpsTimestamps.append(now)
         while now-self.fpsTimestamps[0] > FPS_DAMPENING:
