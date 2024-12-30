@@ -5,11 +5,11 @@ import numpy, math
 
 # Convert
 
-def imageToArray(img:Image):
+def imageToArray(img:Image) -> numpy.ndarray:
     '''Converts an Image into a numpy array'''
     return numpy.array(img)
 
-def arrayToImage(array:numpy.ndarray):
+def arrayToImage(array:numpy.ndarray) -> Image:
     '''Converts a numpy array to an Image'''
     return Image.fromarray(array.astype("uint8"), "RGBA")
 

@@ -2,6 +2,7 @@
 
 from subsystems.visuals import *
 from subsystems.counter import Counter
+from settings import *
 
 class State:
     def __init__(self):
@@ -24,7 +25,7 @@ class State:
         d - debug tab
         e - editor tab
         s - setting tab
-        t - tabs (TO-DO: FUTURE)
+        t - tabs
         w - workspace
         '''
         self.ivos = {
@@ -36,7 +37,13 @@ class State:
             -97 : ["w",ButtonVisualObject("project",(7,450),RECTANGULAR_RED_BUTTON,RECTANGULAR_GREEN_BUTTON)],
             -96 : ["w",IconVisualObject("Settings",(323,450), GEAR, (52,52))],
             -95 : ["w",OrbVisualObject("what",(323,450))],
-            -94 : ["w",EditableTextBoxVisualObject("test", (50,50), "test")]
+            -94 : ["w",EditableTextBoxVisualObject("test", (50,50), "test")],
+
+            -89 : ["t",IconVisualObject("Animation", (9,3), ANIMATION_TAB, outline = False)],
+            -88 : ["t",IconVisualObject("Nodes", (49,3), NODES_TAB, outline = False)],
+            -87 : ["t",IconVisualObject("Debug", (89,3), DEBUG_TAB, outline = False)],
+            -86 : ["t",IconVisualObject("Export", (129,3), EXPORT_TAB, outline = False)],
+            -85 : ["t",IconVisualObject("Settings", (169,3), SETTINGS_TAB, outline = False)],
         }
         '''Control'''
         self.interacting = -999
@@ -80,8 +87,12 @@ class State:
         self.mouseInDebugTab =      self.mouseInSection("d")
         self.mouseInExportTab =     self.mouseInSection("e")
         self.mouseInSettingsTab =   self.mouseInSection("s")
-        # self.mouseInTabs =          self.mouseInSection("t")
+        self.mouseInTabs =          self.mouseInSection("t")
         self.mouseInWorkspace =     self.mouseInSection("w")
+
+        '''tape'''
+        if self.interacting in [-89, -88, -87, -86, -85]:
+            self.tab = self.ivos[self.interacting][1].name[0].lower()
 
     def scheduleSectionUpdate(self, section):
         if not(section in self.scheduledSectionUpdate):

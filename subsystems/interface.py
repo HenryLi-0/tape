@@ -17,7 +17,7 @@ from subsystems.section.nodes_tab       import NodesTab
 from subsystems.section.debug_tab       import DebugTab
 from subsystems.section.export_tab      import ExportTab
 from subsystems.section.settings_tab    import SettingsTab
-# from subsystems.section.tabs            import Tabs
+from subsystems.section.tabs            import Tabs
 from subsystems.section.workspace       import Workspace
 
 class Interface:
@@ -45,16 +45,31 @@ class Interface:
 
         keybind = None
         if (interacting == -999 or interacting == -997) and (time.time() - self.s.keybindLastUpdate > KEYBIND_DIFFERENCE):
-            if KB_TAB_A(keyQueue): # TO-DO: TEMPORARY FOR TESTING, REMOVE
+            if KB_TAB_ANIMATION(keyQueue):
                 '''SWITCH TAB TO ANIMATION'''
                 self.s.keybindLastUpdate = time.time()
                 self.s.tab = "a"
                 keybind = "tab a"
-            if KB_TAB_D(keyQueue): # TO-DO: TEMPORARY FOR TESTING, REMOVE
+            if KB_TAB_NODES(keyQueue):
+                '''SWITCH TAB TO NODES'''
+                self.s.keybindLastUpdate = time.time()
+                self.s.tab = "n"
+                keybind = "tab n"
+            if KB_TAB_DEBUG(keyQueue):
                 '''SWITCH TAB TO DEBUG'''
                 self.s.keybindLastUpdate = time.time()
                 self.s.tab = "d"
                 keybind = "tab d"
+            if KB_TAB_EXPORT(keyQueue):
+                '''SWITCH TAB TO EXPORT'''
+                self.s.keybindLastUpdate = time.time()
+                self.s.tab = "e"
+                keybind = "tab e"
+            if KB_TAB_SETTINGS(keyQueue):
+                '''SWITCH TAB TO SETTINGS'''
+                self.s.keybindLastUpdate = time.time()
+                self.s.tab = "s"
+                keybind = "tab s"
 
         if self.s.currentKeybind[1] != keybind and keybind != None:
             keybind = [True, keybind]
@@ -114,7 +129,7 @@ class Interface:
         self.s.scheduleSectionUpdate("d")
         self.s.scheduleSectionUpdate("e")
         self.s.scheduleSectionUpdate("s")
-        # self.s.scheduleSectionUpdate("t")
+        self.s.scheduleSectionUpdate("t")
         self.s.scheduleSectionUpdate("w")
 
         '''Crosshair'''
@@ -149,8 +164,8 @@ class Interface:
     def processSettingsTab(self, im):
         return SettingsTab.render(self.s, im)
     
-    # def processTabs(self, im):
-    #     return Tabs.render(self.s, im)
+    def processTabs(self, im):
+        return Tabs.render(self.s, im)
 
     def processWorkspace(self, im):
         return Workspace.render(self.s, im)

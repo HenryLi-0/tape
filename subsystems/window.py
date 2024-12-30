@@ -40,7 +40,7 @@ class Window:
             "d" : self.interface.processDebugTab,
             "e" : self.interface.processExportTab,
             "s" : self.interface.processSettingsTab,
-            # "t" : self.interface.processTabs,
+            "t" : self.interface.processTabs,
             "w" : self.interface.processWorkspace,
         }
         self.processFunctionsRegions = list(self.processFunctions.keys())

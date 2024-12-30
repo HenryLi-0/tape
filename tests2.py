@@ -32,3 +32,7 @@ from subsystems.node.node_primatives import *
 # node.set(2)
 # print(node.get())
 # print(node)
+
+from subsystems.fancy import *
+from settings import *
+generateHoverIcon(CURSOR_ARROW, False).show()

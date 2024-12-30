@@ -44,11 +44,14 @@ DEFAULT_PROJECT_NAME = "Untitled Project"
 
 '''Keybinds'''
 KEYBIND_DIFFERENCE = 0.2
-KB_IGNORE   = ["Win_L"]                                                                             # Keys to ignore
-KB_CONFIRM  = ["Return", "Alt_L"]                                                                   # Keys to confirm
-KB_ACTIVATE = ["space", "Return"]                                                                   # Keys to activate/trigger
-KB_TAB_A    = lambda keys: (len(keys) == 2) and ("Control_L" in keys) and ("1" in keys)
-KB_TAB_D    = lambda keys: (len(keys) == 2) and ("Control_L" in keys) and ("3" in keys)
+KB_IGNORE       = ["Win_L"]                                                                             # Keys to ignore
+KB_CONFIRM      = ["Return", "Alt_L"]                                                                   # Keys to confirm
+KB_ACTIVATE     = ["space", "Return"]                                                                   # Keys to activate/trigger
+KB_TAB_ANIMATION= lambda keys: (len(keys) == 2) and ("Control_L" in keys) and ("1" in keys)
+KB_TAB_NODES    = lambda keys: (len(keys) == 2) and ("Control_L" in keys) and ("2" in keys)
+KB_TAB_DEBUG    = lambda keys: (len(keys) == 2) and ("Control_L" in keys) and ("3" in keys)
+KB_TAB_EXPORT   = lambda keys: (len(keys) == 2) and ("Control_L" in keys) and ("4" in keys)
+KB_TAB_SETTINGS = lambda keys: (len(keys) == 2) and ("Control_L" in keys) and ("5" in keys)
 
 '''Constants - DO NOT CHANGE!!!'''
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 
@@ -66,26 +69,26 @@ ROTATE_AROUND_ORIGIN = lambda x,y,d: [(x/abs(x))*math.cos(math.atan(y/x)+(d*math
 
 # Sections
 '''
-- Animation Interface:  `(  10,  10) to ( 478, 687)`: size `( 469, 678)`
-- Nodes Interface:      `(  10,  10) to ( 478, 687)`: size `( 469, 678)`
-- Debug Interface:      `(  10,  10) to ( 478, 687)`: size `( 469, 678)`
-- Export Interface:     `(  10,  10) to ( 478, 687)`: size `( 469, 678)`
-- Settings Interface:   `(  10,  10) to ( 478, 687)`: size `( 469, 678)`
-- Tabs Interface:       `(   0,   0) to (   0,   0)`: size `(   0,   0)` # TO-DO: FUTURE
-- Workspace Interface:  `( 485,  10) to (1355, 687)`: size `( 871, 688)`
+- Animation Interface:  `(  10,  10) to ( 478, 643)`: size `( 469, 634)`
+- Nodes Interface:      `(  10,  10) to ( 478, 643)`: size `( 469, 634)`
+- Debug Interface:      `(  10,  10) to ( 478, 643)`: size `( 469, 634)`
+- Export Interface:     `(  10,  10) to ( 478, 643)`: size `( 469, 634)`
+- Settings Interface:   `(  10,  10) to ( 478, 643)`: size `( 469, 634)`
+- Tabs Interface:       `(  10, 650) to ( 478, 687)`: size `( 469,  38)`
+- Workspace Interface:  `( 485,  10) to (1355, 687)`: size `( 871, 678)`
 - Entire Screen:        `(  0,    0) to (1365, 697)`: size `(1366, 698)`
 
 Region ID : Top Left, Bottom Right, Size, Keep In Relative Top Left, Keep In Relative Bottom Right
 '''
 SECTIONS_DATA = {
     " ": [(   0,   0),(1366, 698),(1366, 698),(   0,   0),(1366, 698)],
-    "a": [(  10,  10),( 478, 687),( 469, 678),(   0,   0),( 469, 678)],
-    "n": [(  10,  10),( 478, 687),( 469, 678),(   0,   0),( 469, 678)],
-    "d": [(  10,  10),( 478, 687),( 469, 678),(   0,   0),( 469, 678)],
-    "e": [(  10,  10),( 478, 687),( 469, 678),(   0,   0),( 469, 678)],
-    "s": [(  10,  10),( 478, 687),( 469, 678),(   0,   0),( 469, 678)],
-    # "t": [(   0,   0),(   0,   0),(   0,   0),(   0,   0),(   0,   0)],
-    "w": [( 485,  10),(1355, 687),( 871, 688),(   0,   0),( 871, 688)],
+    "a": [(  10,  10),( 478, 643),( 469, 634),(   0,   0),( 469, 634)],
+    "n": [(  10,  10),( 478, 643),( 469, 634),(   0,   0),( 469, 634)],
+    "d": [(  10,  10),( 478, 643),( 469, 634),(   0,   0),( 469, 634)],
+    "e": [(  10,  10),( 478, 643),( 469, 634),(   0,   0),( 469, 634)],
+    "s": [(  10,  10),( 478, 643),( 469, 634),(   0,   0),( 469, 634)],
+    "t": [(  10, 650),( 478, 687),( 469,  38),(   0,   0),( 469,  38)],
+    "w": [( 485,  10),(1355, 687),( 871, 678),(   0,   0),( 871, 678)],
 }
 FULL_BACKGROUND = setBrightnessEffect(getImageRGBAFromPath(os.path.join("resources", "loading.png")), -10)
 SECTIONS_FRAME_INSTRUCTIONS = {
@@ -95,8 +98,8 @@ SECTIONS_FRAME_INSTRUCTIONS = {
     "d": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),(  -10,  -10)),
     "e": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),(  -10,  -10)),
     "s": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),(  -10,  -10)),
-    # "t": generateThemedBorderRectangleInstructions((   0,   0), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),(   -0,   -0)),
-    "w": generateThemedBorderRectangleInstructions(( 871, 688), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),( -485,  -10)),
+    "t": generateThemedBorderRectangleInstructions(( 469,  38), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),(  -10, -650)),
+    "w": generateThemedBorderRectangleInstructions(( 871, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),( -485,  -10)),
 }
 SECTIONS = list(SECTIONS_DATA.keys())
 
@@ -155,4 +158,9 @@ LOAD_ICON =             getImageRGBAFromPath(os.path.join("resources", "icon", "
 RENDER_GIF_ICON =       getImageRGBAFromPath(os.path.join("resources", "icon", "render_gif.png"))
 RENDER_MP4_ICON =       getImageRGBAFromPath(os.path.join("resources", "icon", "render_mp4.png"))
 
-PROPERTY_DISPLAY_NAMES = ["Coordinates","Rotational","Apperance","Size","Hue","Transparency","Brightness","Blur"]
+# Tab Icons (Templates)
+ANIMATION_TAB =    getImageRGBAFromPath(os.path.join("resources", "icon", "animation_tab.png"))
+NODES_TAB =        getImageRGBAFromPath(os.path.join("resources", "icon", "nodes_tab.png"))
+DEBUG_TAB =        getImageRGBAFromPath(os.path.join("resources", "icon", "debug_tab.png"))
+EXPORT_TAB =       getImageRGBAFromPath(os.path.join("resources", "icon", "export_tab.png"))
+SETTINGS_TAB =     getImageRGBAFromPath(os.path.join("resources", "icon", "settings_tab.png"))

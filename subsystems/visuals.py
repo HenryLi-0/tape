@@ -3,7 +3,7 @@
 import time, numpy, random, math
 from subsystems.point import addP, subtractP, roundf
 from subsystems.render import placeOver
-from subsystems.fancy import displayText, generateColorBox, generateIcon
+from subsystems.fancy import *
 from settings import *
 
 class VisualManager:
@@ -227,12 +227,16 @@ class DummyVisualObject(VisualObject):
 class IconVisualObject(VisualObject):
     '''An icon, basically a fancy button.'''
     # generateIcon(img, active = False, size = (29,29), color = "")
-    def __init__(self, name, pos:tuple|list, icon:Image, size:tuple|list = (29,29)):
+    def __init__(self, name, pos:tuple|list, icon:Image, size:tuple|list = (29,29), outline = True):
         self.type = "icon"
         self.name = name
         self.lastInteraction = time.time()
-        self.img = generateIcon(icon, False, size)
-        self.img2 = generateIcon(icon, True, size)
+        if outline:
+            self.img = generateOutlineIcon(icon, False, size)
+            self.img2 = generateOutlineIcon(icon, True, size)
+        else:
+            self.img = generateHoverIcon(icon, False)
+            self.img2 = generateHoverIcon(icon, True)
         self.positionO = RectangularPositionalBox((self.img.width,self.img.height), pos[0], pos[1])
     def tick(self, img, visualactive, active):
         if active: self.lastInteraction = time.time()
@@ -248,8 +252,8 @@ class ToggleVisualObject(VisualObject):
         self.type = "icon"
         self.name = name
         self.lastInteraction = time.time()
-        self.img = generateIcon(iconOn, False, size)
-        self.img2 = generateIcon(iconOff, False, size)
+        self.img = generateOutlineIcon(iconOn, False, size)
+        self.img2 = generateOutlineIcon(iconOff, False, size)
         self.positionO = RectangularPositionalBox((self.img.width,self.img.height), pos[0], pos[1])
         self.active = 0
         self.state = False
@@ -347,8 +351,8 @@ class CheckboxVisualObject(VisualObject):
         self.type = "checkbox"
         self.name = name
         self.lastInteraction = time.time()
-        self.img = generateIcon(generateColorBox(size, (255,0,0,255)), False, size)
-        self.img2 = generateIcon(generateColorBox(size, (0,255,0,255)), False, size)
+        self.img = generateOutlineIcon(generateColorBox(size, (255,0,0,255)), False, size)
+        self.img2 = generateOutlineIcon(generateColorBox(size, (0,255,0,255)), False, size)
         self.positionO = RectangularPositionalBox((self.img.width,self.img.height), pos[0], pos[1])
         self.active = 0
         self.state = state
@@ -368,8 +372,8 @@ class TextButtonPushVisualObject(VisualObject):
         self.name = name
         self.lastInteraction = time.time()
         temp = displayText(str(text), "m")
-        self.img = generateIcon(temp, False, (temp.width, temp.height))
-        self.img2 = generateIcon(temp, True, (temp.width, temp.height))
+        self.img = generateOutlineIcon(temp, False, (temp.width, temp.height))
+        self.img2 = generateOutlineIcon(temp, True, (temp.width, temp.height))
         self.positionO = RectangularPositionalBox((self.img.width,self.img.height), pos[0], pos[1])
         self.lastPressed = 9999999
         self.state = False

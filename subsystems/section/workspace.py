@@ -2,7 +2,7 @@ from subsystems.section.section import *
 
 class Workspace(Section):
     def render(state: State, im):
-        '''Workspace Interface:  `( 485,  10) to (1355, 687)`: size `( 871, 688)`'''
+        '''Workspace Interface:  `( 485,  10) to (1355, 687)`: size `( 871, 678)`'''
         img = im.copy()
         rmx = state.mx - 485
         rmy = state.my - 10
