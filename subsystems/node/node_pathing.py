@@ -11,13 +11,15 @@ class Coordinate(Node):
         - `x` represents the x coordinate.
         - `y` represents the y coordinate.
     '''
-    def __init__(self, x:Number|Pixel = Number(0), y:Number|Pixel = Number(0)):
+    IN = [[[Number, Pixel], True], [[Number, Pixel], True]]
+    OUT = [None]
+    def __init__(self, x:Number|Pixel, y:Number|Pixel):
         super().__init__()
         self.output = None
         self.x = 0
         self.y = 0
         self.set(x, y)
-    def set(self, x:Number|Pixel = Number(0), y:Number|Pixel = Number(0)):
+    def set(self, x:Number|Pixel, y:Number|Pixel):
         self.xNode = x
         self.yNode = y
     def get(self):
@@ -29,7 +31,7 @@ class Coordinate(Node):
         else: self.addError("Invalid y!")
         self.x = xcoord
         self.y = ycoord
-        return self
+        return None
 
 
 '''PATHING''' # TO-DO: REFACTOR EVERYTHING BELOW HERE!!!
@@ -42,6 +44,8 @@ class Frame(Node):
         - `value` represents a value or coordinate.
         - `time` represents the time after the start.
     '''
+    IN = [[[Coordinate, Number, Angle, Pixel], True], [[Time], True]]
+    OUT = None
     def __init__(self, value:Coordinate|Number|Angle|Pixel, time:Time):
         super().__init__()
         self.value = None
@@ -60,6 +64,8 @@ class PathType(Node):
     '''
         A class that consists of all types of Paths for Pathing that does the calculations without storing/linking Node data.
     '''
+    IN = [[[None], False]]
+    OUT = [None]
     def __init__(self):
         super().__init__()
     def path(self, *frames:Frame):
@@ -95,6 +101,8 @@ class Path(Node):
         - `pathType` is a PathType that represents the method used to calculate to Path.
         - `frames` is any number of Frames of the type.
     '''
+    IN = [[[PathType], True], [[Frame], -1]]
+    OUT = None # TO-DO: FINISH
     def __init__(self, pathType:PathType, *frames:Frame):
         super().__init__()
         output = None
@@ -114,6 +122,8 @@ class PathAxisMerger(Node):
         - `xAxisPath` is a Path representing the x axis.
         - `yAxisPath` is a Path representing the y axis.
     '''
+    IN = [[[Path], True], [[Path], True]]
+    OUT = [Path]
     def __init__(self, xAxisPath:Path, yAxisPath:Path):
         super().__init__()
         self.output = Path()
@@ -132,6 +142,8 @@ class PathAtTime(Node):
         - `path` is a Path of any type.
         - `time` is a Time, representing the time of which when is a desired value.
     '''
+    IN = [[[Path], True], [[Time], True]]
+    OUT = [Node] # TO-DO: FINISH
     def __init__(self, path:Path, time:Time):
         super().__init__()
         self.path = path
@@ -144,6 +156,8 @@ class PathMerger(Node):
     '''
         Merges any number of paths of the same type into one.
     '''
+    IN = [[[Path], -1]]
+    OUT = [Path]
     def __init__(self, *paths):
         super().__init__()
         for path in paths:

@@ -5,3 +5,36 @@ from subsystems.node.node_operations import *
 
 # Add any plug-ins here!
 # TO-DO: Alternatively, you can also add plug-ins through the Tape UI!
+
+
+
+
+# Additionally, update this master nodes list!
+
+NODES = [
+    # Primatives
+        Number, Boolean, String,
+        Random, FileLocation,
+        # Units
+            # Angle 
+                Degrees, Radians, 
+            # Distance 
+                Pixel, 
+            # Time
+                Milliseconds, Seconds, Minutes, Hours, Days,
+            # IO
+                ImageWrapper, ImageImport, FolderImport,
+            # Logic
+                Reroute, 
+                LessThan, GreaterThan, EqualTo,
+                And, Or, Not,
+                If,
+    # Pathing
+        Coordinate, Frame,
+        # PathType
+            LinearPathType, BezierPathType, SmoothApproachesPathType, SmoothFullPathType,
+        # Paths
+            Path, PathAxisMerger, PathAtTime, PathMerger,
+    # Operations
+        Addition, Multiplication,
+]

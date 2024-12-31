@@ -15,6 +15,8 @@ class ActiveError:
         return self.errors
         
 class Node:
+    IN = None   # FORMAT: IN = [[[type, types, etc], required], etc] (-1 for required = infinite inputs of that type)
+    OUT = None  # FORMAT: OUT = [type, types, etc]
     def __init__(self):
         self.id = uuid.uuid4()
         self.error = ActiveError()
@@ -75,9 +77,10 @@ class Random(Node):
         Requires:
         - `lowerLimit` defines the minimum possible output.
         - `upperLimit` defines the maximum possible output.
-        - `onlyIntegers` defines whether or not only integers are returned.
-        
+        - `onlyIntegers` defines whether or not only integers are returned. 
     '''
+    IN = [[[Number], False], [[Number], False], [[Boolean], False]]
+    OUT = [Number]
     def __init__(self, lowerLimit:Number = Number(0), upperLimit:Number = Number(1), onlyIntegers:Boolean = Boolean(False)):
         super().__init__()
         self.output = Number(0)
@@ -105,6 +108,8 @@ class FileLocation(Node):
         Requires:
         - `location` represents the file location
     '''
+    IN = [[[String], True]]
+    OUT = [String]
     def __init__(self, location:String):
         super().__init__()
         self.fileLocation = None
@@ -160,6 +165,8 @@ class Degrees(Angle):
         Requires:
         - `angle` is either a Angle type or a Number type object. Angle types will be converted, while Numbers will be in degrees.
     '''
+    IN = [[[Number, Angle], True]]
+    OUT = [Number]
     def __init__(self, angle:Angle|Number = Number(0)):
         super().__init__()
         self.output = Number(0)
@@ -180,6 +187,8 @@ class Radians(Angle):
         Requires:
         - `angle` is either a Time type or a Number type object. Angle types will be converted, while Numbers will be in radians.
     '''
+    IN = [[[Number, Angle], True]]
+    OUT = [Number]
     def __init__(self, angle:Angle|Number = Number(0)):
         super().__init__()
         self.output = Number(0)
@@ -207,6 +216,8 @@ class Pixel(Unit):
         Requires:
         - `angle` is either a Time type or a Number type object. Angle types will be converted, while Numbers will be in radians.
     '''
+    IN = [[[Number, Distance], True]]
+    OUT = [Number]
     def __init__(self, distance:Distance|Number = Number(0)):
         super().__init__()
         self.output = Number(0)
@@ -233,6 +244,8 @@ class Milliseconds(Time):
         Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in milliseconds.
     '''
+    IN = [[[Number, Time], True]]
+    OUT = [Number]
     def __init__(self, time:Time|Number = Number(0)):
         super().__init__()
         self.output = Number(0)
@@ -256,6 +269,8 @@ class Seconds(Time):
         Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in seconds.
     '''
+    IN = [[[Number, Time], True]]
+    OUT = [Number]
     def __init__(self, time:Time|Number = Number(0)):
         super().__init__()
         self.output = Number(0)
@@ -279,6 +294,8 @@ class Minutes(Time):
         Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in minutes.
     '''
+    IN = [[[Number, Time], True]]
+    OUT = [Number]
     def __init__(self, time:Time|Number = Number(0)):
         super().__init__()
         self.output = Number(0)
@@ -302,6 +319,8 @@ class Hours(Time):
         Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in hours.
     '''
+    IN = [[[Number, Time], True]]
+    OUT = [Number]
     def __init__(self, time:Time|Number = Number(0)):
         super().__init__()
         self.output = Number(0)
@@ -325,6 +344,8 @@ class Days(Time):
         Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in days.
     '''
+    IN = [[[Number, Time], True]]
+    OUT = [Number]
     def __init__(self, time:Time|Number = Number(0)):
         super().__init__()
         self.output = Number(0)
@@ -343,6 +364,18 @@ class Days(Time):
 
 '''IO'''
 
+class ImageWrapper:
+    '''
+        A wrapper for a PIL image.
+    '''
+    def __init__(self, img:Image = None):
+        if img != None:
+            self.set(img)
+    def set(self, img:Image):
+        self.image = img
+    def get(self):
+        return self.image
+
 class ImageImport(Node):
     '''
         Imports an image file at the given file location/path.
@@ -350,18 +383,20 @@ class ImageImport(Node):
         Requires:
         - `location` represents the image's file location.
     '''
+    IN = [[[FileLocation], True]]
+    OUT = [ImageWrapper]
     def __init__(self, location:FileLocation):
         super().__init__()
-        self.file = None
+        self.img = ImageWrapper()
         self.set(location)
     def set(self, location:FileLocation):
         self.location = location
-    def get(self) -> Image:
+    def get(self) -> ImageWrapper:
         if self.location.extension in [".png", ".jpg", ".jpeg"]:
-            self.file = Image.open(self.location.get()).convert("RGBA")
+            self.img.set(Image.open(self.location.get()).convert("RGBA"))
         else:
             self.addError(f"File extension {self.location.extension} is not a supported image file type!")
-        return self.file
+        return self.img
 
 class FolderImport(Node):
     '''
@@ -370,6 +405,8 @@ class FolderImport(Node):
         Requires:
         - `location` represents the folder containing the image files.
     '''
+    IN = [[[FileLocation], True]]
+    OUT = None # TO-DO: FINISH
     def __init__(self, location:FileLocation):
         super().__init__()
         
@@ -393,6 +430,8 @@ class Reroute(Node):
         Requires:
         - `inputNode` represents any node type.
     '''
+    IN = [[[Node], True]]
+    OUT = [Node]
     def __init__(self, inputNode:Node):
         super().__init__()
         self.inputNode = None
@@ -402,14 +441,14 @@ class Reroute(Node):
     def get(self):
         return self.inputNode
 
-class Comparison(Node):
+class LogicalOperation(Node):
     '''
         A class for all types of logical operations related with booleans.
     '''
     def get(self) -> Boolean:
         pass
 
-class LessThan(Comparison):
+class LessThan(LogicalOperation):
     '''
         Compares two values and outputs a Boolean with the truth value of `inputA` being less than `inputB`.
 
@@ -417,6 +456,8 @@ class LessThan(Comparison):
         - `inputA` represents the first value to be compared.
         - `inputB` represents the second value to be compared.
     '''
+    IN = [[[Number, Unit], True], [[Number, Unit], True]]
+    OUT = [Boolean]
     def __init__(self, inputA:Number|Unit, inputB:Number|Unit):
         super().__init__()
         self.output = Boolean(False)
@@ -439,7 +480,7 @@ class LessThan(Comparison):
             self.addError("Inconsistent type for comparison!")
         return self.output
 
-class GreaterThan(Comparison):
+class GreaterThan(LogicalOperation):
     '''
         Compares two values and outputs a Boolean with the truth value of `inputA` being greater than `inputB`.
 
@@ -447,6 +488,8 @@ class GreaterThan(Comparison):
         - `inputA` represents the first value to be compared.
         - `inputB` represents the second value to be compared.
     '''
+    IN = [[[Number, Unit], True], [[Number, Unit], True]]
+    OUT = [Boolean]
     def __init__(self, inputA:Number|Unit, inputB:Number|Unit):
         super().__init__()
         self.output = Boolean(False)
@@ -469,7 +512,7 @@ class GreaterThan(Comparison):
             self.addError("Inconsistent type for comparison!")
         return self.output
 
-class EqualTo(Comparison):
+class EqualTo(LogicalOperation):
     '''
         Compares two values and outputs a Boolean with the truth value of `inputA` being equal to `inputB`.
 
@@ -477,6 +520,8 @@ class EqualTo(Comparison):
         - `inputA` represents the first value to be compared.
         - `inputB` represents the second value to be compared.
     '''
+    IN = [[[Number, Unit], True], [[Number, Unit], True]]
+    OUT = [Boolean]
     def __init__(self, inputA:Number|Unit, inputB:Number|Unit):
         super().__init__()
         self.output = Boolean(False)
@@ -499,7 +544,7 @@ class EqualTo(Comparison):
             self.addError("Inconsistent type for comparison!")
         return self.output
     
-class And(Comparison):
+class And(LogicalOperation):
     '''
         Compares two Booleans and outputs a Boolean if both `inputA` and `inputB` are True.
 
@@ -507,6 +552,8 @@ class And(Comparison):
         - `inputA` represents the first boolean.
         - `inputB` represents the second boolean.
     '''
+    IN = [[[Boolean], True], [[Boolean], True]]
+    OUT = [Boolean]
     def __init__(self, inputA:Boolean, inputB:Boolean):
         super().__init__()
         self.output = Boolean(False)
@@ -518,7 +565,7 @@ class And(Comparison):
         self.output.set(self.inputA.get() and self.inputB.get())
         return self.output
 
-class Or(Comparison):
+class Or(LogicalOperation):
     '''
         Compares two Booleans and outputs a Boolean if at least one `inputA` and `inputB` are True.
 
@@ -526,6 +573,8 @@ class Or(Comparison):
         - `inputA` represents the first boolean.
         - `inputB` represents the second boolean.
     '''
+    IN = [[[Boolean], True], [[Boolean], True]]
+    OUT = [Boolean]
     def __init__(self, inputA:Boolean, inputB:Boolean):
         super().__init__()
         self.output = Boolean(False)
@@ -537,13 +586,15 @@ class Or(Comparison):
         self.output.set(self.inputA.get() or self.inputB.get())
         return self.output
 
-class Not(Comparison):
+class Not(LogicalOperation):
     '''
         Returns the inverted truth value of the given Boolean.
 
         Requires:
         - `inputNode` represents a boolean.
     '''
+    IN = [[[Boolean], True]]
+    OUT = [Boolean]
     def __init__(self, inputNode:Boolean):
         super().__init__()
         self.output = Boolean(True)
@@ -554,7 +605,7 @@ class Not(Comparison):
         self.output.set(not(self.inputNode.get()))
         return self.output
 
-class If(Comparison):
+class If(LogicalOperation):
     '''
         Returns `inputTrue` if `boolean` is true, otherwise returns `inputFalse`.
         
@@ -563,6 +614,8 @@ class If(Comparison):
         - `inputFalse` represents the second node.
         - `boolean` represents a Boolean.
     '''
+    IN = [[[Node], True], [[Node], True], [[Boolean], True]]
+    OUT = [Node]
     def __init__(self, inputTrue:Node, inputFalse:Node, boolean:Boolean):
         super().__init__()
         self.output = None

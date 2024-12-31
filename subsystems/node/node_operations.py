@@ -12,6 +12,8 @@ class Addition(Node): # TO-DO: OPTIMIZE THIS MORE
         - `inputA` represents the first input, which addition is operated on.
         - `inputB` represents the second input, which is added to `inputA`.
     '''
+    IN = [[[Node], True], [[Node], True]]
+    OUT = [Node]
     def __init__(self, inputA:Node, inputB:Node):
         super().__init__()
         self.output = None
@@ -58,6 +60,8 @@ class Multiplication(Node):
         - `inputA` represents the first input, which multiplication is operated on.
         - `inputB` represents the second input, which `inputA` is multiplied by.
     '''
+    IN = [[[Node], True], [[Node], True]]
+    OUT = [Node]
     def __init__(self, inputA, inputB):
         super().__init__()
         if type(inputA) == Number and type(inputB) == Number:
