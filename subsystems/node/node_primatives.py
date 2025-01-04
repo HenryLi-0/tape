@@ -14,9 +14,23 @@ class ActiveError:
     def getError(self):
         return self.errors
         
+def Input(name, type, required):
+    def decorator(inClass):
+        if not hasattr(inClass, "Input"):
+            inClass.Input = []
+        inClass.Input.append((name, type, required))
+        return inClass
+    return decorator
+
+def Output(name, type):
+    def decorator(inClass):
+        if not hasattr(inClass, "Output"):
+            inClass.Output = []
+        inClass.Output.append((name, type))
+        return inClass
+    return decorator
+
 class Node:
-    IN = None   # FORMAT: IN = [[[type, types, etc], required], etc] (-1 for required = infinite inputs of that type)
-    OUT = None  # FORMAT: OUT = [type, types, etc]
     def __init__(self):
         self.id = uuid.uuid4()
         self.error = ActiveError()
@@ -70,6 +84,10 @@ class String(Node):
     def get(self) -> str:
         return self.string
 
+@Input("Lower Limit", [Number], False)
+@Input("Upper Limit", [Number], False)
+@Input("Only Integers", [Boolean], False)
+@Output("Random Number", Number)
 class Random(Node):
     '''
         A random number, with range [a,b], includes both end points.
@@ -79,8 +97,6 @@ class Random(Node):
         - `upperLimit` defines the maximum possible output.
         - `onlyIntegers` defines whether or not only integers are returned. 
     '''
-    IN = [[[Number], False], [[Number], False], [[Boolean], False]]
-    OUT = [Number]
     def __init__(self, lowerLimit:Number = Number(0), upperLimit:Number = Number(1), onlyIntegers:Boolean = Boolean(False)):
         super().__init__()
         self.output = Number(0)
@@ -101,6 +117,8 @@ class Random(Node):
         except:
             self.addError("Random number failed to generate!")
 
+@Input("File Location", [String], True)
+@Output("Valid File", String)
 class FileLocation(Node):
     '''
         A file or directory location.
@@ -108,8 +126,6 @@ class FileLocation(Node):
         Requires:
         - `location` represents the file location
     '''
-    IN = [[[String], True]]
-    OUT = [String]
     def __init__(self, location:String):
         super().__init__()
         self.fileLocation = None
@@ -158,6 +174,8 @@ class Angle(Unit):
     def simplify(unit):
         return Degrees(unit)
 
+@Input("Angle", [Number, Angle], True)
+@Output("Angle", Number)
 class Degrees(Angle):
     '''
         A unit of angle, representing 1/360th of a circle.
@@ -165,8 +183,6 @@ class Degrees(Angle):
         Requires:
         - `angle` is either a Angle type or a Number type object. Angle types will be converted, while Numbers will be in degrees.
     '''
-    IN = [[[Number, Angle], True]]
-    OUT = [Number]
     def __init__(self, angle:Angle|Number = Number(0)):
         super().__init__()
         self.output = Number(0)
@@ -180,6 +196,8 @@ class Degrees(Angle):
         else: self.addError("Invalid input!")
         return self.output
 
+@Input("Angle", [Number, Angle], True)
+@Output("Angle", Number)
 class Radians(Angle):
     '''
         A unit of angle, where 2*PI radians represents a complete circle.
@@ -187,8 +205,6 @@ class Radians(Angle):
         Requires:
         - `angle` is either a Time type or a Number type object. Angle types will be converted, while Numbers will be in radians.
     '''
-    IN = [[[Number, Angle], True]]
-    OUT = [Number]
     def __init__(self, angle:Angle|Number = Number(0)):
         super().__init__()
         self.output = Number(0)
@@ -209,6 +225,8 @@ class Distance(Unit):
     def simplify(unit):
         return Pixel(unit)
 
+@Input("Distance", [Number, Distance], True)
+@Output("Distance", Number)
 class Pixel(Unit):
     '''
         A unit of measurement, where one pixel represents one screen pixel.
@@ -216,8 +234,6 @@ class Pixel(Unit):
         Requires:
         - `angle` is either a Time type or a Number type object. Angle types will be converted, while Numbers will be in radians.
     '''
-    IN = [[[Number, Distance], True]]
-    OUT = [Number]
     def __init__(self, distance:Distance|Number = Number(0)):
         super().__init__()
         self.output = Number(0)
@@ -237,6 +253,8 @@ class Time(Unit):
     def simplify(unit):
         return Seconds(unit)
 
+@Input("Time", [Number, Time], True)
+@Output("Time", Number)
 class Milliseconds(Time):
     '''
         A unit of time, representing 1/1000th of a second.
@@ -244,8 +262,6 @@ class Milliseconds(Time):
         Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in milliseconds.
     '''
-    IN = [[[Number, Time], True]]
-    OUT = [Number]
     def __init__(self, time:Time|Number = Number(0)):
         super().__init__()
         self.output = Number(0)
@@ -262,6 +278,8 @@ class Milliseconds(Time):
         else: self.addError("Invalid input!")
         return self.output
 
+@Input("Time", [Number, Time], True)
+@Output("Time", Number)
 class Seconds(Time):
     '''
         A unit of time, representing a second.
@@ -269,8 +287,6 @@ class Seconds(Time):
         Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in seconds.
     '''
-    IN = [[[Number, Time], True]]
-    OUT = [Number]
     def __init__(self, time:Time|Number = Number(0)):
         super().__init__()
         self.output = Number(0)
@@ -287,6 +303,8 @@ class Seconds(Time):
         else: self.addError("Invalid input!")
         return self.output
 
+@Input("Time", [Number, Time], True)
+@Output("Time", Number)
 class Minutes(Time):
     '''
         A unit of time, representing a minute.
@@ -294,8 +312,6 @@ class Minutes(Time):
         Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in minutes.
     '''
-    IN = [[[Number, Time], True]]
-    OUT = [Number]
     def __init__(self, time:Time|Number = Number(0)):
         super().__init__()
         self.output = Number(0)
@@ -312,6 +328,8 @@ class Minutes(Time):
         else: self.addError("Invalid input!")
         return self.output
 
+@Input("Time", [Number, Time], True)
+@Output("Time", Number)
 class Hours(Time):
     '''
         A unit of time, representing an hour.
@@ -319,8 +337,6 @@ class Hours(Time):
         Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in hours.
     '''
-    IN = [[[Number, Time], True]]
-    OUT = [Number]
     def __init__(self, time:Time|Number = Number(0)):
         super().__init__()
         self.output = Number(0)
@@ -337,6 +353,8 @@ class Hours(Time):
         else: self.addError("Invalid input!")
         return self.output
 
+@Input("Time", [Number, Time], True)
+@Output("Time", Number)
 class Days(Time):
     '''
         A unit of time, representing a day.
@@ -344,8 +362,6 @@ class Days(Time):
         Requires:
         - `time` is either a Time type or a Number type object. Time types will be converted, while Numbers will be in days.
     '''
-    IN = [[[Number, Time], True]]
-    OUT = [Number]
     def __init__(self, time:Time|Number = Number(0)):
         super().__init__()
         self.output = Number(0)
@@ -376,6 +392,8 @@ class ImageWrapper:
     def get(self):
         return self.image
 
+@Input("File Location", [FileLocation], True)
+@Output("Image", ImageWrapper)
 class ImageImport(Node):
     '''
         Imports an image file at the given file location/path.
@@ -383,8 +401,6 @@ class ImageImport(Node):
         Requires:
         - `location` represents the image's file location.
     '''
-    IN = [[[FileLocation], True]]
-    OUT = [ImageWrapper]
     def __init__(self, location:FileLocation):
         super().__init__()
         self.img = ImageWrapper()
@@ -398,6 +414,8 @@ class ImageImport(Node):
             self.addError(f"File extension {self.location.extension} is not a supported image file type!")
         return self.img
 
+@Input("Directory", [FileLocation], True)
+# @Output(None, None) #TO-DO: FINISH
 class FolderImport(Node):
     '''
         Imports an iterable series of images, given a folder location/path.
@@ -405,8 +423,6 @@ class FolderImport(Node):
         Requires:
         - `location` represents the folder containing the image files.
     '''
-    IN = [[[FileLocation], True]]
-    OUT = None # TO-DO: FINISH
     def __init__(self, location:FileLocation):
         super().__init__()
         
@@ -423,6 +439,8 @@ class FolderImport(Node):
 
 '''LOGIC'''
 
+@Input("Node", [Node], True)
+@Output("Node", Node)
 class Reroute(Node):
     '''
         Returns the same node that was given in.
@@ -430,8 +448,6 @@ class Reroute(Node):
         Requires:
         - `inputNode` represents any node type.
     '''
-    IN = [[[Node], True]]
-    OUT = [Node]
     def __init__(self, inputNode:Node):
         super().__init__()
         self.inputNode = None
@@ -448,6 +464,9 @@ class LogicalOperation(Node):
     def get(self) -> Boolean:
         pass
 
+@Input("A", [Number, Unit], True)
+@Input("B", [Number, Unit], True)
+@Output("Logic", Boolean)
 class LessThan(LogicalOperation):
     '''
         Compares two values and outputs a Boolean with the truth value of `inputA` being less than `inputB`.
@@ -456,8 +475,6 @@ class LessThan(LogicalOperation):
         - `inputA` represents the first value to be compared.
         - `inputB` represents the second value to be compared.
     '''
-    IN = [[[Number, Unit], True], [[Number, Unit], True]]
-    OUT = [Boolean]
     def __init__(self, inputA:Number|Unit, inputB:Number|Unit):
         super().__init__()
         self.output = Boolean(False)
@@ -480,6 +497,9 @@ class LessThan(LogicalOperation):
             self.addError("Inconsistent type for comparison!")
         return self.output
 
+@Input("A", [Number, Unit], True)
+@Input("B", [Number, Unit], True)
+@Output("Logic", Boolean)
 class GreaterThan(LogicalOperation):
     '''
         Compares two values and outputs a Boolean with the truth value of `inputA` being greater than `inputB`.
@@ -488,8 +508,6 @@ class GreaterThan(LogicalOperation):
         - `inputA` represents the first value to be compared.
         - `inputB` represents the second value to be compared.
     '''
-    IN = [[[Number, Unit], True], [[Number, Unit], True]]
-    OUT = [Boolean]
     def __init__(self, inputA:Number|Unit, inputB:Number|Unit):
         super().__init__()
         self.output = Boolean(False)
@@ -512,6 +530,9 @@ class GreaterThan(LogicalOperation):
             self.addError("Inconsistent type for comparison!")
         return self.output
 
+@Input("A", [Number, Unit], True)
+@Input("B", [Number, Unit], True)
+@Output("Logic", Boolean)
 class EqualTo(LogicalOperation):
     '''
         Compares two values and outputs a Boolean with the truth value of `inputA` being equal to `inputB`.
@@ -520,8 +541,6 @@ class EqualTo(LogicalOperation):
         - `inputA` represents the first value to be compared.
         - `inputB` represents the second value to be compared.
     '''
-    IN = [[[Number, Unit], True], [[Number, Unit], True]]
-    OUT = [Boolean]
     def __init__(self, inputA:Number|Unit, inputB:Number|Unit):
         super().__init__()
         self.output = Boolean(False)
@@ -543,7 +562,10 @@ class EqualTo(LogicalOperation):
         else:
             self.addError("Inconsistent type for comparison!")
         return self.output
-    
+
+@Input("A", [Boolean], True)
+@Input("B", [Boolean], True)
+@Output("Logic", Boolean)
 class And(LogicalOperation):
     '''
         Compares two Booleans and outputs a Boolean if both `inputA` and `inputB` are True.
@@ -552,8 +574,6 @@ class And(LogicalOperation):
         - `inputA` represents the first boolean.
         - `inputB` represents the second boolean.
     '''
-    IN = [[[Boolean], True], [[Boolean], True]]
-    OUT = [Boolean]
     def __init__(self, inputA:Boolean, inputB:Boolean):
         super().__init__()
         self.output = Boolean(False)
@@ -565,6 +585,9 @@ class And(LogicalOperation):
         self.output.set(self.inputA.get() and self.inputB.get())
         return self.output
 
+@Input("A", [Boolean], True)
+@Input("B", [Boolean], True)
+@Output("Logic", Boolean)
 class Or(LogicalOperation):
     '''
         Compares two Booleans and outputs a Boolean if at least one `inputA` and `inputB` are True.
@@ -573,8 +596,6 @@ class Or(LogicalOperation):
         - `inputA` represents the first boolean.
         - `inputB` represents the second boolean.
     '''
-    IN = [[[Boolean], True], [[Boolean], True]]
-    OUT = [Boolean]
     def __init__(self, inputA:Boolean, inputB:Boolean):
         super().__init__()
         self.output = Boolean(False)
@@ -586,6 +607,8 @@ class Or(LogicalOperation):
         self.output.set(self.inputA.get() or self.inputB.get())
         return self.output
 
+@Input("A", [Boolean], True)
+@Output("Logic", Boolean)
 class Not(LogicalOperation):
     '''
         Returns the inverted truth value of the given Boolean.
@@ -593,8 +616,6 @@ class Not(LogicalOperation):
         Requires:
         - `inputNode` represents a boolean.
     '''
-    IN = [[[Boolean], True]]
-    OUT = [Boolean]
     def __init__(self, inputNode:Boolean):
         super().__init__()
         self.output = Boolean(True)
@@ -605,6 +626,10 @@ class Not(LogicalOperation):
         self.output.set(not(self.inputNode.get()))
         return self.output
 
+@Input("A", [Node], True)
+@Input("B", [Node], True)
+@Input("Logic", [Boolean], True)
+@Output("Node", [Node])
 class If(LogicalOperation):
     '''
         Returns `inputTrue` if `boolean` is true, otherwise returns `inputFalse`.
@@ -614,8 +639,6 @@ class If(LogicalOperation):
         - `inputFalse` represents the second node.
         - `boolean` represents a Boolean.
     '''
-    IN = [[[Node], True], [[Node], True], [[Boolean], True]]
-    OUT = [Node]
     def __init__(self, inputTrue:Node, inputFalse:Node, boolean:Boolean):
         super().__init__()
         self.output = None

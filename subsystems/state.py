@@ -3,6 +3,7 @@
 from subsystems.visuals import *
 from subsystems.counter import Counter
 from settings import *
+from subsystems.node.node import *
 
 class State:
     def __init__(self):
@@ -63,6 +64,10 @@ class State:
         '''Tape'''
         self.tab = "a"
         self.previousTab = None
+        self.nodes = {
+            "a" : Random()
+        }
+        self.nodesIDs = []
 
 
     def mouseInSection(self, section):
