@@ -67,7 +67,12 @@ class State:
         self.nodes = {
             "a" : Random()
         }
-        self.nodesIDs = []
+        self.nodesIDs = list(self.nodes.keys())
+        self.workspaceX = 0
+        self.workspaceY = 0
+        self.workspaceZoom = 1
+        self.workspaceXV = 0
+        self.workspaceYV = 0
 
 
     def mouseInSection(self, section):

@@ -45,33 +45,52 @@ class Interface:
 
         keybind = None
         if (interacting == -999 or interacting == -997) and (time.time() - self.s.keybindLastUpdate > KEYBIND_DIFFERENCE):
+            '''TABS AREA SWITCHING'''
             if KB_TAB_ANIMATION(keyQueue):
-                '''SWITCH TAB TO ANIMATION'''
-                self.s.keybindLastUpdate = time.time()
                 self.s.tab = "a"
                 keybind = "tab a"
             if KB_TAB_NODES(keyQueue):
-                '''SWITCH TAB TO NODES'''
-                self.s.keybindLastUpdate = time.time()
                 self.s.tab = "n"
                 keybind = "tab n"
             if KB_TAB_DEBUG(keyQueue):
-                '''SWITCH TAB TO DEBUG'''
-                self.s.keybindLastUpdate = time.time()
                 self.s.tab = "d"
                 keybind = "tab d"
             if KB_TAB_EXPORT(keyQueue):
-                '''SWITCH TAB TO EXPORT'''
-                self.s.keybindLastUpdate = time.time()
                 self.s.tab = "e"
                 keybind = "tab e"
             if KB_TAB_SETTINGS(keyQueue):
-                '''SWITCH TAB TO SETTINGS'''
-                self.s.keybindLastUpdate = time.time()
                 self.s.tab = "s"
                 keybind = "tab s"
 
+            '''WORKSPACE ARROW KEYS NAVIGATION'''
+            if KB_WS_NAV_N(keyQueue):
+                self.s.workspaceYV -= self.s.workspaceZoom*2.5
+            if KB_WS_NAV_E(keyQueue):
+                self.s.workspaceXV += self.s.workspaceZoom*2.5
+            if KB_WS_NAV_S(keyQueue):
+                self.s.workspaceYV += self.s.workspaceZoom*2.5
+            if KB_WS_NAV_W(keyQueue):
+                self.s.workspaceXV -= self.s.workspaceZoom*2.5
+            if KB_WS_NAV_NE(keyQueue):
+                self.s.workspaceXV += self.s.workspaceZoom*2.5
+                self.s.workspaceYV -= self.s.workspaceZoom*2.5
+            if KB_WS_NAV_SE(keyQueue):
+                self.s.workspaceYV += self.s.workspaceZoom*2.5
+                self.s.workspaceYV += self.s.workspaceZoom*2.5
+            if KB_WS_NAV_SW(keyQueue):
+                self.s.workspaceXV -= self.s.workspaceZoom*2.5
+                self.s.workspaceYV += self.s.workspaceZoom*2.5
+            if KB_WS_NAV_NW(keyQueue):
+                self.s.workspaceXV -= self.s.workspaceZoom*2.5
+                self.s.workspaceYV -= self.s.workspaceZoom*2.5
+        
+        self.s.workspaceXV *= 0.9
+        self.s.workspaceYV *= 0.9
+        self.s.workspaceX += self.s.workspaceXV
+        self.s.workspaceY += self.s.workspaceYV
+
         if self.s.currentKeybind[1] != keybind and keybind != None:
+            self.s.keybindLastUpdate = time.time()
             keybind = [True, keybind]
         else:
             keybind = [False, keybind]
@@ -82,7 +101,11 @@ class Interface:
         if abs(self.s.mouseScroll) > 0:
             if interacting == -999: interacting = -996
             if interacting == -996:
-                print("scrolling!")
+                if self.s.mouseInWorkspace:
+                    '''MODIFY WORKSPACE ZOOM'''
+                    if self.s.mouseScroll > 0: self.s.workspaceZoom /= self.s.mouseScroll/100
+                    else: self.s.workspaceZoom *= abs(self.s.mouseScroll)/100
+                    self.s.workspaceZoom = max(0.01, min(self.s.workspaceZoom, 10))
         else:
             if interacting == -996: interacting = -999
         pass

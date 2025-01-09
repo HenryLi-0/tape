@@ -52,6 +52,14 @@ KB_TAB_NODES    = lambda keys: (len(keys) == 2) and ("Control_L" in keys) and ("
 KB_TAB_DEBUG    = lambda keys: (len(keys) == 2) and ("Control_L" in keys) and ("3" in keys)
 KB_TAB_EXPORT   = lambda keys: (len(keys) == 2) and ("Control_L" in keys) and ("4" in keys)
 KB_TAB_SETTINGS = lambda keys: (len(keys) == 2) and ("Control_L" in keys) and ("5" in keys)
+KB_WS_NAV_N     = lambda keys: (len(keys) == 1) and ("Up" in keys)
+KB_WS_NAV_NE    = lambda keys: (len(keys) == 2) and ("Up" in keys) and ("Right" in keys)
+KB_WS_NAV_E     = lambda keys: (len(keys) == 1) and ("Right" in keys)
+KB_WS_NAV_SE    = lambda keys: (len(keys) == 2) and ("Right" in keys) and ("Down" in keys)
+KB_WS_NAV_S     = lambda keys: (len(keys) == 1) and ("Down" in keys)
+KB_WS_NAV_SW    = lambda keys: (len(keys) == 2) and ("Down" in keys) and ("Left" in keys)
+KB_WS_NAV_W     = lambda keys: (len(keys) == 1) and ("Left" in keys)
+KB_WS_NAV_NW    = lambda keys: (len(keys) == 2) and ("Left" in keys) and ("Up" in keys)
 
 '''Constants - DO NOT CHANGE!!!'''
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 
