@@ -22,7 +22,7 @@ class Coordinate(Node):
     def set(self, x:Number|Pixel, y:Number|Pixel):
         self.xNode = x
         self.yNode = y
-    def get(self):
+    def update(self):
         if type(self.xNode) == Number: xcoord = self.xNode*ANIMATION_WIDTH.get()
         elif type(self.xNode) == Pixel: xcoord = self.xNode
         else: self.addError("Invalid x!")
@@ -57,7 +57,7 @@ class Frame(Node):
             self.time = time
         else:
             self.addError("Inputted Time is not a Time!")
-    def get(self):
+    def update(self):
         pass
 
 class PathType(Node):
@@ -70,7 +70,7 @@ class PathType(Node):
         super().__init__()
     def path(self, *frames:Frame):
         pass
-    def get(self, *frames:Frame) -> list[Frame]:
+    def update(self, *frames:Frame) -> list[Frame]:
         for frame in frames:
             if frame.type != frames[0].type:
                 self.addError("Frames are not of consistent type!")
@@ -110,7 +110,7 @@ class Path(Node):
     def set(self, pathType:PathType, *frames:Frame):
         self.pathType = pathType
         self.frames = [*frames]
-    def get(self):
+    def update(self):
         self.path = self.pathType(*self.frames)
         return self.path
 
@@ -131,7 +131,7 @@ class PathAxisMerger(Node):
         self.xAxisPath = xAxisPath
         self.yAxisPath = yAxisPath
         # TO-DO: FINISH PATH LOGIC
-    def get(self) -> Path:
+    def update(self) -> Path:
         pass # TO-DO: FINISH PATH LOGIC
 
 class PathAtTime(Node):
@@ -149,7 +149,7 @@ class PathAtTime(Node):
         self.path = path
         self.time = time
         # TO-DO: FINISH PATH LOGIC
-    def get(self):
+    def update(self):
         pass # TO-DO: FINISH PATH LOGIC
 
 class PathMerger(Node):
@@ -163,6 +163,6 @@ class PathMerger(Node):
         for path in paths:
             pass
         # TO-DO: FINISH PATH LOGIC
-    def get(self) -> Path:
+    def update(self) -> Path:
         pass # TO-DO: FINISH PATH LOGIC
 

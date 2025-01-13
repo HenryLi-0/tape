@@ -22,9 +22,9 @@ class Addition(Node): # TO-DO: OPTIMIZE THIS MORE
         self.inputA = inputA
         self.inputB = inputB
         if type(inputA) == Number and type(inputB) == Number:
-            self.output = Number(inputA.get()+inputB.get())
+            self.output = Number(inputA.update()+inputB.update())
         elif issubclass(type(inputA), Unit) and type(inputA) == type(inputB): # TO-DO: ADD UNIT CONVERSION
-            self.output = inputA.__class__(inputA.get()+inputB.get())
+            self.output = inputA.__class__(inputA.update()+inputB.update())
         elif type(inputA) == Coordinate and type(inputB) == Coordinate:
             self.output = Coordinate(Number(inputA.x+inputB.x), Number(inputA.y+inputB.y))
         elif type(inputA) == Frame and type(inputB) == Time:
@@ -35,11 +35,11 @@ class Addition(Node): # TO-DO: OPTIMIZE THIS MORE
             pass # TO-DO: FINISH PATH LOGIC
         else:
             self.addError(f"Addition between {type(inputA)} and {type(inputB)} not supported!")
-    def get(self):
+    def update(self):
         if type(self.inputA) == Number and type(self.inputB) == Number:
-            self.output.set(self.inputA.get()+self.inputB.get())
+            self.output.set(self.inputA.update()+self.inputB.update())
         elif issubclass(type(self.inputA), Unit) and type(self.inputA) == type(self.inputB): # TO-DO: ADD UNIT CONVERSION
-            self.output.set(self.inputA.get()+self.inputB.get())
+            self.output.set(self.inputA.update()+self.inputB.update())
         elif type(self.inputA) == Coordinate and type(self.inputB) == Coordinate:
             self.output.set(Number(self.inputA.x+self.inputB.x), Number(self.inputA.y+self.inputB.y))
         elif type(self.inputA) == Frame and type(self.inputB) == Time:
@@ -65,15 +65,15 @@ class Multiplication(Node):
     def __init__(self, inputA, inputB):
         super().__init__()
         if type(inputA) == Number and type(inputB) == Number:
-            self.value = Number(inputA.get()*inputB.get())
+            self.value = Number(inputA.update()*inputB.update())
         elif issubclass(type(inputA), Unit) and type(inputB) == Number:
-            self.value = inputA.__class__(inputA.get()*inputB.get())
+            self.value = inputA.__class__(inputA.update()*inputB.update())
         elif type(inputA) == Coordinate and type(inputB) == Number:
-            self.value = Coordinate(Number(inputA.x*inputB.get()), Number(inputA.y*inputB.get()))
+            self.value = Coordinate(Number(inputA.x*inputB.update()), Number(inputA.y*inputB.update()))
         else:
             self.addError(f"Multiplication between {type(inputA)} and {type(inputB)} not supported!")
         # TO-DO: ADD MORE VALID MULTIPLICATION CASES
-    def get(self):
+    def update(self):
         return self.value
 
 
