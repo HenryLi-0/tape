@@ -24,6 +24,14 @@ def Input(name, type, required, multiple = 0):
         return inClass
     return decorator
 
+def Display(name, getter):
+    def decorator(inClass):
+        if not hasattr(inClass, "Display"):
+            inClass.Output = []
+        inClass.Output.append((name, getter))
+        return inClass
+    return decorator
+
 def Output(name, type, getter):
     def decorator(inClass):
         if not hasattr(inClass, "Output"):
@@ -98,6 +106,7 @@ class String(Node):
 @Input("Lower Limit", [Number], False)
 @Input("Upper Limit", [Number], False)
 @Input("Only Integers", [Boolean], False)
+@Display("Random Number", lambda self: self.output.value)
 @Output("Random Number", Number, lambda self: self.output)
 class Random(Node):
     '''
@@ -130,7 +139,6 @@ class Random(Node):
     
     @property
     def output(self) -> Number: 
-        self.update()
         return self.__output
 
 

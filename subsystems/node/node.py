@@ -2,6 +2,7 @@
 from subsystems.node.node_primatives import *
 from subsystems.node.node_pathing import *
 from subsystems.node.node_operations import *
+from subsystems.node.node_render import *
 
 # Add any plug-ins here!
 # TO-DO: Alternatively, you can also add plug-ins through the Tape UI!
@@ -37,4 +38,8 @@ NODES = [
             Path, PathAxisMerger, PathAtTime, PathMerger,
     # Operations
         Addition, Multiplication,
+
+    # Render
+        AnimationTime,
+        RenderInstructions, Sprite, Camera, Render,
 ]

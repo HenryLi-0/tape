@@ -16,8 +16,6 @@ class Coordinate(Node):
         - `x` represents the x coordinate.
         - `y` represents the y coordinate.
     '''
-    IN = [[[Number, Pixel], True], [[Number, Pixel], True]]
-    OUT = [None]
     def __init__(self, x:Number|Pixel, y:Number|Pixel):
         super().__init__()
         self.__output = None
@@ -27,6 +25,7 @@ class Coordinate(Node):
     def set(self, x:Number|Pixel, y:Number|Pixel):
         self.__xNode = x
         self.__yNode = y
+        self.update()
     def update(self):
         if type(self.__xNode) == Number: self.__x.set(self.__xNode.value*ANIMATION_WIDTH.get())
         elif type(self.__xNode) == Pixel: self.__x.set(self.__xNode)
@@ -61,13 +60,10 @@ class Frame(Node):
         self.__time = None
     def set(self, value:Coordinate|Number|Angle|Pixel, time:Time):
         if issubclass(type(time), Time):
-            self.type = type(value)
             self.__value = value
             self.__time = time
         else:
             self.addError("Inputted Time is not a Time!")
-    def update(self):
-        pass
 
     @property
     def output(self): return self
@@ -119,16 +115,11 @@ class Path(Node):
         super().__init__()
         self.set(pathType, *frames)
     def set(self, pathType:PathType, *frames:Frame):
-        self.__pathType = pathType
-        self.__frames = [*frames]
-    def update(self):
-        self.__path = self.__pathType.update(*self.__frames)
+        self.pathType = pathType
+        self.frames = [*frames]
     
     @property
-    def output(self): return self.__path
-
-    # TO-DO: add property for all the calculations and stuff, probably a lambda for efficiency
-    # TO-DO: REDO SO THAT IT ACTUALLY ONLY CALCULATES THE NECCESSARY INFORMATION/FRAME DATA BEHIND THE SCENES
+    def output(self): return self
 
 @Input("X Axis Path", [Path], True)
 @Input("Y Axis Path", [Path], True)
@@ -168,12 +159,19 @@ class PathAtTime(Node):
     '''
     def __init__(self, path:Path, time:Time):
         super().__init__()
+        self.__output = None
+        self.set(path, time)
+    def set(self, path:Path, time:Time):
         self.__path = path
         self.__time = time
-        self.__output = Frame()
-        # TO-DO: FINISH PATH LOGIC
-    def set(self):
-        pass
+        frameClass = self.__path.frames[0].__value.__class__
+        if frameClass == Coordinate:
+            self.__output = Coordinate(Number(0), Number(0))
+        elif frameClass == Unit:
+            self.__output = self.__path.frames[0].__value.__class__(Number(0))
+        else:
+            self.addError(f"Unexpected frame data type {frameClass}!")
+        self.update()
     def update(self):
         pass # TO-DO: FINISH PATH LOGIC
     
