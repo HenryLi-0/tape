@@ -24,11 +24,11 @@ def Input(name, type, required, multiple = 0):
         return inClass
     return decorator
 
-def Display(name, getter):
+def Display(name, modify, getter):
     def decorator(inClass):
         if not hasattr(inClass, "Display"):
             inClass.Output = []
-        inClass.Output.append((name, getter))
+        inClass.Output.append((name, modify, getter))
         return inClass
     return decorator
 
@@ -106,7 +106,7 @@ class String(Node):
 @Input("Lower Limit", [Number], False)
 @Input("Upper Limit", [Number], False)
 @Input("Only Integers", [Boolean], False)
-@Display("Random Number", lambda self: self.output.value)
+@Display("Random Number", False, lambda self: self.output.value)
 @Output("Random Number", Number, lambda self: self.output)
 class Random(Node):
     '''
@@ -143,6 +143,7 @@ class Random(Node):
 
 
 @Input("File Location", [String], True)
+@Display("Valid File", False, lambda self: self.fileLocation)
 @Output("Valid File", String, lambda self: self.fileLocation)
 class FileLocation(Node):
     '''
@@ -213,6 +214,7 @@ class Angle(Unit):
         return Degrees(unit)
 
 @Input("Angle", [Number, Angle], True)
+@Display("Value", False, lambda self: self.output.value)
 @Output("Angle", Number, lambda self: self.output)
 class Degrees(Angle):
     '''
@@ -235,6 +237,7 @@ class Degrees(Angle):
         else: self.addError("Invalid input!")
 
 @Input("Angle", [Number, Angle], True)
+@Display("Value", False, lambda self: self.output.value)
 @Output("Angle", Number, lambda self: self.output)
 class Radians(Angle):
     '''
@@ -267,6 +270,7 @@ class Distance(Unit):
         return Pixel(unit)
 
 @Input("Distance", [Number, Distance], True)
+@Display("Value", False, lambda self: self.output.value)
 @Output("Distance", Number, lambda self: self.output)
 class Pixel(Distance):
     '''
@@ -295,6 +299,7 @@ class Time(Unit):
         return Seconds(unit)
 
 @Input("Time", [Number, Time], True)
+@Display("Value", False, lambda self: self.output.value)
 @Output("Time", Number, lambda self: self.output)
 class Milliseconds(Time):
     '''
@@ -320,6 +325,7 @@ class Milliseconds(Time):
         else: self.addError("Invalid input!")
 
 @Input("Time", [Number, Time], True)
+@Display("Value", False, lambda self: self.output.value)
 @Output("Time", Number, lambda self: self.output)
 class Seconds(Time):
     '''
@@ -345,6 +351,7 @@ class Seconds(Time):
         else: self.addError("Invalid input!")
 
 @Input("Time", [Number, Time], True)
+@Display("Value", False, lambda self: self.output.value)
 @Output("Time", Number, lambda self: self.output)
 class Minutes(Time):
     '''
@@ -370,6 +377,7 @@ class Minutes(Time):
         else: self.addError("Invalid input!")
 
 @Input("Time", [Number, Time], True)
+@Display("Value", False, lambda self: self.output.value)
 @Output("Time", Number, lambda self: self.output)
 class Hours(Time):
     '''
@@ -395,6 +403,7 @@ class Hours(Time):
         else: self.addError("Invalid input!")
 
 @Input("Time", [Number, Time], True)
+@Display("Value", False, lambda self: self.output.value)
 @Output("Time", Number, lambda self: self.output)
 class Days(Time):
     '''
@@ -435,6 +444,7 @@ class ImageWrapper:
     def image(self) -> Image: return self.__image
 
 @Input("File Location", [FileLocation], True)
+@Display("Image", False, lambda self: self.__valid)
 @Output("Image", ImageWrapper, lambda self: self.image)
 class ImageImport(Node):
     '''
@@ -446,6 +456,7 @@ class ImageImport(Node):
     def __init__(self, location:FileLocation):
         super().__init__()
         self.__img = ImageWrapper()
+        self.__valid = False
         self.set(location)
     def set(self, location:FileLocation):
         self.__location = location
@@ -453,15 +464,22 @@ class ImageImport(Node):
     def update(self):
         if self.__location.__extension in [".png", ".jpg", ".jpeg"]:
             self.__img.set(Image.open(self.__location.fileLocation).convert("RGBA"))
+            self.__valid = True
         else:
             self.addError(f"File extension {self.__location.__extension} is not a supported image file type!")
+            self.__valid = False
     
     @property
     def image(self) -> ImageWrapper:
         self.update()
         return self.__img
+    @property
+    def valid(self) -> bool:
+        self.update()
+        return self.__valid
 
 @Input("Directory", [FileLocation], True)
+# @Display("Items", False, lambda self: None)
 # @Output(None, None) #TO-DO: FINISH
 class FolderImport(Node):
     '''
@@ -514,6 +532,7 @@ class LogicalOperation(Node):
 
 @Input("A", [Number, Unit], True)
 @Input("B", [Number, Unit], True)
+@Display("Value", False, lambda self: self.output.value)
 @Output("Logic", Boolean, lambda self: self.output)
 class LessThan(LogicalOperation):
     '''
@@ -552,6 +571,7 @@ class LessThan(LogicalOperation):
 
 @Input("A", [Number, Unit], True)
 @Input("B", [Number, Unit], True)
+@Display("Value", False, lambda self: self.output.value)
 @Output("Logic", Boolean, lambda self: self.output)
 class GreaterThan(LogicalOperation):
     '''
@@ -590,6 +610,7 @@ class GreaterThan(LogicalOperation):
 
 @Input("A", [Number, Unit], True)
 @Input("B", [Number, Unit], True)
+@Display("Value", False, lambda self: self.output.value)
 @Output("Logic", Boolean, lambda self: self.output)
 class EqualTo(LogicalOperation):
     '''
@@ -628,6 +649,7 @@ class EqualTo(LogicalOperation):
 
 @Input("A", [Boolean], True)
 @Input("B", [Boolean], True)
+@Display("Value", False, lambda self: self.output.value)
 @Output("Logic", Boolean, lambda self: self.output)
 class And(LogicalOperation):
     '''
@@ -655,6 +677,7 @@ class And(LogicalOperation):
 
 @Input("A", [Boolean], True)
 @Input("B", [Boolean], True)
+@Display("Value", False, lambda self: self.output.value)
 @Output("Logic", Boolean, lambda self: self.output)
 class Or(LogicalOperation):
     '''
@@ -681,6 +704,7 @@ class Or(LogicalOperation):
         return self.__output
 
 @Input("A", [Boolean], True)
+@Display("Value", False, lambda self: self.output.value)
 @Output("Logic", Boolean, lambda self: self.output)
 class Not(LogicalOperation):
     '''
@@ -706,6 +730,8 @@ class Not(LogicalOperation):
 
 @Input("A", [Node], True)
 @Input("B", [Node], True)
+@Display("Boolean Value", False, lambda self: self.__boolean.value)
+@Display("Choice", False, lambda self: "A" if self.__boolean.value else "B")
 @Input("Logic", [Boolean], True)
 @Output("Node", Node, lambda self: self.output)
 class If(LogicalOperation):

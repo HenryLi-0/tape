@@ -5,6 +5,7 @@ from subsystems.settings import *
 
 @Input("x", [Number, Pixel], True)
 @Input("y", [Number, Pixel], True)
+@Display("Value", False, lambda self: f"({self.x.value})")
 @Output("x", Pixel, lambda self: self.x)
 @Output("y", Pixel, lambda self: self.y)
 @Output("Coordinate", -1, lambda self: self.output)
@@ -56,11 +57,11 @@ class Frame(Node):
     '''
     def __init__(self, value:Coordinate|Number|Angle|Pixel, time:Time):
         super().__init__()
-        self.__value = None
+        self.__output = None
         self.__time = None
     def set(self, value:Coordinate|Number|Angle|Pixel, time:Time):
         if issubclass(type(time), Time):
-            self.__value = value
+            self.__output = value
             self.__time = time
         else:
             self.addError("Inputted Time is not a Time!")

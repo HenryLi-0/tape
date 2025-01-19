@@ -6,7 +6,8 @@ from subsystems.settings import *
 
 @Input("Node A", [Node], True)
 @Input("Node B", [Node], True)
-@Input("Sum", [Node], True)
+@Display("Valid", False, None) # TO-DO
+@Output("Sum", [Node], True)
 class Addition(Node): # TO-DO: OPTIMIZE THIS MORE, FINISH UPDATING
     '''
         A node that adds two nodes together, if logical. The node interprets addition as adding the second input to the first input.
@@ -55,7 +56,8 @@ class Addition(Node): # TO-DO: OPTIMIZE THIS MORE, FINISH UPDATING
 
 @Input("Node A", [Node], True)
 @Input("Node B", [Node], True)
-@Input("Product", [Node], True)
+@Display("Valid", False, None) # TO-DO
+@Output("Product", [Node], True)
 class Multiplication(Node):
     '''
         A node that multiplies two nodes together, if logical. The node interprets multiplication as multiplying the first input by the second input.
