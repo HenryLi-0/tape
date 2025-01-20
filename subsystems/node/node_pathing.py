@@ -103,7 +103,7 @@ class SmoothFullPathType(PathType):
         pass # TO-DO: FINISH
 
 @Input("Path Type", [PathType], True)
-@Input("Frames", [Frame], True, MAX_UNCAPPED_NODES_LIMIT.get())
+@Input("Frames", [Frame], True, True)
 @Display()
 @Output("Path", -1, lambda self: self.output)
 class Path(Node):
@@ -183,7 +183,7 @@ class PathAtTime(Node):
     @property
     def output(self): return self.__output
 
-@Input("Path(s)", [Path], False, MAX_UNCAPPED_NODES_LIMIT.get())
+@Input("Path(s)", [Path], False, True)
 @Display()
 @Output("Output Path", Path, lambda self: self.output)
 class PathMerger(Node):

@@ -14,14 +14,12 @@ class ActiveError:
     def getError(self):
         return self.errors
         
-def Input(name = None, type = None, required = None, multiple = 0):
+def Input(name = None, type = None, required = None, multiple = False):
     def decorator(inClass):
         if not hasattr(inClass, "Input"):
             inClass.Input = []
         if name != None:
-            inClass.Input.append((name, type, required))
-            if multiple > 1: 
-                for i in range(multiple-1): inClass.Input.append((name, type, required))
+            inClass.Input.append((name, type, required, multiple))
         return inClass
     return decorator
 

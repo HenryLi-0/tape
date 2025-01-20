@@ -102,7 +102,7 @@ class Sprite(RenderedObject): pass
 
 class Camera(RenderedObject): pass
 
-@Input("Render Instructions", [RenderInstructions], MAX_UNCAPPED_NODES_LIMIT.get())
+@Input("Render Instructions", [RenderInstructions], True, True)
 @Display("Given Instructions", False, lambda self: self.givenInstructions)
 class Render(Node):
     '''
