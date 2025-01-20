@@ -25,15 +25,17 @@ LAST_INTERACTION_KEY_TIME = 1 # Amount of seconds for last interaction to be act
 
 hexColorToRGBA = lambda hexcolor: tuple(int(hexcolor[i:i+2], 16) for i in (1, 3, 5)) + (255,)
 
-BACKGROUND_COLOR = "#241530" #Background color
-FRAME_COLOR = "#381f4d" #Borders and Frame color
-SELECTED_COLOR = "#9e6cc9" #Selected Element color
-TIMELINE_COLOR = "#6d3999" #Timeline color
+BACKGROUND_COLOR = "#241530"    #Background color
+FRAME_COLOR = "#381f4d"         #Borders and Frame color
+SELECTED_COLOR = "#9e6cc9"      #Selected Element color
+TIMELINE_COLOR = "#6d3999"      #Timeline color
+WORKSPACE_COLOR = "#8F809D"     #Workspace color
 
-BACKGROUND_COLOR_RGBA       = hexColorToRGBA(BACKGROUND_COLOR      )
-FRAME_COLOR_RGBA            = hexColorToRGBA(FRAME_COLOR           )
-SELECTED_COLOR_RGBA         = hexColorToRGBA(SELECTED_COLOR        )
-TIMELINE_COLOR_RGBA         = hexColorToRGBA(TIMELINE_COLOR        )
+BACKGROUND_COLOR_RGBA   = hexColorToRGBA(BACKGROUND_COLOR)
+FRAME_COLOR_RGBA        = hexColorToRGBA(FRAME_COLOR     )
+SELECTED_COLOR_RGBA     = hexColorToRGBA(SELECTED_COLOR  )
+TIMELINE_COLOR_RGBA     = hexColorToRGBA(TIMELINE_COLOR  )
+WORKSPACE_COLOR_RBA     = hexColorToRGBA(WORKSPACE_COLOR )
 
 '''Saving'''
 import os, time

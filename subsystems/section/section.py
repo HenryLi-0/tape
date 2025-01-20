@@ -1,4 +1,5 @@
 '''This file is a template section'''
+from settings import *
 from subsystems.state import State
 from subsystems.render import *
 from subsystems.fancy import *

@@ -28,36 +28,3 @@ class Workspace(Section):
         Section.overlayCrosshair(state, img, rmx, rmy)
 
         return img
-    
-''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
-
-from subsystems.node.node import Node
-from subsystems.visuals import *
-
-class VisualNode(VisualObject):
-    '''A visual representation of a node.'''
-    def __init__(self, name, pos:tuple|list, node:Node, intOnly = False):
-        # init
-        self.type = "node"
-        self.name = name
-        self.lastInteraction = time.time()
-
-        self.header = generateColorBox((100,25),(255,127,0,255))
-        placeOver(self.header, displayText(node.__class__.__name__, 7), (0,0))
-
-        inputs = node.Inputs
-        ouputs = node.Outputs
-
-
-
-    def tick(self, img, visualactive, active):
-        y = 0
-        placeOver(img, self.header, (0,0))
-        y += self.header.height
-        
-    def updateText(self, txt):
-        pass
-    def keyAction(self, keys):
-        pass
-    def updatePos(self, rmx, rmy):
-        pass

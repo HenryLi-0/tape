@@ -14,29 +14,32 @@ class ActiveError:
     def getError(self):
         return self.errors
         
-def Input(name, type, required, multiple = 0):
+def Input(name = None, type = None, required = None, multiple = 0):
     def decorator(inClass):
         if not hasattr(inClass, "Input"):
             inClass.Input = []
-        inClass.Input.append((name, type, required))
-        if multiple > 1: 
-            for i in range(multiple-1): inClass.Input.append((name, type, required))
+        if name != None:
+            inClass.Input.append((name, type, required))
+            if multiple > 1: 
+                for i in range(multiple-1): inClass.Input.append((name, type, required))
         return inClass
     return decorator
 
-def Display(name, modify, getter):
+def Display(name = None, modify = None, getter = None):
     def decorator(inClass):
         if not hasattr(inClass, "Display"):
-            inClass.Output = []
-        inClass.Output.append((name, modify, getter))
+            inClass.Display = []
+        if name != None:
+            inClass.Display.append((name, modify, getter))
         return inClass
     return decorator
 
-def Output(name, type, getter):
+def Output(name = None, type = None, getter = None):
     def decorator(inClass):
         if not hasattr(inClass, "Output"):
             inClass.Output = []
-        inClass.Output.append((name, inClass if type==-1 else type, getter))
+        if name != None:
+            inClass.Output.append((name, inClass if type==-1 else type, getter))
         return inClass
     return decorator
 
@@ -58,7 +61,9 @@ class Node:
     
 
 '''SIMPLE/BASIC'''
-
+@Input()
+@Display("Value", True, None)
+@Output("Value", -1, lambda self: self)
 class Number(Node):
     '''
         A number.
@@ -73,6 +78,9 @@ class Number(Node):
     @property
     def value(self) -> int|float: return self.__value
 
+@Input()
+@Display("Value", True, None)
+@Output("Value", -1, lambda self: self)
 class Boolean(Node):
     '''
         A boolean.
@@ -87,6 +95,9 @@ class Boolean(Node):
     @property
     def value(self) -> bool: return self.__value
 
+@Input()
+@Display("Value", True, None)
+@Output("Value", -1, lambda self: self)
 class String(Node):
     '''
         A string.
@@ -106,6 +117,8 @@ class String(Node):
 @Input("Lower Limit", [Number], False)
 @Input("Upper Limit", [Number], False)
 @Input("Only Integers", [Boolean], False)
+@Display("Range", False, lambda self: f"[{self.__lowerLimit.value}, {self.__upperLimit.value}]")
+@Display("Only Integers", False, lambda self: self.__onlyIntegers.value)
 @Display("Random Number", False, lambda self: self.output.value)
 @Output("Random Number", Number, lambda self: self.output)
 class Random(Node):
@@ -505,6 +518,7 @@ class FolderImport(Node):
 '''LOGIC'''
 
 @Input("Node", [Node], True)
+@Display()
 @Output("Node", Node, lambda self: self.node)
 class Reroute(Node):
     '''

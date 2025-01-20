@@ -150,7 +150,7 @@ def placeOver(img1: Image, img2: Image, position:list|tuple, center = False):
                 max(-X, 0) + (math.floor(min(X + img2.width, img1.width)) - SX),
                 max(-Y, 0) + (math.floor(min(Y + img2.height, img1.height)) - SY)
             ))
-            img1.paste(crop, (SX, SY), crop)
+            img1.paste(crop, (round(SX), round(SY)), crop)
         else:
             img1.paste(img2, (round(X), round(Y)), img2)
     return True

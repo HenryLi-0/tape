@@ -103,17 +103,24 @@ class Sprite(RenderedObject): pass
 class Camera(RenderedObject): pass
 
 @Input("Render Instructions", [RenderInstructions], MAX_UNCAPPED_NODES_LIMIT.get())
+@Display("Given Instructions", False, lambda self: self.givenInstructions)
 class Render(Node):
     '''
         Renders a sprite, given render instructions.
     '''
     def __init__(self, instructions:RenderInstructions):
         super().__init__()
+        self.__givenInstructions = False
         self.set(instructions)
     def set(self, instructions:RenderInstructions):
         self.__instruction = instructions
+        self.__givenInstructions = True
         self.update()
+    def update(self):
+        pass
 
     @property
-    def instructions(self): return self.instructions
+    def instructions(self): return self.__instructions
+    @property
+    def givenInstructions(self): return self.__givenInstructions
     # TO-DO: TO BE ACCESSED BY ACTUAL RENDERER FOR INSTRUCTIONS

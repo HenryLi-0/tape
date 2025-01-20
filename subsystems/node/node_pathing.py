@@ -46,6 +46,7 @@ class Coordinate(Node):
 
 @Input("Value", [Coordinate, Number, Angle, Pixel], True)
 @Input("Time", [Time], True)
+@Display()
 @Output("Frame", -1, lambda self: self.output)
 class Frame(Node):
     '''
@@ -103,6 +104,7 @@ class SmoothFullPathType(PathType):
 
 @Input("Path Type", [PathType], True)
 @Input("Frames", [Frame], True, MAX_UNCAPPED_NODES_LIMIT.get())
+@Display()
 @Output("Path", -1, lambda self: self.output)
 class Path(Node):
     '''
@@ -124,6 +126,7 @@ class Path(Node):
 
 @Input("X Axis Path", [Path], True)
 @Input("Y Axis Path", [Path], True)
+@Display()
 @Output("Coordinate Path", Path, lambda self: self.output)
 class PathAxisMerger(Node):
     '''
@@ -149,6 +152,7 @@ class PathAxisMerger(Node):
 
 @Input("Path", [Path], True)
 @Input("At Time", [Time], True)
+@Display()
 @Output("Frame", Frame, lambda self: self.output)
 class PathAtTime(Node):
     '''
@@ -180,6 +184,7 @@ class PathAtTime(Node):
     def output(self): return self.__output
 
 @Input("Path(s)", [Path], False, MAX_UNCAPPED_NODES_LIMIT.get())
+@Display()
 @Output("Output Path", Path, lambda self: self.output)
 class PathMerger(Node):
     '''

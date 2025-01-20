@@ -1,6 +1,7 @@
 '''This file is used for transfering information from interface tick and image rendering processes'''
 
 from subsystems.visuals import *
+from subsystems.visuals_node import *
 from subsystems.counter import Counter
 from settings import *
 from subsystems.node.node import *
@@ -45,6 +46,8 @@ class State:
             -87 : ["t",IconVisualObject("Debug", (89,3), DEBUG_TAB, outline = False)],
             -86 : ["t",IconVisualObject("Export", (129,3), EXPORT_TAB, outline = False)],
             -85 : ["t",IconVisualObject("Settings", (169,3), SETTINGS_TAB, outline = False)],
+
+             10 : ["w",VisualNode("test", (10,10), Number(1155))]
         }
         '''Control'''
         self.interacting = -999
