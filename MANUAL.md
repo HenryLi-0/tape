@@ -17,7 +17,7 @@ Tape v2.x, unlike Tape v1.x, is a node based animation editor using node structu
 ## Nodes:
 *This section details what each node does and what inputs/outputs/fields it uses!*
 
-**NEEDS TO UPDATE WITH NEW STUFF (EX. MUSIC, ADVANCED MUSIC, CALCULATION, ETC.)**
+**TO-DO NEEDS TO BE UPDATED WITH NEW STUFF (EX. MUSIC, ADVANCED MUSIC, CALCULATION, ETC.)**
 
 **Simple**
 - Numbers: a number FILL IN, or removes units
@@ -181,6 +181,18 @@ Tape v2.x, unlike Tape v1.x, is a node based animation editor using node structu
   - Out:
     - CRASHTBW values (same as above)
 
+### Adding Custom Nodes
+*This but explains how to add custom noded!*
+
+Have or want to make custom noded that you want to add! Very cool! If you slready have your file, wuickly read iver this first bit to make sure its formatted properly!
+
+First, have your file ready and this repository! If you haven't created one yet, head over to `subsystems/node/` and create your file there. Following the naming is recommended, but not necessary. 
+
+Next, make sure you `from subsystems.node.node_primatives.py import*` to import all the basic parts of a node. Import other node files as needed, except for `node.py`, as it is used as a quick way to import all nodes, and would result in a future circular import.
+
+Ok, first node time! Your file should have imports with the basic nodes! Now, that a look at one of them and their structure. Starts off with `class Example(Node)`, has `@Input`, `@Display` and `@Output` decorators, and has a quite consitent recognizable structure across nodes. 
+
+TO-DO: FINISH
 
 
 ## Controls:
