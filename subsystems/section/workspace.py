@@ -13,8 +13,8 @@ class Workspace(Section):
         rmx = state.mx - 485
         rmy = state.my - 10
 
-        placeOver(img, scaleImage(state, PLACEHOLDER_IMAGE_5), scaleCoords(state, 10,10))
-        placeOver(img, scaleImage(state, PLACEHOLDER_IMAGE_5), scaleCoords(state, 50,50))
+        placeOver(img, scaleImage(state, PLACEHOLDER_IMAGE_5), scaleCoords(state, 110, 110))
+        placeOver(img, scaleImage(state, PLACEHOLDER_IMAGE_5), scaleCoords(state, 150, 150))
 
 
 
@@ -24,6 +24,8 @@ class Workspace(Section):
         for id in state.ivos:
             if state.ivos[id][0] == "w":
                 state.ivos[id][1].tick(img, state.interacting==id or ((state.lastInteraction==id) and (abs(time.time() - state.ivos[id][1].lastInteraction) < LAST_INTERACTION_KEY_TIME)), state.interacting==id)
+                if state.ivos[id][1].type == "node":
+                    state.ivos[id][1].render(img, scaleCoords(state, state.ivos[id][1].positionO.getX(), state.ivos[id][1].positionO.getY()))
 
         Section.overlayCrosshair(state, img, rmx, rmy)
 

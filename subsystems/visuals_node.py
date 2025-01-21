@@ -10,13 +10,13 @@ class VisualNode(VisualObject):
         self.name = name
         self.node = node
         self.lastInteraction = time.time()
+        self.positionO = RectangularPositionalBox((0,0), pos[0], pos[1])
         
         self.n_input = self.node.Input
         self.n_display = self.node.Display
         self.n_output = self.node.Output
         self.r_divider = generateColorBox((round(NODE_WIDTH.get()*0.5),1), (125,125,125,255))
         self.generateTemplate()
-
     
     def generateTemplate(self):
         x = NODE_WIDTH.get()
@@ -69,9 +69,12 @@ class VisualNode(VisualObject):
 
     def tick(self, img, visualactive, active):
         y = 0
-        placeOver(img, self.r_template_main, (200,200))
-        placeOver(img, self.r_template_inputs, (200-self.r_template_inputs.width-5,200+3))
-        placeOver(img, self.r_template_outputs, (200+self.r_template_main.width+5,200+3))
+    
+    def render(self, img, pos):
+        placeOver(img, self.r_template_main, (pos[0],pos[1]))
+        placeOver(img, self.r_template_inputs, (pos[0]-self.r_template_inputs.width-5,pos[1]+3))
+        placeOver(img, self.r_template_outputs, (pos[0]+self.r_template_main.width+5,pos[1]+3))
+
         
         
     def updateText(self, txt):
