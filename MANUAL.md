@@ -182,18 +182,61 @@ Tape v2.x, unlike Tape v1.x, is a node based animation editor using node structu
     - CRASHTBW values (same as above)
 
 ### Adding Custom Nodes
-*This but explains how to add custom noded!*
+*This bit explains how to add your own custom nodes!*
 
-Have or want to make custom noded that you want to add! Very cool! If you slready have your file, wuickly read iver this first bit to make sure its formatted properly!
+Have or want to make and add your own custom nodes! Very cool! If you already have your file, it's still recommended to read over this first bit to make sure its formatted properly!
 
-First, have your file ready and this repository! If you haven't created one yet, head over to `subsystems/node/` and create your file there. Following the naming is recommended, but not necessary. 
+1. First, have your file ready and this repository! If you haven't created one yet, head over to `subsystems/node/` and create your file there. Following the naming is recommended, but not necessary. Additionally, it's recommended to put the file in this directory for easy and straightforward access.
+2. Next, make sure you `from subsystems.node.node_primatives.py import*` to import all the basic parts of a node. Import other node files as needed, except for `node.py`, as it is used as a quick way to import all nodes, and would result in a future circular import.
+3. Ok, first node time! Your file should have imports with the basic nodes! Now, that a look at one of them and their structure. Starts off with `class Example(Node)`, has `@Input`, `@Display` and `@Output` decorators, and has a quite consitent recognizable structure across nodes. (see an example such as the `Random` node!)
+``` python
+@Input("Lower Limit", [Number], False) # An input.
+@Input("Upper Limit", [Number], False) # Another input. Notice the "name, [allowed types], required" structure!
+@Input("Only Integers", [Boolean], False) # Yet another one!
+@Display("Range", False, lambda self: f"[{self.__lowerLimit.value}, {self.__upperLimit.value}]") # A display.
+@Display("Only Integers", False, lambda self: self.__onlyIntegers.value) # Another display! Notice the "name, modifyable, getter" structure!
+@Display("Random Number", False, lambda self: self.output.value) # Yet another one!
+@Output("Random Number", Number, lambda self: self.output) # An output! Notice the "name, type, getter" structure!
+class Random(Node): # Notice how it inherits Node!
+    '''
+        A random number, with range [a,b], includes both end points.
 
-Next, make sure you `from subsystems.node.node_primatives.py import*` to import all the basic parts of a node. Import other node files as needed, except for `node.py`, as it is used as a quick way to import all nodes, and would result in a future circular import.
+        Requires:
+        - `lowerLimit` defines the minimum possible output.
+        - `upperLimit` defines the maximum possible output.
+        - `onlyIntegers` defines whether or not only integers are returned. 
+    ''' # A bit of documentation, pretty useful when working on the code!
+    def __init__(self, lowerLimit:Number = Number(0), upperLimit:Number = Number(1), onlyIntegers:Boolean = Boolean(False)): # The initalizer on the node object!
+        super().__init__()
+        self.__output = Number(0)
+        self.set(lowerLimit, upperLimit, onlyIntegers)
+    def set(self, lowerLimit:Number = Number(0), upperLimit:Number = Number(1), onlyIntegers:Boolean = Boolean(False)):
+        # The set part! Notice the lack of calculations, only storing the Node objects.
+        self.__lowerLimit = lowerLimit
+        self.__upperLimit = upperLimit
+        self.__onlyIntegers = onlyIntegers
+        self.update()
+    def update(self):
+        # The update part, where the calculations do occur!
+        try:
+            if self.__lowerLimit.value == self.__upperLimit.value:
+                self.__output.set(self.__lowerLimit.value)
+            elif self.__onlyIntegers.value:
+                self.__output.set(random.randint(self.__lowerLimit.value, self.__upperLimit.value))
+            else:
+                self.__output.set(random.random()*(self.__upperLimit.value-self.__lowerLimit.value)+self.__lowerLimit.value)
+        except:
+            self.addError("Random number failed to generate!") # Here's what it looks like to add an error!
+        # Notice how update() doesn't return anything, just updates the ouput!
+    
+    @property # This makes the following definition a property of the node!
+    def output(self) -> Number:
+        return self.__output # Here is when the output is actually taken, by any other things needing it!
+```
+4. Now, that said, we're almost there! You've got your file, node, and are ready to add it! Now, head over to `subsystems/node/node.py`, and import your file there. Finally, add your node to the `NODES` list, and maybe add a little comment stating the group its in! (This comment doesn't affect the end program, it's just for organization!)
+5. Finally, run `main.py`, and it should show up in the Nodes Tab! If any issues or help is needed, head over to [the Tape repository](https://github.com/HenryLi-0/tape/issues) and create an issue!
 
-Ok, first node time! Your file should have imports with the basic nodes! Now, that a look at one of them and their structure. Starts off with `class Example(Node)`, has `@Input`, `@Display` and `@Output` decorators, and has a quite consitent recognizable structure across nodes. 
-
-TO-DO: FINISH
-
+TO-DO: UPDATE!
 
 ## Controls:
 *This section describes general controls!*

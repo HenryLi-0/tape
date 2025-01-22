@@ -19,7 +19,7 @@ class VisualNode(VisualObject):
         self.generateTemplate()
     
     def generateTemplate(self):
-        x = NODE_WIDTH.get()
+        x = NODE_WIDTH.get()+6*2
         mid_x = (NODE_WIDTH.get()+6)/2
         y_header = (NODE_SECTION_HEIGHT.get() + NODE_SECTION_DIVIDER_HEIGHT.get())
         y_body = max(len(self.n_display)*(NODE_SECTION_HEIGHT.get()+NODE_SECTION_DIVIDER_HEIGHT.get()), len(self.n_input)*12, len(self.n_output)*12)
@@ -31,7 +31,7 @@ class VisualNode(VisualObject):
         for i in range(len(self.n_display)):
             h = (NODE_SECTION_HEIGHT.get() + NODE_SECTION_DIVIDER_HEIGHT.get())*i
             placeOver(self.r_template_main, self.r_divider, (mid_x, 10+NODE_SECTION_HEIGHT.get()+ h), True)
-            placeOver(self.r_template_main, displayText(self.n_display[i][0], "m"), (5,NODE_SECTION_HEIGHT.get()*1.5+h))
+            placeOver(self.r_template_main, displayText(self.n_display[i][0], "m"), (6+3+5,NODE_SECTION_HEIGHT.get()*1.5+h))
             if not(self.n_display[i][1]): # not modifyable
                 temp = displayText(self.n_display[i][2](), "m")
                 placeOver(self.r_template_main, temp, (x-3-temp.width,NODE_SECTION_HEIGHT.get()*1.5+h))
@@ -48,6 +48,7 @@ class VisualNode(VisualObject):
             mul = y_body/(len(temp)+1)
             for i in range(len(temp)):
                 placeOver(self.r_template_inputs, temp[i], (x-temp[i].width/2, mul*(1+i)), True)
+                placeOver(self.r_template_main) # TO-DO: CONTINUE HERE!
         else:
             self.r_template_inputs = EMPTY_IMAGE.copy()
         

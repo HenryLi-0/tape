@@ -174,3 +174,6 @@ NODES_TAB =        getImageRGBAFromPath(os.path.join("resources", "icon", "nodes
 DEBUG_TAB =        getImageRGBAFromPath(os.path.join("resources", "icon", "debug_tab.png"))
 EXPORT_TAB =       getImageRGBAFromPath(os.path.join("resources", "icon", "export_tab.png"))
 SETTINGS_TAB =     getImageRGBAFromPath(os.path.join("resources", "icon", "settings_tab.png"))
+
+# Traingles
+NODE_IO_TRIANGLE = getImageRGBAFromPath(os.path.join("resources", "icon", "node_triangle.png"))
