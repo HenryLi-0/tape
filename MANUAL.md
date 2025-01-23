@@ -187,7 +187,7 @@ Tape v2.x, unlike Tape v1.x, is a node based animation editor using node structu
 Have or want to make and add your own custom nodes! Very cool! If you already have your file, it's still recommended to read over this first bit to make sure its formatted properly!
 
 1. First, have your file ready and this repository! If you haven't created one yet, head over to `subsystems/node/` and create your file there. Following the naming is recommended, but not necessary. Additionally, it's recommended to put the file in this directory for easy and straightforward access.
-2. Next, make sure you `from subsystems.node.node_primatives.py import*` to import all the basic parts of a node. Import other node files as needed, except for `node.py`, as it is used as a quick way to import all nodes, and would result in a future circular import.
+2. Next, make sure you `from subsystems.node.node_functional.py import*` and `from subsystems.node.node_primatives.py import*` to import all the basic parts of a node. Import other node files as needed, except for `node.py`, as it is used as a quick way to import all nodes, and would result in a future circular import.
 3. Ok, first node time! Your file should have imports with the basic nodes! Now, that a look at one of them and their structure. Starts off with `class Example(Node)`, has `@Input`, `@Display` and `@Output` decorators, and has a quite consitent recognizable structure across nodes. (see an example such as the `Random` node!)
 ``` python
 @Input("Lower Limit", [Number], False) # An input.

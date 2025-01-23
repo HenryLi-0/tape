@@ -74,6 +74,7 @@ from subsystems.render import *
 # Version
 VERSION = "pre-v2.0.0"
 SYS_IVOS = [-999,-998,-997,-996]
+DEBUG = False
 
 ROTATE_AROUND_ORIGIN = lambda x,y,d: [(x/abs(x))*math.cos(math.atan(y/x)+(d*math.pi/50))*math.sqrt(x*x+y*y), (x/abs(x))*math.sin(math.atan(y/x)+(d*math.pi/50))*math.sqrt(x*x+y*y)]
 

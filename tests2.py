@@ -37,4 +37,8 @@ from subsystems.node.node_primatives import *
 # from settings import *
 # generateHoverIcon(CURSOR_ARROW, False).show()
 
-print(Random.Output)
+# print(Random.Output)
+
+import subsystems.node.node 
+# print([x for x in dir(subsystems.node.node.NodeThemes) if x[0:2] != "__"])
+print(subsystems.node.node.THEMES)

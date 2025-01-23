@@ -1,5 +1,7 @@
+from subsystems.node.node_functional import *
 from subsystems.node.node_primatives import *
 from subsystems.node.node_pathing import *
+
 from subsystems.settings import *
 
 '''OPERATIONS''' # TO-DO: REFACTOR EVERYTHING BELOW HERE!!! ALSO MAKE IT MAKE SENSE!

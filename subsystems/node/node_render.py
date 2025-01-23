@@ -1,6 +1,8 @@
+from subsystems.node.node_functional import *
 from subsystems.node.node_primatives import *
 from subsystems.node.node_pathing import *
 from subsystems.node.node_operations import *
+
 from subsystems.settings import *
 
 @Output("Animation Time", Seconds, lambda self: self.output)

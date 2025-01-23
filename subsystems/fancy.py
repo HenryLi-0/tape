@@ -30,11 +30,3 @@ def generateOutlineIcon(img, active = False, size = (29,29), color = ""):
     else: placeOver(icon, generateBorderBox(size,3, hexColorToRGBA(color)), (0,0))
     placeOver(icon, img, (3,3))
     return icon
-
-def generateHoverIcon(img, active = False, color = ""):
-    '''Generates an icon image given an image, inactive color, active color, and an optional overriding color, which replacing all non empty pixels with that color.'''
-    from subsystems.render import imageToArray, arrayToImage
-    icon = imageToArray(img)
-    icon[(icon[...] != [0,0,0,0]).any(axis=-1)] = color if (color!= "") else ([250,250,250,255] if active else [175,175,175,255])
-    icon = arrayToImage(icon)
-    return icon

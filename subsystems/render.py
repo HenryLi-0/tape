@@ -36,20 +36,20 @@ def addBlank(img:Image.Image|numpy.ndarray, add: int, direction: str, color = (0
     if direction == 'N': 
         temp = numpy.zeros((add, x, 4) if thirdaxis else (add, x), dtype=img.dtype)
         temp[:,:] = color
-        return numpy.vstack((temp, img))
+        return arrayToImage(numpy.vstack((temp, img)))
     elif direction == 'S': 
         temp = numpy.zeros((add, x, 4) if thirdaxis else (add, x), dtype=img.dtype)
         temp[:,:] = color
-        return numpy.vstack((img, temp))
+        return arrayToImage(numpy.vstack((img, temp)))
     elif direction == 'E': 
         temp = numpy.zeros((y, add, 4) if thirdaxis else (y, add), dtype=img.dtype)
         temp[:,:] = color
-        return numpy.hstack((img, temp))
+        return arrayToImage(numpy.hstack((img, temp)))
     elif direction == 'W': 
         temp = numpy.zeros((y, add, 4) if thirdaxis else (y, add), dtype=img.dtype)
         temp[:,:] = color
-        return numpy.hstack((temp, img))
-    else: return img
+        return arrayToImage(numpy.hstack((temp, img)))
+    else: return arrayToImage(img)
 
 def getRegion(img:Image.Image|numpy.ndarray, cornerA:tuple|list, cornerB:tuple|list, exact = 2, color = (0,0,0,0), thirdaxis = True):
     '''Returns a region of an image, given two coordinates relative to (0,0) of the image'''

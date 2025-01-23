@@ -52,13 +52,29 @@ def generatePastelDark():
     color.append(255)
     return color
 
-def translatePastelLight(color):
-    '''Translate a dark pastel color to a light pastel color, given the color in RGBA form'''
+def translatePastel(color, value = 0.9):
+    '''Translate a color based on the value of Value is HSV, given the color in RGBA form and the target Value'''
     colorC = color[0:3]
     colorC = list(colorsys.rgb_to_hsv(colorC[0]/255,colorC[1]/255,colorC[2]/255))
-    colorC[2] = 0.9
+    colorC[2] = value
     colorC = colorsys.hsv_to_rgb(colorC[0],colorC[1],colorC[2])
     return [round(colorC[0]*255), round(colorC[1]*255), round(colorC[2]*255), color[3]]
+
+def generateHoverIcon(img, active = False, color = ""):
+    '''Generates an icon image given an image, inactive color, active color, and an optional overriding color, which replacing all non empty pixels with that color.'''
+    from subsystems.render import imageToArray, arrayToImage
+    icon = imageToArray(img)
+    icon[(icon[...] != [0,0,0,0]).any(axis=-1)] = color if (color!= "") else ([250,250,250,255] if active else [175,175,175,255])
+    icon = arrayToImage(icon)
+    return icon
+
+def fill(img, targetColor = (0,0,0,255), fillColor = (255,255,255,255)):
+    '''Generates an icon image given an image, inactive color, active color, and an optional overriding color, which replacing all non empty pixels with that color.'''
+    from subsystems.render import imageToArray, arrayToImage
+    icon = imageToArray(img)
+    icon[(icon[...] == targetColor).any(axis=-1)] = fillColor
+    icon = arrayToImage(icon)
+    return icon
 
 def generateCircle(radius, color):
     '''Generates a circle with given radius (radius) and color (RGBA)'''
@@ -89,3 +105,4 @@ def generateThemedBorderRectangleInstructions(size:list|tuple = (25,25),borderCo
 def generateSpecificThemedBorderRectangleInstructions(section, borderColor:list|tuple = (255,255,255,255)):
     '''Generates Instructions for a specific section's Themed Border Rectangle'''
     return None
+    
