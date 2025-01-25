@@ -49,7 +49,7 @@ class VisualNode(VisualObject):
             mul = y_body/(len(temp)+1)
             for i in range(len(temp)):
                 placeOver(self.r_template_inputs, temp[i], (x-temp[i].width/2, y_header + mul*(1+i)), True)
-                placeOver(self.r_template_main, NODE_THEMES_TRIANGLES[NODE_THEMES_ASSGINMENT[self.n_input[i][1][0]]], (3, y_header + mul*(1+i)), True)
+                placeOver(self.r_template_main, NODE_THEMES_TRIANGLES[NODE_THEMES_ASSGINMENT[self.n_input[i][1][0]]], (6, y_header + mul*(1+i)), True)
         else:
             self.r_template_inputs = EMPTY_IMAGE.copy()
         
@@ -83,9 +83,18 @@ class VisualNode(VisualObject):
                 if type(data) == bool:
                     temp = displayText(data, "sm", colorTXT=(150,255,150,255) if data else (255,150,150,255))
                 elif type(data) == int:
-                    temp = displayText(data, "sm")
+                    if len(str(data)) > 7:
+                        temp = displayText(format(data, ".2e"), "sm")
+                    else:
+                        temp = displayText(data, "sm")
                 elif type(data) == float:
-                    temp = displayText(data, "sm")
+                    if len(str(data)) > 7:
+                        if data < 10**5:
+                            temp = displayText("{:5.3f}".format(data).rstrip("0").rstrip("."), "sm")
+                        else:
+                            temp = displayText(format(data, ".2e"), "sm")
+                    else:
+                        temp = displayText(data, "sm")
                 else:
                     temp = displayText(data, "sm")
                 placeOver(templateC, temp, (NODE_WIDTH.get()-3-temp.width,NODE_SECTION_HEIGHT.get()*1.5+h))

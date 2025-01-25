@@ -14,7 +14,7 @@ class Setting:
 
 '''System'''
 # Sets debug mode
-DEBUG = Setting([bool], True)
+DEBUG = Setting([bool], False)
 
 
 '''Animation'''
