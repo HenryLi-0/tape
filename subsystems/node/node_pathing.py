@@ -3,6 +3,8 @@ from subsystems.node.node_primatives import *
 
 from subsystems.settings import *
 
+# TO-DO: FINISH REFACTORING
+
 '''Location'''
 
 @Input("x", [Number, Pixel], True)

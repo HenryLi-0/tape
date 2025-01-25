@@ -4,6 +4,8 @@ from subsystems.node.node_pathing import *
 
 from subsystems.settings import *
 
+# TO-DO: FINISH REFACTORING
+
 '''OPERATIONS''' # TO-DO: REFACTOR EVERYTHING BELOW HERE!!! ALSO MAKE IT MAKE SENSE!
 
 @Input("Node A", [Node], True)

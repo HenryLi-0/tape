@@ -37,3 +37,11 @@ def Output(name = None, type = None, getter = None):
             inClass.Output.insert(0, (name, inClass if type==-1 else type, getter))
         return inClass
     return decorator
+
+def validate(*inputs):
+    valid = True
+    for input in inputs:
+        if input == None:
+            valid = False
+            break
+    return valid

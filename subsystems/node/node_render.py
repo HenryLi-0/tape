@@ -5,6 +5,8 @@ from subsystems.node.node_operations import *
 
 from subsystems.settings import *
 
+# TO-DO: FINISH REFACTORING
+
 @Output("Animation Time", Seconds, lambda self: self.output)
 class AnimationTime(Node):
     '''
