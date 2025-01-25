@@ -82,9 +82,9 @@ class String(Node):
 @Input("Lower Limit", [Number], False)
 @Input("Upper Limit", [Number], False)
 @Input("Only Integers", [Boolean], False)
-@Display("Range", False, lambda self: f"[{self.__lowerLimit.value}, {self.__upperLimit.value}]")
-@Display("Only Integers", False, lambda self: self.__onlyIntegers.value)
-@Display("Random Number", False, lambda self: self.output.value)
+@Display("Range", False, lambda self: f"[{self.display[0].value}, {self.display[1].value}]")
+@Display("Only Int.", False, lambda self: self.display[2].value)
+@Display("Output", False, lambda self: self.output.value)
 @Output("Random Number", Number, lambda self: self.output)
 class Random(Node):
     '''
@@ -118,6 +118,9 @@ class Random(Node):
     @property
     def output(self) -> Number: 
         return self.__output
+    @property
+    def display(self): 
+        return [self.__lowerLimit, self.__upperLimit, self.__onlyIntegers]
 
 
 @Input("File Location", [String], True)

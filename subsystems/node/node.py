@@ -54,13 +54,16 @@ class NodeThemes:
     ORANGE      = (233,135, 39,255)
 
 NODE_THEMES_ASSGINMENT = {
+    "default"       : NodeThemes.UNKNOWN,
     Number          : NodeThemes.YELLOW,
     Boolean         : NodeThemes.YELLOW,
     String          : NodeThemes.YELLOW, 
 
+    Random          : NodeThemes.ORANGE, 
+
     FileLocation    : NodeThemes.ORANGE, 
 }
-NODE_THEMES_TRIANGLES = {getattr(NodeThemes,x):fill(NODE_IO_TRIANGLE, [255,255,255,255], getattr(NodeThemes,x)) for x in dir(NodeThemes) if x[0:2] != "__"}
+NODE_THEMES_TRIANGLES = {getattr(NodeThemes,x):fill(NODE_IO_TRIANGLE.copy(), [255,255,255,255], getattr(NodeThemes,x)) for x in dir(NodeThemes) if x[0:2] != "__"}
 
 
 

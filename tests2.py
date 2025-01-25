@@ -39,6 +39,10 @@ from subsystems.node.node_primatives import *
 
 # print(Random.Output)
 
-import subsystems.node.node 
+# import subsystems.node.node 
 # print([x for x in dir(subsystems.node.node.NodeThemes) if x[0:2] != "__"])
-print(subsystems.node.node.THEMES)
+# print(subsystems.node.node.THEMES)
+
+from subsystems.simplefancy import *
+from settings import NODE_IO_TRIANGLE
+fill(NODE_IO_TRIANGLE.copy(), [255,255,255,255], [100,0,0,255]).show()

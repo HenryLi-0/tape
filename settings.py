@@ -74,7 +74,6 @@ from subsystems.render import *
 # Version
 VERSION = "pre-v2.0.0"
 SYS_IVOS = [-999,-998,-997,-996]
-DEBUG = False
 
 ROTATE_AROUND_ORIGIN = lambda x,y,d: [(x/abs(x))*math.cos(math.atan(y/x)+(d*math.pi/50))*math.sqrt(x*x+y*y), (x/abs(x))*math.sin(math.atan(y/x)+(d*math.pi/50))*math.sqrt(x*x+y*y)]
 
@@ -138,7 +137,7 @@ FONTS_ALL = ["Comfortaa-Medium.ttf", "Orbitron-VariableFont_wght.ttf", "Tiny5-Re
 FONT_PATH = os.path.join("resources", "fonts", FONTS_ALL[0])
 FONT_LARGE = ImageFont.truetype(FONT_PATH, 24)
 FONT_MEDIUM = ImageFont.truetype(FONT_PATH, 15)
-FONT_SMALL_MEDIUM = ImageFont.truetype(FONT_PATH, 12)
+FONT_SMALL_MEDIUM = ImageFont.truetype(FONT_PATH, 12.5)
 FONT_SMALL = ImageFont.truetype(FONT_PATH, 10)
 EDITOR_SPACING = lambda x: x*20+15
 

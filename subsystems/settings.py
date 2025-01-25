@@ -12,6 +12,11 @@ class Setting:
     def get(self):
         return self.value
 
+'''System'''
+# Sets debug mode
+DEBUG = Setting([bool], True)
+
+
 '''Animation'''
 # Defines the width of the animation.
 ANIMATION_WIDTH  = Setting([int], 1920)

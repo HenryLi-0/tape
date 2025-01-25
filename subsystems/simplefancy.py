@@ -4,11 +4,11 @@ from PIL import Image
 import numpy, random, colorsys
 from subsystems.render import *
 
-def getArrayImageRGBAFromPath(path):
+def getArrayImageRGBAFromPath(path) -> numpy.ndarray:
     '''Given a path, opens the image, converts it to RGBA, and returns it as a numpy array.'''
     return numpy.array(Image.open(path).convert("RGBA"))
 
-def getImageRGBAFromPath(path):
+def getImageRGBAFromPath(path) -> Image:
     '''Given a path, opens the image, converts it to RGBA, and returns the Image.'''
     return Image.open(path).convert("RGBA")
 
@@ -72,7 +72,7 @@ def fill(img, targetColor = (0,0,0,255), fillColor = (255,255,255,255)):
     '''Generates an icon image given an image, inactive color, active color, and an optional overriding color, which replacing all non empty pixels with that color.'''
     from subsystems.render import imageToArray, arrayToImage
     icon = imageToArray(img)
-    icon[(icon[...] == targetColor).any(axis=-1)] = fillColor
+    icon[(icon[...] == targetColor).all(axis=-1)] = fillColor
     icon = arrayToImage(icon)
     return icon
 

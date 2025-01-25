@@ -16,7 +16,7 @@ def Input(name = None, type = None, required = None, multiple = False):
         if not hasattr(inClass, "Input"):
             inClass.Input = []
         if name != None:
-            inClass.Input.append((name, type, required, multiple))
+            inClass.Input.insert(0, (name, type, required, multiple))
         return inClass
     return decorator
 
@@ -25,7 +25,7 @@ def Display(name = None, modify = None, getter = None):
         if not hasattr(inClass, "Display"):
             inClass.Display = []
         if name != None:
-            inClass.Display.append((name, modify, getter))
+            inClass.Display.insert(0, (name, modify, getter))
         return inClass
     return decorator
 
@@ -34,6 +34,6 @@ def Output(name = None, type = None, getter = None):
         if not hasattr(inClass, "Output"):
             inClass.Output = []
         if name != None:
-            inClass.Output.append((name, inClass if type==-1 else type, getter))
+            inClass.Output.insert(0, (name, inClass if type==-1 else type, getter))
         return inClass
     return decorator

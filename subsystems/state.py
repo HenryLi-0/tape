@@ -47,7 +47,8 @@ class State:
             -86 : ["t",IconVisualObject("Export", (129,3), EXPORT_TAB, outline = False)],
             -85 : ["t",IconVisualObject("Settings", (169,3), SETTINGS_TAB, outline = False)],
 
-             10 : ["w",VisualNode("test", (10,10), Number(1155))]
+             10 : ["w",VisualNode("test", (10,10), Number(1155))],
+             11 : ["w",VisualNode("test", (500,500), Random(Number(1), Number(2)))]
         }
         '''Control'''
         self.interacting = -999
