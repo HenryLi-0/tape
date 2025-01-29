@@ -46,9 +46,6 @@ class State:
             -87 : ["t",IconVisualObject("Debug", (89,3), DEBUG_TAB, outline = False)],
             -86 : ["t",IconVisualObject("Export", (129,3), EXPORT_TAB, outline = False)],
             -85 : ["t",IconVisualObject("Settings", (169,3), SETTINGS_TAB, outline = False)],
-
-             10 : ["w",VisualNode("test", (10,10), Number(1155))],
-             11 : ["w",VisualNode("test", (500,500), Random())]
         }
         '''Control'''
         self.interacting = -999
@@ -69,9 +66,26 @@ class State:
         self.tab = "a"
         self.previousTab = None
         self.nodes = {
-            "a" : Random()
+            "aaa" : Random(),
+            "bbb" : Number(100)
         }
+        self.nodeConnections = [["bbb", "Value", "aaa", "Lower Limit"]]
         self.nodesIDs = list(self.nodes.keys())
+
+        '''TEMPORARY TESTING'''
+        for id in self.nodesIDs:
+            self.ivos[id] = ["w", VisualNode("test", (random.randint(0,500),random.randint(0,500)), self.nodes[id])]
+        
+        for connection in self.nodeConnections:
+            outputs = self.nodes[connection[0]].Output
+            getter = outputs[[x[0] for x in outputs].index(connection[1])][2]
+            inputs = self.nodes[connection[2]].Input
+            newInputs = self.nodes[connection[2]].get()
+            newInputs[[x[0] for x in inputs].index(connection[3])] = getter(self.nodes[connection[0]])
+            self.nodes[connection[2]].set(*newInputs)
+
+
+
         self.workspaceX = 0
         self.workspaceY = 0
         self.workspaceZoom = 1

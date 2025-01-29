@@ -39,6 +39,8 @@ class Number(Node):
         self.set(start)
     def set(self, start:int|float = None):
         self.__value = start
+    def get(self):
+        return [self.__value]
 
     @property
     def value(self) -> int|float: return self.__value
@@ -56,6 +58,8 @@ class Boolean(Node):
         self.set(boolean)
     def set(self, boolean:bool):
         self.__value = boolean
+    def get(self):
+        return [self.__value]
     
     @property
     def value(self) -> bool: return self.__value
@@ -73,6 +77,8 @@ class String(Node):
         self.set(string)
     def set(self, string:str):
         self.__value = string
+    def get(self):
+        return [self.__value]
     
     @property
     def value(self) -> str: return self.__value
@@ -104,6 +110,8 @@ class Random(Node):
         self.__upperLimit = upperLimit
         self.__onlyIntegers = onlyIntegers
         self.update()
+    def get(self):
+        return [self.__lowerLimit, self.__upperLimit, self.__onlyIntegers]
     def update(self):
         if validate(self.__lowerLimit, self.__upperLimit, self.__onlyIntegers):
             try:
@@ -162,6 +170,8 @@ class FileLocation(Node):
             else:
                 self.addError(f"File extension {fileType} invalid! (for safety reasons)")
         self.update()
+    def get(self):
+        return [self.__fileLocation]
     def update(self):
         if validate(self.__fileLocation):
             self.__output.set(self.__fileLocation)
@@ -216,6 +226,8 @@ class Degrees(Angle):
     def set(self, angle:Angle|Number = None):
         self.__angle = angle
         self.update()
+    def get(self):
+        return [self.__angle]
     def update(self):
         if validate(self.__angle):
             if type(self.__angle) == Number:      self.__output.set(self.__angle.value)
@@ -241,6 +253,8 @@ class Radians(Angle):
     def set(self, angle:Angle|Number = None):
         self.__angle = angle
         self.update()
+    def get(self):
+        return [self.__angle]
     def update(self):
         if validate(self.__angle):
             if type(self.__angle) == Number:      self.__output.set(self.__angle.value)
@@ -276,6 +290,8 @@ class Pixel(Distance):
     def set(self, distance:Distance|Number = None):
         self.__distance = distance
         self.update()
+    def get(self):
+        return [self.__distance]
     def update(self):
         if validate(self.__distance):
             if type(self.__distance) == Number:   self.__output.set(self.__distance.value)
@@ -307,6 +323,8 @@ class Milliseconds(Time):
     def set(self, time:Time|Number = None):
         self.__time = time
         self.update()
+    def get(self):
+        return [self.__time]
     def update(self):
         if validate(self.__time):
             if type(self.__time) == Number:           self.__output.set(self.__time.value)
@@ -335,6 +353,8 @@ class Seconds(Time):
     def set(self, time:Time|Number = None):
         self.__time = time
         self.update()
+    def get(self):
+        return [self.__time]
     def update(self):
         if validate(self.__time):
             if type(self.__time) == Number:           self.__output.set(self.__time.value)
@@ -363,6 +383,8 @@ class Minutes(Time):
     def set(self, time:Time|Number = None):
         self.__time = time
         self.update()
+    def get(self):
+        return [self.__time]
     def update(self):
         if validate(self.__time):
             if type(self.__time) == Number:           self.__output.set(self.__time.value)
@@ -391,6 +413,8 @@ class Hours(Time):
     def set(self, time:Time|Number = None):
         self.__time = time
         self.update()
+    def get(self):
+        return [self.__time]
     def update(self):
         if validate(self.__time):
             if type(self.__time) == Number:           self.__output.set(self.__time.value)
@@ -419,6 +443,8 @@ class Days(Time):
     def set(self, time:Time|Number = None):
         self.__time = time
         self.update()
+    def get(self):
+        return [self.__time]
     def update(self):
         if validate(self.__time):
             if type(self.__time) == Number:           self.__output.set(self.__time.value)
@@ -463,6 +489,8 @@ class ImageImport(Node):
     def set(self, location:FileLocation = None):
         self.__location = location
         self.update()
+    def get(self):
+        return [self.__location]
     def update(self):
         if validate(self.__location):
             if self.__location.__extension in [".png", ".jpg", ".jpeg"]:
@@ -501,6 +529,8 @@ class FolderImport(Node):
             # TO-DO: finish, and make sure its safe
         else:
             self.addError(f"The file location isn't a folder/directory!")
+    def get(self):
+        return [] # TO-DO: FINISH
     def update(self):
         pass # TO-DO: FINISH
 
@@ -524,6 +554,8 @@ class Reroute(Node):
         self.set()
     def set(self, inputNode:Node = None):
         self.__inputNode = inputNode
+    def get(self):
+        return [self.__inputNode]
     def update(self):
         if validate(self.__inputNode):
             self.__output = self.__inputNode
@@ -559,6 +591,8 @@ class LessThan(LogicalOperation):
         self.__inputA = inputA
         self.__inputB = inputB
         self.update()
+    def get(self):
+        return [self.__inputA, self.__inputB]
     def update(self):
         if validate(self.__inputA, self.__inputB):
             if type(self.__inputA) == type(self.__inputB):
@@ -600,6 +634,8 @@ class GreaterThan(LogicalOperation):
         self.__inputA = inputA
         self.__inputB = inputB
         self.update()
+    def get(self):
+        return [self.__inputA, self.__inputB]
     def update(self):
         if type(self.__inputA) == type(self.__inputB):
             if type(self.__inputA) == Number:
@@ -639,6 +675,8 @@ class EqualTo(LogicalOperation):
         self.__inputA = inputA
         self.__inputB = inputB
         self.update()
+    def get(self):
+        return [self.__inputA, self.__inputB]
     def update(self):
         if type(self.__inputA) == type(self.__inputB):
             if type(self.__inputA) == Number:
@@ -678,6 +716,8 @@ class And(LogicalOperation):
         self.__inputA = inputA
         self.__inputB = inputB
         self.update()
+    def get(self):
+        return [self.__inputA, self.__inputB]
     def update(self):
         self.__output.set(self.__inputA.value and self.__inputB.value)
     
@@ -706,6 +746,8 @@ class Or(LogicalOperation):
         self.__inputA = inputA
         self.__inputB = inputB
         self.update()
+    def get(self):
+        return [self.__inputA, self.__inputB]
     def update(self):
         self.__output.set(self.__inputA.value or self.__inputB.value)
 
@@ -731,6 +773,8 @@ class Not(LogicalOperation):
     def set(self, inputNode:Boolean):
         self.__inputNode = inputNode
         self.update()
+    def get(self):
+        return [self.__inputNode]
     def update(self):
         self.__output.set(not(self.__inputNode.value))
 
@@ -763,6 +807,8 @@ class If(LogicalOperation):
         self.__inputFalse = inputFalse
         self.__boolean = boolean
         self.update()
+    def get(self):
+        return [self.__inputTrue, self.__inputFalse, self.__boolean]
     def update(self):
         if self.__boolean.value: self.__output = self.__inputTrue
         else: self.__output = self.__inputFalse
