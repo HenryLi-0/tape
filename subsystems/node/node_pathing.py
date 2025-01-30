@@ -50,7 +50,7 @@ class Coordinate(Node):
     @property
     def output(self): return self
 
-'''PATHING''' # TO-DO: REFACTOR EVERYTHING BELOW HERE!!!
+'''PATHING'''
 
 @Input("Value", [Coordinate, Number, Angle, Pixel], True)
 @Input("Time", [Time], True)
@@ -153,21 +153,33 @@ class PathCalculator(Node):
     def calculatePath(self):
         return self.calculate(self.__allFrames) # TO-DO: MAKE MORE EFFICIENT
 
+@Input("Path", [Path], True, False)
+@Input("Time", [Time], True, False)
+@Display()
 @Output("Linear Path Type", -1, lambda self: self)
 class LinearPathType(PathCalculator):
     def calculate(self, *frames:Frame):
         pass # TO-DO: FINISH
 
+@Input("Path", [Path], True, False)
+@Input("Time", [Time], True, False)
+@Display()
 @Output("Bezier Path Type", -1, lambda self: self)
 class BezierPathType(PathCalculator):
     def calculate(self, *frames:Frame):
         pass # TO-DO: FINISH
 
+@Input("Path", [Path], True, False)
+@Input("Time", [Time], True, False)
+@Display()
 @Output("Smooth Approach Path Type", -1, lambda self: self)
 class SmoothApproachesPathType(PathCalculator):
     def calculate(self, *frames:Frame):
         pass # TO-DO: FINISH
 
+@Input("Path", [Path], True, False)
+@Input("Time", [Time], True, False)
+@Display()
 @Output("Smooth Full Path Type", -1, lambda self: self)
 class SmoothFullPathType(PathCalculator):
     def calculate(self, *frames:Frame):

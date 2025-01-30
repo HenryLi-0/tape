@@ -7,6 +7,8 @@ from subsystems.settings import *
 
 # TO-DO: FINISH REFACTORING
 
+@Input()
+@Display()
 @Output("Animation Time", Seconds, lambda self: self.output)
 class AnimationTime(Node):
     '''
@@ -33,9 +35,10 @@ class RenderInstructions:
         self.t = None
         self.b = None
         self.w = None
+        self.z = 0
 
 @Input("Coordinate",    [Coordinate],   True)
-@Input("Rotation",      [Number, Angle],True)
+@Input("Rotation",      [Number],       True)
 @Input("Apperance",     [ImageImport],  True)
 @Input("Size",          [Number],       True)
 @Input("Hue",           [Number],       True)
@@ -65,12 +68,13 @@ class RenderedObject(Node):
 
         Requires:
         - `CRASHTBW` values. Refer to `MANUAL.md` for more information.
+        - `Z` layer value
     '''
-    def __init__(self, coord:Coordinate, rotation:Number|Angle, appearance:ImageImport, size:Number, hue:Number, transparency:Number, brightness:Number, weird:Number):
+    def __init__(self):
         super().__init__()
         self.__output = RenderInstructions()
-        self.set(coord, rotation, appearance, size, hue, transparency, brightness, weird)
-    def set(self, coord:Coordinate, rotation:Number|Angle, appearance:ImageImport, size:Number, hue:Number, transparency:Number, brightness:Number, weird:Number):
+        self.set()
+    def set(self, coord:Coordinate = None, rotation:Number = None, appearance:ImageImport = None, size:Number = None, hue:Number = None, transparency:Number = None, brightness:Number = None, weird:Number = None, z:Number = None):
         self.__coordNode = coord
         self.__rotationNode = rotation
         self.__appearanceNode = appearance
@@ -79,14 +83,25 @@ class RenderedObject(Node):
         self.__transparencyNode = transparency
         self.__brightnessNode = brightness
         self.__weirdNode = weird
+        self.__zNode = z
         self.update()
+    def get(self):
+        return [self.__coordNode, self.__rotationNode, self.__appearanceNode, self.__sizeNode, self.__hueNode, self.__transparencyNode, self.__brightnessNode, self.__weirdNode, self.__zNode]
     def update(self):
-        pass
+        self.__output.c = [self.__coordNode.__x, self.__coordNode.__y]  # coordinate [x,y] (in pixels)
+        self.__output.r = self.__rotationNode.value                     # angle (in degrees)
+        self.__output.a = self.__appearanceNode.image                   # image (pillow image)
+        self.__output.s = self.__sizeNode.value                         # size (100 is normal)
+        self.__output.h = self.__hueNode.value                          # hue (color shift, 0-100)
+        self.__output.t = self.__transparencyNode.value                 # transparency (0-100)
+        self.__output.b = self.__brightnessNode.value                   # brightness (0 is normal)
+        self.__output.w = self.__weirdNode.value                        # blur (>0 means more pixelated)
+        self.__output.z = self.__zNode.value                            # z layer (>0 means closer)
 
     @property
     def coordinate(self) -> Coordinate: return self.__coordNode
     @property
-    def rotation(self) -> Number|Angle: return self.__rotationNode
+    def rotation(self) -> Number: return self.__rotationNode
     @property
     def appearance(self) -> ImageImport: return self.__appearanceNode
     @property
@@ -100,6 +115,8 @@ class RenderedObject(Node):
     @property
     def weird(self) -> Number: return self.__weirdNode
     @property
+    def z(self) -> Number: return self.__zNode
+    @property
     def output(self): return self.__output
 
 class Sprite(RenderedObject): pass
@@ -108,18 +125,21 @@ class Camera(RenderedObject): pass
 
 @Input("Render Instructions", [RenderInstructions], True, True)
 @Display("Given Instructions", False, lambda self: self.givenInstructions)
+@Output()
 class Render(Node):
     '''
         Renders a sprite, given render instructions.
     '''
-    def __init__(self, instructions:RenderInstructions):
+    def __init__(self):
         super().__init__()
         self.__givenInstructions = False
-        self.set(instructions)
-    def set(self, instructions:RenderInstructions):
-        self.__instruction = instructions
+        self.set()
+    def set(self, instructions:RenderInstructions = None):
+        self.__instructions = instructions
         self.__givenInstructions = True
         self.update()
+    def get(self):
+        return [self.__givenInstructions]
     def update(self):
         pass
 

@@ -662,18 +662,20 @@ class GreaterThan(LogicalOperation):
     def get(self):
         return [self.__inputA, self.__inputB]
     def update(self):
-        if type(self.__inputA) == type(self.__inputB):
-            if type(self.__inputA) == Number:
-                self.__output.set(self.__inputA.value > self.__inputB.value)
-            elif type(self.__inputA) == Unit:
-                a = self.__inputA.raw_output
-                b = self.__inputB.raw_output
-                if type(a) == type(b):
-                    self.__output.set(a.get() > b.get())
-                else:
-                    self.addError(f"Inconsistent Unit dimensions {type(a)} and {type(b)}!")
-        else:
-            self.addError("Inconsistent type for comparison!")
+        if validate(self.__inputA, self.__inputB):
+            if type(self.__inputA) == type(self.__inputB):
+                if type(self.__inputA) == Number:
+                    self.__output.set(self.__inputA.value > self.__inputB.value)
+                elif type(self.__inputA) == Unit:
+                    a = self.__inputA.raw_output
+                    b = self.__inputB.raw_output
+                    if type(a) == type(b):
+                        self.__output.set(a.get() > b.get())
+                    else:
+                        self.addError(f"Inconsistent Unit dimensions {type(a)} and {type(b)}!")
+            else:
+                self.addError("Inconsistent type for comparison!")
+        else: self.addError("Input(s) missing or contain errors!")
 
     @property
     def output(self) -> Boolean:
@@ -703,18 +705,20 @@ class EqualTo(LogicalOperation):
     def get(self):
         return [self.__inputA, self.__inputB]
     def update(self):
-        if type(self.__inputA) == type(self.__inputB):
-            if type(self.__inputA) == Number:
-                self.__output = Boolean(self.__inputA.value == self.__inputB.value)
-            elif type(self.__inputA) == Unit:
-                a = self.__inputA.raw_output
-                b = self.__inputB.raw_output
-                if type(a) == type(b):
-                    self.__output = Boolean(a.output.value == b.output.value)
-                else:
-                    self.addError(f"Inconsistent Unit dimensions {type(a)} and {type(b)}!")
-        else:
-            self.addError("Inconsistent type for comparison!")
+        if validate(self.__inputA, self.__inputB):
+            if type(self.__inputA) == type(self.__inputB):
+                if type(self.__inputA) == Number:
+                    self.__output = Boolean(self.__inputA.value == self.__inputB.value)
+                elif type(self.__inputA) == Unit:
+                    a = self.__inputA.raw_output
+                    b = self.__inputB.raw_output
+                    if type(a) == type(b):
+                        self.__output = Boolean(a.output.value == b.output.value)
+                    else:
+                        self.addError(f"Inconsistent Unit dimensions {type(a)} and {type(b)}!")
+            else:
+                self.addError("Inconsistent type for comparison!")
+        else: self.addError("Input(s) missing or contain errors!")
     
     @property
     def output(self) -> Boolean:
@@ -744,7 +748,9 @@ class And(LogicalOperation):
     def get(self):
         return [self.__inputA, self.__inputB]
     def update(self):
-        self.__output.set(self.__inputA.value and self.__inputB.value)
+        if validate(self.__inputA, self.__inputB):
+            self.__output.set(self.__inputA.value and self.__inputB.value)
+        else: self.addError("Input(s) missing or contain errors!")
     
     @property
     def output(self) -> Boolean:
@@ -774,7 +780,9 @@ class Or(LogicalOperation):
     def get(self):
         return [self.__inputA, self.__inputB]
     def update(self):
-        self.__output.set(self.__inputA.value or self.__inputB.value)
+        if validate(self.__inputA, self.__inputB):
+            self.__output.set(self.__inputA.value or self.__inputB.value)
+        else: self.addError("Input(s) missing or contain errors!")
 
     @property
     def output(self) -> Boolean:
@@ -801,7 +809,9 @@ class Not(LogicalOperation):
     def get(self):
         return [self.__inputNode]
     def update(self):
-        self.__output.set(not(self.__inputNode.value))
+        if validate(self.__inputNode):
+            self.__output.set(not(self.__inputNode.value))
+        else: self.addError("Input(s) missing or contain errors!")
 
     @property
     def output(self) -> Boolean:
@@ -835,8 +845,10 @@ class If(LogicalOperation):
     def get(self):
         return [self.__inputTrue, self.__inputFalse, self.__boolean]
     def update(self):
-        if self.__boolean.value: self.__output = self.__inputTrue
-        else: self.__output = self.__inputFalse
+        if validate(self.__inputTrue, self.__inputFalse, self.__boolean):
+            if self.__boolean.value: self.__output = self.__inputTrue
+            else: self.__output = self.__inputFalse
+        else: self.addError("Input(s) missing or contain errors!")
     
     @property
     def output(self) -> Node: return self.__output
