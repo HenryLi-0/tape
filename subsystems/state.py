@@ -75,6 +75,7 @@ class State:
         '''TEMPORARY TESTING'''
         for id in self.nodesIDs:
             self.ivos[id] = ["w", VisualNode("test", (random.randint(0,500),random.randint(0,500)), self.nodes[id])]
+        self.ivos["test"] = ["w", VisualNodeConnection("test", self.ivos["bbb"][1], 0, self.ivos["aaa"][1], 0)]
         
         for connection in self.nodeConnections:
             outputs = self.nodes[connection[0]].Output
@@ -83,7 +84,6 @@ class State:
             newInputs = self.nodes[connection[2]].get()
             newInputs[[x[0] for x in inputs].index(connection[3])] = getter(self.nodes[connection[0]])
             self.nodes[connection[2]].set(*newInputs)
-
 
 
         self.workspaceX = 0

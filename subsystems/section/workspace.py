@@ -24,8 +24,8 @@ class Workspace(Section):
         for id in state.ivos:
             if state.ivos[id][0] == "w":
                 state.ivos[id][1].tick(img, state.interacting==id or ((state.lastInteraction==id) and (abs(time.time() - state.ivos[id][1].lastInteraction) < LAST_INTERACTION_KEY_TIME)), state.interacting==id)
-                if state.ivos[id][1].type == "node":
-                    state.ivos[id][1].render(img, scaleCoords(state, state.ivos[id][1].positionO.getX(), state.ivos[id][1].positionO.getY()))
+                if state.ivos[id][1].type == "node" or state.ivos[id][1].type == "node connection" :
+                    state.ivos[id][1].render(img, scaleCoords(state, state.ivos[id][1].positionO.getX(), state.ivos[id][1].positionO.getY()), state.workspaceZoom)
 
         Section.overlayCrosshair(state, img, rmx, rmy)
 

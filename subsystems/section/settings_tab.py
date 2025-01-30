@@ -1,4 +1,5 @@
 from subsystems.section.section import *
+from subsystems.settings import SETTINGS
 
 class SettingsTab(Section):
     def render(state: State, im):
@@ -7,7 +8,10 @@ class SettingsTab(Section):
         rmx = state.mx - 10
         rmy = state.my - 10
 
-        placeOver(img, displayText(f"hi i am settings", "m"), (20,20))
+        y = 0
+        for setting in SETTINGS:
+            placeOver(img, displayText(f"{setting.name} ({setting.valid}): {setting.value}", "m"), (10, y))
+            y += 30
 
         for id in state.ivos:
             if state.ivos[id][0] == "s":

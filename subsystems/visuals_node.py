@@ -20,6 +20,8 @@ class VisualNode(VisualObject):
         self.r_nodeInnerColor = translatePastel(theme, 0.5)
         self.r_nodeBorderColor = translatePastel(theme, 0.2)
         self.r_divider = generateColorBox((round(NODE_WIDTH.get()*0.5),1), self.r_nodeBorderColor)
+        self.r_inputConverter = lambda i: (0,0)
+        self.r_outputConverter = lambda i: (0,0)
         self.generateTemplate()
     
     def generateTemplate(self):
@@ -46,10 +48,10 @@ class VisualNode(VisualObject):
                 temp.append(displayText(f" {self.n_input[i][0]} ", "s", NODE_IO_BACKGROUND_RGBA.get(), NODE_IO_UNCAPPED_RGBA.get() if self.n_input[i][3] else NODE_IO_NORMAL_RGBA.get()))
             x = max([x.width for x in temp])
             self.r_template_inputs = generateColorBox((x, y_header + y_body), (255,0,0,255) if DEBUG.get() else (0,0,0,0))
-            mul = y_body/(len(temp)+1)
+            self.r_inputConverter = lambda i: (6, y_header + (y_body/(len(temp)+1))*(1+i))
             for i in range(len(temp)):
-                placeOver(self.r_template_inputs, temp[i], (x-temp[i].width/2, y_header + mul*(1+i)), True)
-                placeOver(self.r_template_main, NODE_THEMES_TRIANGLES[NODE_THEMES_ASSGINMENT[self.n_input[i][1][0]]], (6, y_header + mul*(1+i)), True)
+                placeOver(self.r_template_inputs, temp[i], (x-temp[i].width/2, self.r_inputConverter(i)[1]), True)
+                placeOver(self.r_template_main, NODE_THEMES_TRIANGLES[NODE_THEMES_ASSGINMENT[self.n_input[i][1][0]]], self.r_inputConverter(i), True)
         else:
             self.r_template_inputs = EMPTY_IMAGE.copy()
         
@@ -60,10 +62,10 @@ class VisualNode(VisualObject):
                 temp.append(displayText(f" {self.n_output[i][0]} ", "s", NODE_IO_BACKGROUND_RGBA.get(), NODE_IO_NORMAL_RGBA.get()))
             x = max([x.width for x in temp])
             self.r_template_outputs = generateColorBox((x, y_header+y_body), (255,0,0,255) if DEBUG.get() else (0,0,0,0))
-            mul = y_body/(len(temp)+1)
+            self.r_outputConverter = lambda i: (node_x + 15 + 2*3, y_header + (y_body/(len(temp)+1))*(1+i))
             for i in range(len(temp)):
-                placeOver(self.r_template_outputs, temp[i], (temp[i].width/2, y_header+mul*(1+i)), True)
-                placeOver(self.r_template_main, NODE_THEMES_TRIANGLES[NODE_THEMES_ASSGINMENT[self.n_output[i][1]]], (node_x + 15 + 2*3, y_header + mul*(1+i)), True)
+                placeOver(self.r_template_outputs, temp[i], (temp[i].width/2, self.r_outputConverter(i)[1]), True)
+                placeOver(self.r_template_main, NODE_THEMES_TRIANGLES[NODE_THEMES_ASSGINMENT[self.n_output[i][1]]], self.r_outputConverter(i), True)
         else:
             self.r_template_outputs = EMPTY_IMAGE.copy()
 
@@ -73,7 +75,7 @@ class VisualNode(VisualObject):
     def tick(self, img, visualactive, active):
         y = 0
     
-    def render(self, img, pos):
+    def render(self, img, pos, zoom):
         templateC = self.r_template_main.copy()
 
         for i in range(len(self.n_display)):
@@ -108,6 +110,47 @@ class VisualNode(VisualObject):
 
         
         
+    def updateText(self, txt):
+        pass
+    def keyAction(self, keys):
+        pass
+    def updatePos(self, rmx, rmy):
+        pass
+
+
+class VisualNodeConnection(VisualObject):
+    '''A connection between two parts of a node.'''
+    def __init__(self, name, nodeA:VisualNode, nodeAindex:int, nodeB:VisualNode, nodeBindex:int):
+        # init
+        self.type = "node connection"
+        self.name = name
+        self.lastInteraction = time.time()
+        self.positionO = NoPositionalBox()
+        
+        self.nodeA = nodeA # Output side
+        self.nodeAindex = nodeAindex
+        self.nodeB = nodeB # Input side
+        self.nodeBindex = nodeBindex
+
+        self.r_pixel = generateColorBox((3,3), NodeThemes.UNKNOWN)
+        self.generateTemplate()
+
+    def generateTemplate(self):
+        self.r_pixel = generateColorBox((3,3), NODE_THEMES_ASSGINMENT[self.nodeA.node.Output[self.nodeAindex][1]])
+
+    def render(self, img, pos, zoom):
+        nodeApos = addP(self.nodeA.positionO.getPosition(), self.nodeA.r_outputConverter(self.nodeAindex))
+        nodeBpos = addP(self.nodeB.positionO.getPosition(), self.nodeB.r_inputConverter(self.nodeBindex))
+        step = multiplyP(subtractP(nodeBpos, nodeApos), 0.01)
+        for i in range(100):
+            placeOver(img, self.r_pixel, addP(multiplyP(addP(nodeApos, multiplyP(step, i)), zoom), pos))
+
+    def tick(self, img, visualactive, active):
+        pass
+
+
+
+
     def updateText(self, txt):
         pass
     def keyAction(self, keys):

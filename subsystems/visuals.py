@@ -99,6 +99,20 @@ class FixedRegionPositionalBox:
         self.pointA = (min(pointA[0], pointB[0]), min(pointA[1], pointB[1]))
         self.pointB = (max(pointA[0], pointB[0]), max(pointA[1], pointB[1]))
 
+class NoPositionalBox:
+    '''A postional box that doesn't process anything.'''
+    def __init__(self): pass
+    def process(self, interact, rmx, rmy): pass
+    def getInteract(self, rmx, rmy): return False
+    def getPosition(self): return (0,0)
+    def getX(self): return 0
+    def getY(self): return 0
+    def getBBOX(self): return (0,0)
+    def setPosition(self, position: tuple|list): pass
+    def setX(self, nx): pass
+    def setY(self, ny): pass
+    def setBBOX(self, nbbox): pass
+
 '''Visual Objects'''
 
 from settings import ORB_IDLE, ORB_SELECTED
