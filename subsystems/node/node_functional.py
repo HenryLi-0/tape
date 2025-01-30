@@ -5,11 +5,18 @@ import time
 class ActiveError:
     def __init__(self, error = None):
         self.errors = []
+        self.lastErrorTime = time.time()
         self.addError(error)
     def addError(self, error):
+        if len(self.errors) > 5: self.errors.pop(0)
+        self.lastErrorTime = time.time()
         self.errors.append(f"{time.time()} - {error}")
     def getError(self):
         return self.errors
+    def hasRecentError(self):
+        return abs(time.time() - self.lastErrorTime) < 0.2
+        
+
         
 def Input(name = None, type = None, required = None, multiple = False):
     def decorator(inClass):
@@ -44,4 +51,12 @@ def validate(*inputs):
         if input == None:
             valid = False
             break
+        isNode = True
+        try: input.update()
+        except: isNode = False
+        if isNode:
+            if input.error.hasRecentError():
+                valid = False
+                break
+
     return valid

@@ -23,7 +23,7 @@ class Coordinate(Node):
     '''
     def __init__(self, x:Number|Pixel, y:Number|Pixel):
         super().__init__()
-        self.__output = None
+        self.__output = self
         self.__x = Pixel(0)
         self.__y = Pixel(0)
         self.set(x, y)
@@ -31,13 +31,17 @@ class Coordinate(Node):
         self.__xNode = x
         self.__yNode = y
         self.update()
+    def get(self):
+        return [self.__xNode, self.__yNode]
     def update(self):
-        if type(self.__xNode) == Number: self.__x.set(self.__xNode.value*ANIMATION_WIDTH.get())
-        elif type(self.__xNode) == Pixel: self.__x.set(self.__xNode)
-        else: self.addError("Invalid x!")
-        if type(self.__yNode) == Number: self.__y.set(Number(self.__yNode.value*ANIMATION_HEIGHT.get()))
-        elif type(self.__yNode) == Pixel: self.__y.set(self.__yNode)
-        else: self.addError("Invalid y!")
+        if validate(self.__xNode, self.__yNode):
+            if type(self.__xNode) == Number: self.__x.set(self.__xNode.value*ANIMATION_WIDTH.get())
+            elif type(self.__xNode) == Pixel: self.__x.set(self.__xNode)
+            else: self.addError("Invalid x!")
+            if type(self.__yNode) == Number: self.__y.set(Number(self.__yNode.value*ANIMATION_HEIGHT.get()))
+            elif type(self.__yNode) == Pixel: self.__y.set(self.__yNode)
+            else: self.addError("Invalid y!")
+        else: self.addError("Input(s) missing or contain errors!")
 
     @property
     def x(self): return self.__x
@@ -70,63 +74,105 @@ class Frame(Node):
             self.__time = time
         else:
             self.addError("Inputted Time is not a Time!")
+        self.update()
+    def get(self):
+        return [self.__output, self.__time]
+    def update(self):
+        pass # TO-DO: finish!
+
+    @property
+    def value(self): return self.__output
+
+    @property
+    def time(self): return self.__time
 
     @property
     def output(self): return self
 
-# No inputs or outputs.
-class PathType(Node):
+@Input("Frames", [Frame], True, True)
+@Display("Frames", False, lambda self: self.framesLength)
+@Output("Path", -1, lambda self: self)
+class Path(Node):
     '''
-        A class that consists of all types of Paths for Pathing that does the calculations without storing/linking Node data.
+        A path is the stores information of any number of frames, to be interpolated.
+        
+        Requires:
+        - `frames` is any number of Frames of the type.
+    '''
+    def __init__(self, *frames:Frame):
+        super().__init__()
+        self.set(*frames)
+    def set(self, *frames:Frame):
+        self.__allFrames = [*frames]
+        self.update()
+    def get(self):
+        return self.__allFrames
+    def update(self):
+        if validate(*self.__allFrames):
+            for frame in self.__allFrames:
+                if frame.type != self.__allFrames[0].type:
+                    self.addError("Frames are not of consistent type!")
+                    break
+        else: self.addError("Input(s) missing or contain errors!")
+
+    @property
+    def framesLength(self): return len(self.__allFrames)
+
+    @property
+    def frames(self): return self.__allFrames
+
+    @property
+    def output(self): return self
+
+class PathCalculator(Node):
+    '''
+        Gets the value of a path at a given time, with a specific calculation method.
+
+        Requires:
+        - `path` is a Path of any type.
+        - `time` is a Time, representing the time of which when is a desired value.
     '''
     def __init__(self):
         super().__init__()
-    def path(self, *frames:Frame):
+        self.__output = None
+    def set(self, path:Path, time:Time):
+        self.__path = path
+        self.__time = time
+        self.update()
+    def get(self):
+        return [self.__path, self.__time]
+    def calculate(self):
         pass
-    def update(self, *frames:Frame) -> list[Frame]:
-        for frame in frames:
-            if frame.type != frames[0].type:
-                self.addError("Frames are not of consistent type!")
-                break
-        return self.path(*frames)
+    def update(self):
+        if validate(self.__path, self.__time):
+            self.__path.update()
+            self.__time.update()
 
-class LinearPathType(PathType):
-    def path(self, *frames:Frame):
-        pass # TO-DO: FINISH
-
-class BezierPathType(PathType):
-    def path(self, *frames:Frame):
-        pass # TO-DO: FINISH
-
-class SmoothApproachesPathType(PathType):
-    def path(self, *frames:Frame):
-        pass # TO-DO: FINISH
-
-class SmoothFullPathType(PathType):
-    def path(self, *frames:Frame):
-        pass # TO-DO: FINISH
-
-@Input("Path Type", [PathType], True)
-@Input("Frames", [Frame], True, True)
-@Display()
-@Output("Path", -1, lambda self: self.output)
-class Path(Node):
-    '''
-        A path is the interpolated information of any number of frames, given an approach of calculation.
-        
-        Requires:
-        - `pathType` is a PathType that represents the method used to calculate to Path.
-        - `frames` is any number of Frames of the type.
-    '''
-    def __init__(self, pathType:PathType, *frames:Frame):
-        super().__init__()
-        self.set(pathType, *frames)
-    def set(self, pathType:PathType, *frames:Frame):
-        self.pathType = pathType
-        self.frames = [*frames]
-    
+        else: self.addError("Input(s) missing or contain errors!")
     @property
-    def output(self): return self
+    def calculatePath(self):
+        return self.calculate(self.__allFrames) # TO-DO: MAKE MORE EFFICIENT
+
+@Output("Linear Path Type", -1, lambda self: self)
+class LinearPathType(PathCalculator):
+    def calculate(self, *frames:Frame):
+        pass # TO-DO: FINISH
+
+@Output("Bezier Path Type", -1, lambda self: self)
+class BezierPathType(PathCalculator):
+    def calculate(self, *frames:Frame):
+        pass # TO-DO: FINISH
+
+@Output("Smooth Approach Path Type", -1, lambda self: self)
+class SmoothApproachesPathType(PathCalculator):
+    def calculate(self, *frames:Frame):
+        pass # TO-DO: FINISH
+
+@Output("Smooth Full Path Type", -1, lambda self: self)
+class SmoothFullPathType(PathCalculator):
+    def calculate(self, *frames:Frame):
+        pass # TO-DO: FINISH
+
 
 @Input("X Axis Path", [Path], True)
 @Input("Y Axis Path", [Path], True)
@@ -160,28 +206,33 @@ class PathAxisMerger(Node):
 @Output("Frame", Frame, lambda self: self.output)
 class PathAtTime(Node):
     '''
-        Gets the value of a path at a given time.
 
-        Requires:
-        - `path` is a Path of any type.
-        - `time` is a Time, representing the time of which when is a desired value.
     '''
     def __init__(self, path:Path, time:Time):
         super().__init__()
         self.__output = None
+        self.__temp = None
+        self.__mode = None
         self.set(path, time)
     def set(self, path:Path, time:Time):
         self.__path = path
         self.__time = time
-        frameClass = self.__path.frames[0].__value.__class__
+        frameClass = self.__path.__allFrames[0].value.__class__
         if frameClass == Coordinate:
-            self.__output = Coordinate(Number(0), Number(0))
+            self.__temp = [Number(0), Number(0)]
+            self.__output = Coordinate()
+            self.__output.set(*self.__temp)
+            self.__mode = "coords"
         elif frameClass == Unit:
-            self.__output = self.__path.frames[0].__value.__class__(Number(0))
+            self.__temp = [Number(0)]
+            self.__output = self.__path.__allFrames[0].value.__class__()
+            self.__output.set(*self.__temp)
+            self.__mode = "unit"
         else:
             self.addError(f"Unexpected frame data type {frameClass}!")
         self.update()
     def update(self):
+        self.__output.update()
         pass # TO-DO: FINISH PATH LOGIC
     
     @property

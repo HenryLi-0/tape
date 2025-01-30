@@ -123,7 +123,7 @@ class Random(Node):
                     self.__output.set(random.random()*(self.__upperLimit.value-self.__lowerLimit.value)+self.__lowerLimit.value)
             except:
                 self.addError("Random number failed to generate!")
-        else: self.addError("Missing inputs!")
+        else: self.addError("Input(s) missing or contain errors!")
     
     @property
     def output(self) -> Number: 
@@ -175,7 +175,7 @@ class FileLocation(Node):
     def update(self):
         if validate(self.__fileLocation):
             self.__output.set(self.__fileLocation)
-        else: self.addError("Missing inputs!")
+        else: self.addError("Input(s) missing or contain errors!")
     
     @property
     def fileLocation(self) -> String: return self.__fileLocation
@@ -190,15 +190,14 @@ class Unit(Node):
     def __init__(self):
         super().__init__()
         self.__output = None
-    def simplify(unit): # TO-DO: COMPLETE, BUT MAKE IT MORE EFFICIENT!
-        '''
-            Turns a unit to its simpliest form, consist with all other simplified version.
-        '''
-        pass
 
     @property
     def output(self) -> Number: 
         return self.__output
+
+    @property
+    def raw_output(self) -> float|int: 
+        return self.__output.value
 
 class Angle(Unit):
     '''
@@ -206,8 +205,6 @@ class Angle(Unit):
     '''
     def __init__(self):
         super().__init__()
-    def simplify(unit):
-        return Degrees(unit)
 
 @Input("Angle", [Number, Angle], True)
 @Display("Value", False, lambda self: self.output.value)
@@ -234,7 +231,11 @@ class Degrees(Angle):
             elif type(self.__angle) == Degrees:   self.__output.set(self.__angle.output.value)
             elif type(self.__angle) == Radians:   self.__output.set(self.__angle.output.value/math.pi*180)
             else: self.addError("Invalid input!")
-        else: self.addError("Missing inputs!")
+        else: self.addError("Input(s) missing or contain errors!")
+    
+    @property
+    def raw_output(self) -> float|int: 
+        return self.__output.value
 
 @Input("Angle", [Number, Angle], True)
 @Display("Value", False, lambda self: self.output.value)
@@ -262,7 +263,11 @@ class Radians(Angle):
             elif type(self.__angle) == Radians:   self.__output.set(self.__angle.output.value)
             else: self.addError("Invalid input!")
             return self.__output
-        else: self.addError("Missing inputs!")
+        else: self.addError("Input(s) missing or contain errors!")
+    
+    @property
+    def raw_output(self) -> float|int: 
+        return self.__output.value*180/math.pi
 
 class Distance(Unit):
     '''
@@ -270,8 +275,6 @@ class Distance(Unit):
     '''
     def __init__(self):
         super().__init__()
-    def simplify(unit):
-        return Pixel(unit)
 
 @Input("Distance", [Number, Distance], True)
 @Display("Value", False, lambda self: self.output.value)
@@ -297,14 +300,16 @@ class Pixel(Distance):
             if type(self.__distance) == Number:   self.__output.set(self.__distance.value)
             elif type(self.__distance) == Pixel:  self.__output.set(self.__distance.output.value)
             else: self.addError("Invalid input!")
-        else: self.addError("Missing inputs!")
+        else: self.addError("Input(s) missing or contain errors!")
+    
+    @property
+    def raw_output(self) -> float|int: 
+        return self.__output.value
 
 class Time(Unit):
     '''
         A class for all types of Time units to inherit from.
     '''
-    def simplify(unit):
-        return Seconds(unit)
 
 @Input("Time", [Number, Time], True)
 @Display("Value", False, lambda self: self.output.value)
@@ -334,7 +339,11 @@ class Milliseconds(Time):
             elif type(self.__time) == Hours:          self.__output.set(self.__time.output.value*1000*60*60)
             elif type(self.__time) == Days:           self.__output.set(self.__time.output.value*1000*60*60*24)
             else: self.addError("Invalid input!")
-        else: self.addError("Missing inputs!")
+        else: self.addError("Input(s) missing or contain errors!")
+    
+    @property
+    def raw_output(self) -> float|int: 
+        return self.__output.value/1000
 
 @Input("Time", [Number, Time], True)
 @Display("Value", False, lambda self: self.output.value)
@@ -364,7 +373,11 @@ class Seconds(Time):
             elif type(self.__time) == Hours:          self.__output.set(self.__time.output.value*60*60)
             elif type(self.__time) == Days:           self.__output.set(self.__time.output.value*60*60*24)
             else: self.addError("Invalid input!")
-        else: self.addError("Missing inputs!")
+        else: self.addError("Input(s) missing or contain errors!")
+    
+    @property
+    def raw_output(self) -> float|int: 
+        return self.__output.value
 
 @Input("Time", [Number, Time], True)
 @Display("Value", False, lambda self: self.output.value)
@@ -394,7 +407,11 @@ class Minutes(Time):
             elif type(self.__time) == Hours:          self.__output.set(self.__time.output.value*60)
             elif type(self.__time) == Days:           self.__output.set(self.__time.output.value*60*24)
             else: self.addError("Invalid input!")
-        else: self.addError("Missing inputs!")
+        else: self.addError("Input(s) missing or contain errors!")
+    
+    @property
+    def raw_output(self) -> float|int: 
+        return self.__output.value*60
 
 @Input("Time", [Number, Time], True)
 @Display("Value", False, lambda self: self.output.value)
@@ -424,7 +441,11 @@ class Hours(Time):
             elif type(self.__time) == Hours:          self.__output.set(self.__time.output.value)
             elif type(self.__time) == Days:           self.__output.set(self.__time.output.value*24)
             else: self.addError("Invalid input!")
-        else: self.addError("Missing inputs!")
+        else: self.addError("Input(s) missing or contain errors!")
+    
+    @property
+    def raw_output(self) -> float|int: 
+        return self.__output.value*60*60
 
 @Input("Time", [Number, Time], True)
 @Display("Value", False, lambda self: self.output.value)
@@ -454,7 +475,11 @@ class Days(Time):
             elif type(self.__time) == Hours:          self.__output.set(self.__time.output.value/24)
             elif type(self.__time) == Days:           self.__output.set(self.__time.output.value)
             else: self.addError("Invalid input!")
-        else: self.addError("Missing inputs!")
+        else: self.addError("Input(s) missing or contain errors!")
+    
+    @property
+    def raw_output(self) -> float|int: 
+        return self.__output.value*60*60*24
 
 '''IO'''
 
@@ -499,7 +524,7 @@ class ImageImport(Node):
             else:
                 self.addError(f"File extension {self.__location.__extension} is not a supported image file type!")
                 self.__valid = False
-        else: self.addError("Missing inputs!")
+        else: self.addError("Input(s) missing or contain errors!")
     
     @property
     def image(self) -> ImageWrapper:
@@ -559,7 +584,7 @@ class Reroute(Node):
     def update(self):
         if validate(self.__inputNode):
             self.__output = self.__inputNode
-        else: self.addError("Missing inputs!")
+        else: self.addError("Input(s) missing or contain errors!")
 
     @property
     def node(self) -> Node: return self.__output
@@ -599,15 +624,15 @@ class LessThan(LogicalOperation):
                 if type(self.__inputA) == Number:
                     self.__output.set(self.__inputA.value < self.__inputB.value)
                 elif type(self.__inputA) == Unit:
-                    a = self.__inputA.simplify()
-                    b = self.__inputB.simplify()
+                    a = self.__inputA.raw_output
+                    b = self.__inputB.raw_output
                     if type(a) == type(b):
                         self.__output.set(a.get() < b.get())
                     else:
                         self.addError(f"Inconsistent Unit dimensions {type(a)} and {type(b)}!")
             else:
                 self.addError("Inconsistent type for comparison!")
-        else: self.addError("Missing inputs!")
+        else: self.addError("Input(s) missing or contain errors!")
     
     @property
     def output(self) -> Boolean:
@@ -641,8 +666,8 @@ class GreaterThan(LogicalOperation):
             if type(self.__inputA) == Number:
                 self.__output.set(self.__inputA.value > self.__inputB.value)
             elif type(self.__inputA) == Unit:
-                a = self.__inputA.simplify()
-                b = self.__inputB.simplify()
+                a = self.__inputA.raw_output
+                b = self.__inputB.raw_output
                 if type(a) == type(b):
                     self.__output.set(a.get() > b.get())
                 else:
@@ -682,8 +707,8 @@ class EqualTo(LogicalOperation):
             if type(self.__inputA) == Number:
                 self.__output = Boolean(self.__inputA.value == self.__inputB.value)
             elif type(self.__inputA) == Unit:
-                a = self.__inputA.simplify()
-                b = self.__inputB.simplify()
+                a = self.__inputA.raw_output
+                b = self.__inputB.raw_output
                 if type(a) == type(b):
                     self.__output = Boolean(a.output.value == b.output.value)
                 else:
