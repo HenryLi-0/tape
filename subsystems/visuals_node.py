@@ -20,8 +20,12 @@ class VisualNode(VisualObject):
         self.r_nodeInnerColor = translatePastel(theme, 0.5)
         self.r_nodeBorderColor = translatePastel(theme, 0.2)
         self.r_divider = generateColorBox((round(NODE_WIDTH.get()*0.5),1), self.r_nodeBorderColor)
-        self.r_inputConverter = lambda i: (0,0)
-        self.r_outputConverter = lambda i: (0,0)
+        self.r_inputX = 0
+        self.r_inputYAdd = 0
+        self.r_inputYMul = 1
+        self.r_outputX = 0
+        self.r_outputYAdd = 0
+        self.r_outputYMul = 1
         self.generateTemplate()
     
     def generateTemplate(self):
@@ -48,10 +52,12 @@ class VisualNode(VisualObject):
                 temp.append(displayText(f" {self.n_input[i][0]} ", "s", NODE_IO_BACKGROUND_RGBA.get(), NODE_IO_UNCAPPED_RGBA.get() if self.n_input[i][3] else NODE_IO_NORMAL_RGBA.get()))
             x = max([x.width for x in temp])
             self.r_template_inputs = generateColorBox((x, y_header + y_body), (255,0,0,255) if DEBUG.get() else (0,0,0,0))
-            self.r_inputConverter = lambda i: (6, y_header + (y_body/(len(temp)+1))*(1+i))
+            self.r_inputX = 6
+            self.r_inputYAdd = y_header + (y_body/(len(temp)+1))
+            self.r_inputYMul = y_body/(len(temp)+1)
             for i in range(len(temp)):
-                placeOver(self.r_template_inputs, temp[i], (x-temp[i].width/2, self.r_inputConverter(i)[1]), True)
-                placeOver(self.r_template_main, NODE_THEMES_TRIANGLES[NODE_THEMES_ASSGINMENT[self.n_input[i][1][0]]], self.r_inputConverter(i), True)
+                placeOver(self.r_template_inputs, temp[i], (x-temp[i].width/2, self.r_inputYMul * i + self.r_inputYAdd), True)
+                placeOver(self.r_template_main, NODE_THEMES_TRIANGLES[NODE_THEMES_ASSGINMENT[self.n_input[i][1][0]]], (6, self.r_inputYMul * i  + self.r_inputYAdd), True)
         else:
             self.r_template_inputs = EMPTY_IMAGE.copy()
         
@@ -62,10 +68,12 @@ class VisualNode(VisualObject):
                 temp.append(displayText(f" {self.n_output[i][0]} ", "s", NODE_IO_BACKGROUND_RGBA.get(), NODE_IO_NORMAL_RGBA.get()))
             x = max([x.width for x in temp])
             self.r_template_outputs = generateColorBox((x, y_header+y_body), (255,0,0,255) if DEBUG.get() else (0,0,0,0))
-            self.r_outputConverter = lambda i: (node_x + 15 + 2*3, y_header + (y_body/(len(temp)+1))*(1+i))
+            self.r_outputX = node_x + 15 + 2*3
+            self.r_outputYAdd = y_header + (y_body/(len(temp)+1))
+            self.r_outputYMul = y_body/(len(temp)+1)
             for i in range(len(temp)):
-                placeOver(self.r_template_outputs, temp[i], (temp[i].width/2, self.r_outputConverter(i)[1]), True)
-                placeOver(self.r_template_main, NODE_THEMES_TRIANGLES[NODE_THEMES_ASSGINMENT[self.n_output[i][1]]], self.r_outputConverter(i), True)
+                placeOver(self.r_template_outputs, temp[i], (temp[i].width/2, i * self.r_outputYMul + self.r_outputYAdd), True)
+                placeOver(self.r_template_main, NODE_THEMES_TRIANGLES[NODE_THEMES_ASSGINMENT[self.n_output[i][1]]], (self.r_outputX, i * self.r_outputYMul + self.r_outputYAdd), True)
         else:
             self.r_template_outputs = EMPTY_IMAGE.copy()
 
@@ -139,8 +147,9 @@ class VisualNodeConnection(VisualObject):
         self.r_pixel = generateColorBox((3,3), NODE_THEMES_ASSGINMENT[self.nodeA.node.Output[self.nodeAindex][1]])
 
     def render(self, img, pos, zoom):
-        nodeApos = addP(self.nodeA.positionO.getPosition(), self.nodeA.r_outputConverter(self.nodeAindex))
-        nodeBpos = addP(self.nodeB.positionO.getPosition(), self.nodeB.r_inputConverter(self.nodeBindex))
+        nodeApos = addP(self.nodeA.positionO.getPosition(), (self.nodeA.r_outputX, self.nodeAindex * self.nodeA.r_outputYMul + self.nodeA.r_outputYAdd))
+        nodeBpos = addP(self.nodeB.positionO.getPosition(), (self.nodeB.r_inputX , self.nodeBindex * self.nodeB.r_inputYMul  + self.nodeB.r_inputYAdd ))
+
         step = multiplyP(subtractP(nodeBpos, nodeApos), 0.01)
         for i in range(100):
             placeOver(img, self.r_pixel, addP(multiplyP(addP(nodeApos, multiplyP(step, i)), zoom), pos))
