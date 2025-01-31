@@ -214,7 +214,7 @@ class VisualNodeConnection(VisualObject):
 
 class NodeEditableTextBoxVisualObject(VisualObject):
     '''An editable text box for nodes.'''
-    def __init__(self, name, node:VisualNode, index:int = 0, startTxt= "", intOnly = False, maxSize = (75,25)):
+    def __init__(self, name, node:VisualNode, index:int = 0, startTxt= "", intOnly = False, maxSize = (50,25)):
         self.type = "node textbox"
         self.name = name
         self.lastInteraction = time.time()
@@ -226,18 +226,22 @@ class NodeEditableTextBoxVisualObject(VisualObject):
         self.txtImg = displayText(self.txt, "sm")
         self.intOnly = intOnly
 
-        self.r_templateIdle = generateColorBox(maxSize, BACKGROUND_COLOR_RGBA)
-        self.r_templateActive = generateColorBox(maxSize, FRAME_COLOR_RGBA)
+        temp = NODE_THEMES_ASSGINMENT[self.n_node.node.__class__]
+        temp2 = translatePastel(temp, 0.3)
+        temp3 = translatePastel(temp, 0.6)
+        temp4 = translatePastel(temp, 0.8)
+        self.r_templateIdle = generateColorBox(maxSize, temp2)
+        self.r_templateActive = generateColorBox(maxSize, temp3)
 
-        self.positionO = NodeRectangularPositionalBox(maxSize, self.n_node.positionO.getX(), self.n_node.positionO.getY() + index * NODE_SECTION_HEIGHT.get())
-        self.underlineIdle = generateColorBox((maxSize[0],3), FRAME_COLOR_RGBA)
-        self.underlineActive = generateColorBox((maxSize[0],3), SELECTED_COLOR_RGBA)
+        self.positionO = NodeRectangularPositionalBox(maxSize, self.n_node.positionO.getX(), self.n_node.positionO.getY() + (index+0.5) * NODE_SECTION_HEIGHT.get())
+        self.underlineIdle = generateColorBox((maxSize[0],3), temp3)
+        self.underlineActive = generateColorBox((maxSize[0],3), temp4)
         
     def tick(self, img, visualactive, active):
         if active: self.lastInteraction = time.time()
         temp = self.r_templateActive.copy() if visualactive else self.r_templateIdle.copy()
         placeOver(temp, self.underlineActive if visualactive else self.underlineIdle, (0, self.positionO.getBBOX()[1]-3))
-        placeOver(temp, self.txtImg, (75-self.txtImg.width,0), False)
+        placeOver(temp, self.txtImg, (50-self.txtImg.width,0), False)
         placeOver(img, temp, self.positionO.getPosition())
 
     def updateText(self, txt):
@@ -263,7 +267,7 @@ class NodeEditableTextBoxVisualObject(VisualObject):
             self.updateText(self.txt)
 
     def render(self, img, pos, zoom):
-        self.positionO.setPosition(pos)
+        self.positionO.setPosition(addP(pos, (20 + NODE_WIDTH.get()/2, (self.n_index+1) * NODE_SECTION_HEIGHT.get() - 3)))
 
     def updatePos(self, rmx, rmy):
         pass
