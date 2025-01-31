@@ -153,8 +153,7 @@ class VisualNode(VisualObject):
                 else:
                     temp = displayText(data, "sm")
                 placeOver(templateC, temp, (NODE_WIDTH.get()-3-temp.width,NODE_SECTION_HEIGHT.get()*1.5+h))
-            else:
-                pass # TO-DO: FILL IN AREA
+            else: pass
 
         placeOver(img, templateC, (pos[0],pos[1]))
 
@@ -255,6 +254,8 @@ class NodeEditableTextBoxVisualObject(VisualObject):
                         while item in temp: temp.remove(item)
                     self.txt = "".join(temp)
         self.txtImg = displayText(self.txt, "sm")
+
+        self.n_node.n_display[self.n_index][2](self.n_node.node, float(self.txt) if self.intOnly else self.txt)
 
     def keyAction(self, keys):
         self.lastInteraction = time.time()

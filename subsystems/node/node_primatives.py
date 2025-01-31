@@ -27,7 +27,7 @@ class Node:
 
 '''SIMPLE/BASIC'''
 @Input()
-@Display("Value", True, None)
+@Display("Value", True, lambda self, data: self.set(data))
 @Output("Value", -1, lambda self: self)
 class Number(Node):
     '''
@@ -46,7 +46,7 @@ class Number(Node):
     def value(self) -> int|float: return self.__value
 
 @Input()
-@Display("Value", True, None)
+@Display("Value", True, lambda self, data: self.set(data))
 @Output("Value", -1, lambda self: self)
 class Boolean(Node):
     '''
@@ -65,7 +65,7 @@ class Boolean(Node):
     def value(self) -> bool: return self.__value
 
 @Input()
-@Display("Value", True, None)
+@Display("Value", True, lambda self, data: self.set(data))
 @Output("Value", -1, lambda self: self)
 class String(Node):
     '''
