@@ -63,7 +63,7 @@ class State:
             "aaa" : Random(),
             "bbb" : Number(100)
         }
-        self.nodeConnections = [["bbb", "Value", "aaa", "Lower Limit"]]
+        self.nodeConnections = [["bbb", 0, "aaa", 0]]
         self.nodesIDs = list(self.nodes.keys())
 
         '''TEMPORARY TESTING'''
@@ -73,18 +73,20 @@ class State:
         
         for connection in self.nodeConnections:
             outputs = self.nodes[connection[0]].Output
-            getter = outputs[[x[0] for x in outputs].index(connection[1])][2]
+            getter = outputs[connection[1]][2]
             inputs = self.nodes[connection[2]].Input
             newInputs = self.nodes[connection[2]].get()
-            newInputs[[x[0] for x in inputs].index(connection[3])] = getter(self.nodes[connection[0]])
+            newInputs[connection[3]] = getter(self.nodes[connection[0]])
             self.nodes[connection[2]].set(*newInputs)
         
         self.ivos["text"] = ["w",NodeEditableTextBoxVisualObject("test", self.ivos["bbb"][1], 0, "sus")]
-        self.ivos["a1"] = ["w",NodeConnectionPoint("test", self.ivos["aaa"][1], 0,  True)]
-        self.ivos["a2"] = ["w",NodeConnectionPoint("test", self.ivos["aaa"][1], 1,  True)]
-        self.ivos["a3"] = ["w",NodeConnectionPoint("test", self.ivos["aaa"][1], 2,  True)]
-        self.ivos["b1"] = ["w",NodeConnectionPoint("test", self.ivos["aaa"][1], 0, False)]
-        self.ivos["c1"] = ["w",NodeConnectionPoint("test", self.ivos["bbb"][1], 0, False)]
+
+        self.ivos["a1"] = ["w",NodeConnectionPoint("test", "aaa", self.ivos["aaa"][1], 0,  True)]
+        self.ivos["a2"] = ["w",NodeConnectionPoint("test", "aaa", self.ivos["aaa"][1], 1,  True)]
+        self.ivos["a3"] = ["w",NodeConnectionPoint("test", "aaa", self.ivos["aaa"][1], 2,  True)]
+        self.ivos["b1"] = ["w",NodeConnectionPoint("test", "aaa", self.ivos["aaa"][1], 0, False)]
+        self.ivos["c1"] = ["w",NodeConnectionPoint("test", "bbb", self.ivos["bbb"][1], 0, False)]
+        self.nodeConnectors = ["a1", "a2", "a3", "b1", "c1"]
 
 
 
@@ -123,6 +125,48 @@ class State:
         '''tape'''
         if self.interacting in [-99, -98, -97, -96, -95]:
             self.tab = self.ivos[self.interacting][1].name[0].lower()
+
+        # node connection creation logic
+        if self.ivos[self.previousInteracting][1].type == "node connection point" and self.interacting != self.previousInteracting:
+            if self.ivos[self.previousInteracting][1].out_connectionRequest != None:
+                here = self.ivos[self.previousInteracting][1].out_connectionRequest
+                nodeSpace = []
+                for connectorID in self.nodeConnectors:
+                    if self.ivos[connectorID][1].n_input:
+                        nodeSpace.append(distanceP(self.ivos[connectorID][1].positionO.getNodeSpacePosition(), here))
+                    else:
+                        nodeSpace.append(100)
+                closest = self.nodeConnectors[nodeSpace.index(min(nodeSpace))]
+                if distanceP(self.ivos[closest][1].positionO.getNodeSpacePosition(), here) < 10:
+                    connection = [self.ivos[self.previousInteracting][1].n_nodeID, self.ivos[self.previousInteracting][1].n_index, self.ivos[closest][1].n_nodeID, self.ivos[closest][1].n_index]
+                    self.ivos[str(uuid.uuid4())] = ["w", VisualNodeConnection("test", self.ivos[self.ivos[self.previousInteracting][1].n_nodeID][1], connection[1], self.ivos[self.ivos[closest][1].n_nodeID][1], connection[3])]
+                    outputs = self.nodes[connection[0]].Output
+                    getter = outputs[connection[1]][2]
+                    newInputs = self.nodes[connection[2]].get()
+                    newInputs[connection[3]] = getter(self.nodes[connection[0]])
+                    self.nodes[connection[2]].set(*newInputs)
+
+                self.ivos[self.previousInteracting][1].out_connectionRequest = None
+
+    def summonNode(self, node:Node):
+        id = str(uuid.uuid4())
+        self.nodes[id] = node
+        self.nodesIDs = list(self.nodes.keys())
+
+        self.ivos[id] = ["w", VisualNode("test", (random.randint(0,500),random.randint(0,500)), self.nodes[id])]
+        
+        for i in range(len(node.Input)):
+            name = f"{id} - in{i}"
+            self.ivos[name] = ["w", NodeConnectionPoint(name, id, self.ivos[id][1], i, True)]
+            self.nodeConnectors.append(name)
+        for i in range(len(node.Output)):
+            name = f"{id} - out{i}"
+            self.ivos[name] = ["w", NodeConnectionPoint(name, id, self.ivos[id][1], i, False)]
+            self.nodeConnectors.append(name)
+
+
+
+
 
     def scheduleSectionUpdate(self, section):
         if not(section in self.scheduledSectionUpdate):

@@ -21,6 +21,10 @@ def multiplyP(coord: tuple|list, mul):
     '''Multiplies the x and y coordinate of a given (x,y) by mul'''
     return (coord[0]*mul, coord[1]*mul)
 
+def distanceP(coord1: tuple|list, coord2: tuple|list):
+    '''Returns the distance between two points given in (x,y) format'''
+    return math.sqrt((coord1[0]-coord2[0])**2+(coord1[1]-coord2[1])**2)
+
 def line(coord1: tuple|list,coord2: tuple|list):
     '''Returns a lambda f(x)=mx+b, given two points in (x,y) format '''
     return lambda x: ((coord2[1]-coord1[1])/(coord2[0]-coord1[0]))*(x-coord1[0])+coord1[1]

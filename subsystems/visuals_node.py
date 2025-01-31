@@ -271,14 +271,16 @@ class NodeEditableTextBoxVisualObject(VisualObject):
 
 class NodeConnectionPoint(VisualObject):
     '''An connection point for nodes.'''
-    def __init__(self, name, node:VisualNode, index:int = 0, isInput = True):
+    def __init__(self, name, nodeID, node:VisualNode, index:int = 0, isInput = True):
         self.type = "node connection point"
         self.name = name
         self.lastInteraction = time.time()
 
+        self.n_nodeID = nodeID
         self.n_node = node
         self.n_index = index
         self.n_input = isInput
+        self.out_connectionRequest = None
         
         if isInput:
             pos = addP(self.n_node.positionO.getNodeSpacePosition(), (self.n_node.r_inputX , self.n_index * self.n_node.r_inputYMul  + self.n_node.r_inputYAdd ))
@@ -298,3 +300,4 @@ class NodeConnectionPoint(VisualObject):
     def updatePos(self, rmx, rmy):
         if not(self.n_input):
             self.positionO.setPosition((rmx, rmy))
+            self.out_connectionRequest = [rmx, rmy]
