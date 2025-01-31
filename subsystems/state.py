@@ -34,18 +34,12 @@ class State:
             -999 : [" ", DummyVisualObject("dummy", (0,0))], # used for not interacting with anything
             -998 : [" ", DummyVisualObject("dummy", (0,0))], # used for text boxes
 
-            -99 : ["w",ButtonVisualObject("sprites",(7,450),RECTANGULAR_RED_BUTTON,RECTANGULAR_GREEN_BUTTON)],
-            -98 : ["w",ButtonVisualObject("visuals",(134,450),RECTANGULAR_RED_BUTTON,RECTANGULAR_GREEN_BUTTON)],
-            -97 : ["w",ButtonVisualObject("project",(7,450),RECTANGULAR_RED_BUTTON,RECTANGULAR_GREEN_BUTTON)],
-            -96 : ["w",IconVisualObject("Settings",(323,450), GEAR, (52,52))],
-            -95 : ["w",OrbVisualObject("what",(323,450))],
-            -94 : ["w",EditableTextBoxVisualObject("test", (50,50), "test")],
 
-            -89 : ["t",IconVisualObject("Animation", (9,3), ANIMATION_TAB, outline = False)],
-            -88 : ["t",IconVisualObject("Nodes", (49,3), NODES_TAB, outline = False)],
-            -87 : ["t",IconVisualObject("Debug", (89,3), DEBUG_TAB, outline = False)],
-            -86 : ["t",IconVisualObject("Export", (129,3), EXPORT_TAB, outline = False)],
-            -85 : ["t",IconVisualObject("Settings", (169,3), SETTINGS_TAB, outline = False)],
+            -99 : ["t",IconVisualObject("Animation", (9,3), ANIMATION_TAB, outline = False)],
+            -98 : ["t",IconVisualObject("Nodes", (49,3), NODES_TAB, outline = False)],
+            -97 : ["t",IconVisualObject("Debug", (89,3), DEBUG_TAB, outline = False)],
+            -96 : ["t",IconVisualObject("Export", (129,3), EXPORT_TAB, outline = False)],
+            -95 : ["t",IconVisualObject("Settings", (169,3), SETTINGS_TAB, outline = False)],
         }
         '''Control'''
         self.interacting = -999
@@ -84,6 +78,8 @@ class State:
             newInputs = self.nodes[connection[2]].get()
             newInputs[[x[0] for x in inputs].index(connection[3])] = getter(self.nodes[connection[0]])
             self.nodes[connection[2]].set(*newInputs)
+        
+        self.ivos["text"] = ["w",NodeEditableTextBoxVisualObject("test", self.ivos["bbb"][1], 0, "sus")]
 
 
         self.workspaceX = 0
@@ -119,7 +115,7 @@ class State:
         self.mouseInWorkspace =     self.mouseInSection("w")
 
         '''tape'''
-        if self.interacting in [-89, -88, -87, -86, -85]:
+        if self.interacting in [-99, -98, -97, -96, -95]:
             self.tab = self.ivos[self.interacting][1].name[0].lower()
 
     def scheduleSectionUpdate(self, section):
