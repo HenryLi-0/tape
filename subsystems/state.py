@@ -80,6 +80,12 @@ class State:
             self.nodes[connection[2]].set(*newInputs)
         
         self.ivos["text"] = ["w",NodeEditableTextBoxVisualObject("test", self.ivos["bbb"][1], 0, "sus")]
+        self.ivos["a1"] = ["w",NodeConnectionPoint("test", self.ivos["aaa"][1], 0,  True)]
+        self.ivos["a2"] = ["w",NodeConnectionPoint("test", self.ivos["aaa"][1], 1,  True)]
+        self.ivos["a3"] = ["w",NodeConnectionPoint("test", self.ivos["aaa"][1], 2,  True)]
+        self.ivos["b1"] = ["w",NodeConnectionPoint("test", self.ivos["aaa"][1], 0, False)]
+        self.ivos["c1"] = ["w",NodeConnectionPoint("test", self.ivos["bbb"][1], 0, False)]
+
 
 
         self.workspaceX = 0

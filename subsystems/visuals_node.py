@@ -200,10 +200,6 @@ class VisualNodeConnection(VisualObject):
 
     def tick(self, img, visualactive, active):
         pass
-
-
-
-
     def updateText(self, txt):
         pass
     def keyAction(self, keys):
@@ -268,7 +264,37 @@ class NodeEditableTextBoxVisualObject(VisualObject):
             self.updateText(self.txt)
 
     def render(self, img, pos, zoom):
-        self.positionO.setPosition(addP(pos, (20 + NODE_WIDTH.get()/2, (self.n_index+1) * NODE_SECTION_HEIGHT.get() - 3)))
+        self.positionO.setPosition(addP(pos, multiplyP((20 + NODE_WIDTH.get()/2, (self.n_index+1) * NODE_SECTION_HEIGHT.get() - 3), zoom)))
 
     def updatePos(self, rmx, rmy):
         pass
+
+class NodeConnectionPoint(VisualObject):
+    '''An connection point for nodes.'''
+    def __init__(self, name, node:VisualNode, index:int = 0, isInput = True):
+        self.type = "node connection point"
+        self.name = name
+        self.lastInteraction = time.time()
+
+        self.n_node = node
+        self.n_index = index
+        self.n_input = isInput
+        
+        if isInput:
+            pos = addP(self.n_node.positionO.getNodeSpacePosition(), (self.n_node.r_inputX , self.n_index * self.n_node.r_inputYMul  + self.n_node.r_inputYAdd ))
+        else:
+            pos = addP(self.n_node.positionO.getNodeSpacePosition(), (self.n_node.r_outputX, self.n_index * self.n_node.r_outputYMul + self.n_node.r_outputYAdd))
+
+        self.positionO = NodeRectangularPositionalBox((10,10), pos[0], pos[1])
+        self.visual = generateColorBox((10,10), (255,0,0,255))
+        
+    def tick(self, img, visualactive, active):
+        if active: self.lastInteraction = time.time()
+        placeOver(img, self.visual, self.positionO.getPosition())
+
+    def render(self, img, pos, zoom):
+        self.positionO.setPosition(pos)
+
+    def updatePos(self, rmx, rmy):
+        if not(self.n_input):
+            self.positionO.setPosition((rmx, rmy))
