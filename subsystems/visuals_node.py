@@ -251,7 +251,18 @@ class NodeEditableTextBoxVisualObject(VisualObject):
                     self.txt = "".join(temp)
         self.txtImg = displayText(self.txt, "sm")
 
-        self.n_node.n_display[self.n_index][2](self.n_node.node, float(self.txt) if self.intOnly else self.txt)
+        output = self.txt
+        if self.intOnly or type(self.n_node.node)==Number:
+            output = float(self.txt)
+        elif type(self.n_node.node)==Boolean:
+            if output=="0" or output=="" or "f" in output or "F" in output:
+                output = False
+            else:
+                output = True
+        elif type(self.n_node.node)==String:
+            output = str(self.txt)
+
+        self.n_node.n_display[self.n_index][2](self.n_node.node, output)
 
     def keyAction(self, keys):
         self.lastInteraction = time.time()
@@ -279,6 +290,10 @@ class NodeConnectionPoint(VisualObject):
         self.n_nodeID = nodeID
         self.n_node = node
         self.n_index = index
+        if isInput:
+            self.n_type = node.n_input[index][1]
+        else:
+            self.n_type = node.n_output[index][1]
         self.n_input = isInput
         self.out_connectionRequest = None
         

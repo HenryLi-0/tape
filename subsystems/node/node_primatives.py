@@ -33,11 +33,11 @@ class Number(Node):
     '''
         A number.
     '''
-    def __init__(self, start:int|float = None):
+    def __init__(self, start:int|float = 0):
         super().__init__()
         self.__value = None
         self.set(start)
-    def set(self, start:int|float = None):
+    def set(self, start:int|float = 0):
         self.__value = start
     def get(self):
         return [self.__value]
@@ -52,11 +52,11 @@ class Boolean(Node):
     '''
         A boolean.
     '''
-    def __init__(self, boolean:bool):
+    def __init__(self, boolean:bool = False):
         super().__init__()
         self.__value = None
         self.set(boolean)
-    def set(self, boolean:bool):
+    def set(self, boolean:bool = False):
         self.__value = boolean
     def get(self):
         return [self.__value]
@@ -71,11 +71,11 @@ class String(Node):
     '''
         A string.
     '''
-    def __init__(self, string:str):
+    def __init__(self, string:str = ""):
         super().__init__()
         self.__value = None
         self.set(string)
-    def set(self, string:str):
+    def set(self, string:str = ""):
         self.__value = string
     def get(self):
         return [self.__value]
