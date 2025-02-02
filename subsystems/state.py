@@ -70,33 +70,15 @@ class State:
         self.nodeConnections = []
         self.nodeConnectors = []
 
-        '''TEMPORARY TESTING'''
-        # for id in self.nodesIDs:
-        #     self.ivos[id] = ["w", VisualNode("test", (random.randint(0,500),random.randint(0,500)), self.nodes[id])]
-        # self.ivos["test"] = ["w", VisualNodeConnection("test", self.ivos["bbb"][1], 0, self.ivos["aaa"][1], 0)]
-        
-        # for connection in self.nodeConnections:
-        #     outputs = self.nodes[connection[0]].Output
-        #     getter = outputs[connection[1]][2]
-        #     inputs = self.nodes[connection[2]].Input
-        #     newInputs = self.nodes[connection[2]].get()
-        #     newInputs[connection[3]] = getter(self.nodes[connection[0]])
-        #     self.nodes[connection[2]].set(*newInputs)
-        
-        # self.ivos["text"] = ["w",NodeEditableTextBoxVisualObject("test", self.ivos["bbb"][1], 0, "sus")]
-
-        # self.ivos["a1"] = ["w",NodeConnectionPoint("test", "aaa", self.ivos["aaa"][1], 0,  True)]
-        # self.ivos["a2"] = ["w",NodeConnectionPoint("test", "aaa", self.ivos["aaa"][1], 1,  True)]
-        # self.ivos["a3"] = ["w",NodeConnectionPoint("test", "aaa", self.ivos["aaa"][1], 2,  True)]
-        # self.ivos["b1"] = ["w",NodeConnectionPoint("test", "aaa", self.ivos["aaa"][1], 0, False)]
-        # self.ivos["c1"] = ["w",NodeConnectionPoint("test", "bbb", self.ivos["bbb"][1], 0, False)]
-        # self.nodeConnectors = ["a1", "a2", "a3", "b1", "c1"]
-
         self.summonNode(Number(), (0, 0))
         self.summonNode(Number(), (0, 100))
         self.summonNode(Boolean(), (0, 200))
 
         self.summonNode(Random(), (250, 0))
+        self.summonNode(Number(), (250, 200))
+
+        self.summonNode(Coordinate(), (500, 0))
+        self.summonNode(RawUnit(), (750, 0))
 
 
         self.workspaceX = 0
@@ -144,10 +126,11 @@ class State:
                     if self.ivos[connectorID][1].n_input:
                         nodeSpace.append(distanceP(self.ivos[connectorID][1].positionO.getNodeSpacePosition(), here))
                     else:
-                        nodeSpace.append(100)
+                        nodeSpace.append(math.inf)
                 closest = self.nodeConnectors[nodeSpace.index(min(nodeSpace))]
                 if distanceP(self.ivos[closest][1].positionO.getNodeSpacePosition(), here) < 25:
                     if self.ivos[self.previousInteracting][1].n_type in self.ivos[closest][1].n_type:
+                        # form a connection
                         connection = [
                             self.ivos[self.previousInteracting][1].n_nodeID,
                             self.ivos[self.previousInteracting][1].n_index,
@@ -156,7 +139,7 @@ class State:
                         ]
                         self.nodeConnections.append(connection)
                         self.ivos[str(uuid.uuid4())] = ["w", VisualNodeConnection(
-                            "test",
+                            "connection",
                             self.ivos[self.ivos[self.previousInteracting][1].n_nodeID][1],
                             connection[1],
                             self.ivos[self.ivos[closest][1].n_nodeID][1],

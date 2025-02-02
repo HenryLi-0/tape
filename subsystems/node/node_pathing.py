@@ -9,7 +9,7 @@ from subsystems.settings import *
 
 @Input("x", [Number, Pixel], True)
 @Input("y", [Number, Pixel], True)
-@Display("Value", False, lambda self: f"({self.x.value})")
+@Display("Value", False, lambda self: f"({self.x.raw_output}, {self.y.raw_output})")
 @Output("x", Pixel, lambda self: self.x)
 @Output("y", Pixel, lambda self: self.y)
 @Output("Coordinate", -1, lambda self: self.output)
@@ -21,13 +21,13 @@ class Coordinate(Node):
         - `x` represents the x coordinate.
         - `y` represents the y coordinate.
     '''
-    def __init__(self, x:Number|Pixel, y:Number|Pixel):
+    def __init__(self):
         super().__init__()
         self.__output = self
-        self.__x = Pixel(0)
-        self.__y = Pixel(0)
-        self.set(x, y)
-    def set(self, x:Number|Pixel, y:Number|Pixel):
+        self.__x = Pixel()
+        self.__y = Pixel()
+        self.set()
+    def set(self, x:Number|Pixel = None, y:Number|Pixel = None):
         self.__xNode = x
         self.__yNode = y
         self.update()
@@ -64,11 +64,12 @@ class Frame(Node):
         - `value` represents a value or coordinate.
         - `time` represents the time after the start.
     '''
-    def __init__(self, value:Coordinate|Number|Angle|Pixel, time:Time):
+    def __init__(self):
         super().__init__()
         self.__output = None
         self.__time = None
-    def set(self, value:Coordinate|Number|Angle|Pixel, time:Time):
+        self.set()
+    def set(self, value:Coordinate|Number|Angle|Pixel = None, time:Time = None):
         if issubclass(type(time), Time):
             self.__output = value
             self.__time = time
@@ -99,10 +100,10 @@ class Path(Node):
         Requires:
         - `frames` is any number of Frames of the type.
     '''
-    def __init__(self, *frames:Frame):
+    def __init__(self):
         super().__init__()
-        self.set(*frames)
-    def set(self, *frames:Frame):
+        self.set()
+    def set(self, *frames:Frame): # TO-DO: fix no default value
         self.__allFrames = [*frames]
         self.update()
     def get(self):
@@ -135,7 +136,7 @@ class PathCalculator(Node):
     def __init__(self):
         super().__init__()
         self.__output = None
-    def set(self, path:Path, time:Time):
+    def set(self, path:Path = None, time:Time = None):
         self.__path = path
         self.__time = time
         self.update()
@@ -151,38 +152,38 @@ class PathCalculator(Node):
         else: self.addError("Input(s) missing or contain errors!")
     @property
     def calculatePath(self):
-        return self.calculate(self.__allFrames) # TO-DO: MAKE MORE EFFICIENT
+        return self.calculate(self.__allFrames, self.__time.raw_output)
 
 @Input("Path", [Path], True, False)
 @Input("Time", [Time], True, False)
 @Display()
-@Output("Linear Path Type", -1, lambda self: self)
-class LinearPathType(PathCalculator):
-    def calculate(self, *frames:Frame):
+@Output("Value", Node, lambda self: self.calculatePath())
+class LinearPath(PathCalculator):
+    def calculate(self, *frames:Frame, time:float|int):
         pass # TO-DO: FINISH
 
 @Input("Path", [Path], True, False)
 @Input("Time", [Time], True, False)
 @Display()
-@Output("Bezier Path Type", -1, lambda self: self)
-class BezierPathType(PathCalculator):
-    def calculate(self, *frames:Frame):
+@Output("Value", Node, lambda self: self.calculatePath())
+class BezierPath(PathCalculator):
+    def calculate(self, *frames:Frame, time:float|int):
         pass # TO-DO: FINISH
 
 @Input("Path", [Path], True, False)
 @Input("Time", [Time], True, False)
 @Display()
-@Output("Smooth Approach Path Type", -1, lambda self: self)
-class SmoothApproachesPathType(PathCalculator):
-    def calculate(self, *frames:Frame):
+@Output("Value", Node, lambda self: self.calculatePath())
+class SmoothApproachPath(PathCalculator):
+    def calculate(self, *frames:Frame, time:float|int):
         pass # TO-DO: FINISH
 
 @Input("Path", [Path], True, False)
 @Input("Time", [Time], True, False)
 @Display()
-@Output("Smooth Full Path Type", -1, lambda self: self)
-class SmoothFullPathType(PathCalculator):
-    def calculate(self, *frames:Frame):
+@Output("Value", Node, lambda self: self.calculatePath())
+class SmoothFullPath(PathCalculator):
+    def calculate(self, *frames:Frame, time:float|int):
         pass # TO-DO: FINISH
 
 
@@ -198,11 +199,11 @@ class PathAxisMerger(Node):
         - `xAxisPath` is a Path representing the x axis.
         - `yAxisPath` is a Path representing the y axis.
     '''
-    def __init__(self, xAxisPath:Path, yAxisPath:Path):
+    def __init__(self):
         super().__init__()
         self.__output = Path()
-        self.set(xAxisPath, yAxisPath)
-    def set(self, xAxisPath:Path, yAxisPath:Path):
+        self.set()
+    def set(self, xAxisPath:Path = None, yAxisPath:Path = None):
         self.__xAxisPath = xAxisPath
         self.__yAxisPath = yAxisPath
         self.update()
@@ -220,13 +221,13 @@ class PathAtTime(Node):
     '''
 
     '''
-    def __init__(self, path:Path, time:Time):
+    def __init__(self):
         super().__init__()
         self.__output = None
         self.__temp = None
         self.__mode = None
-        self.set(path, time)
-    def set(self, path:Path, time:Time):
+        self.set()
+    def set(self, path:Path = None, time:Time = None):
         self.__path = path
         self.__time = time
         frameClass = self.__path.__allFrames[0].value.__class__
@@ -244,6 +245,7 @@ class PathAtTime(Node):
             self.addError(f"Unexpected frame data type {frameClass}!")
         self.update()
     def update(self):
+        # if validate()
         self.__output.update()
         pass # TO-DO: FINISH PATH LOGIC
     
@@ -257,14 +259,14 @@ class PathMerger(Node):
     '''
         Merges any number of paths of the same type into one.
     '''
-    def __init__(self, *paths):
+    def __init__(self):
         super().__init__()
         self.__output = Path()
+        self.set()
+    def set(self, *paths):
         for path in paths:
             pass
         # TO-DO: FINISH PATH LOGIC
-    def set():
-        pass
     def update(self):
         pass # TO-DO: FINISH PATH LOGIC
 

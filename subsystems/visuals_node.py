@@ -79,7 +79,7 @@ class VisualNode(VisualObject):
         node_x = NODE_WIDTH.get()
         node_mid_x = (NODE_WIDTH.get()+6+20)/2
         y_header = (NODE_SECTION_HEIGHT.get() + NODE_SECTION_DIVIDER_HEIGHT.get())
-        y_body = max(len(self.n_display)*(NODE_SECTION_HEIGHT.get()+NODE_SECTION_DIVIDER_HEIGHT.get()), len(self.n_input)*12, len(self.n_output)*12)
+        y_body = max(len(self.n_display)*(NODE_SECTION_HEIGHT.get()+NODE_SECTION_DIVIDER_HEIGHT.get()), len(self.n_input)*24, len(self.n_output)*24)
         y = y_header + y_body
     
         self.r_template_main = generateBorderBox((node_x, y), 3, self.r_nodeBorderColor, self.r_nodeInnerColor)
@@ -209,7 +209,7 @@ class VisualNodeConnection(VisualObject):
 
 class NodeEditableTextBoxVisualObject(VisualObject):
     '''An editable text box for nodes.'''
-    def __init__(self, name, node:VisualNode, index:int = 0, startTxt= "", intOnly = False, maxSize = (50,25)):
+    def __init__(self, name, node:VisualNode, index:int = 0, startTxt= "", maxSize = (50,25)):
         self.type = "node textbox"
         self.name = name
         self.lastInteraction = time.time()
@@ -219,7 +219,6 @@ class NodeEditableTextBoxVisualObject(VisualObject):
 
         self.txt = str(startTxt)
         self.txtImg = displayText(self.txt, "sm")
-        self.intOnly = intOnly
 
         temp = NODE_THEMES_ASSGINMENT[self.n_node.node.__class__]
         temp2 = translatePastel(temp, 0.3)
@@ -239,21 +238,18 @@ class NodeEditableTextBoxVisualObject(VisualObject):
         placeOver(temp, self.txtImg, (50-self.txtImg.width,0), False)
         placeOver(img, temp, self.positionO.getPosition())
 
-    def updateText(self, txt):
-        if self.intOnly:
-            if txt == "" or len(str(txt)) == 0:
-                self.txt = "0"
-            else:
-                temp = list(str(txt))
+    def updateText(self):
+        output = self.txt
+        if type(self.n_node.node)==Number:
+            try:
+                output = float(self.txt)
+            except:
+                temp = list(str(self.txt))
                 for item in temp:
                     if item not in "0123456789":
                         while item in temp: temp.remove(item)
-                    self.txt = "".join(temp)
-        self.txtImg = displayText(self.txt, "sm")
-
-        output = self.txt
-        if self.intOnly or type(self.n_node.node)==Number:
-            output = float(self.txt)
+                    output = "".join(temp)
+                    self.txt = output
         elif type(self.n_node.node)==Boolean:
             if output=="0" or output=="" or "f" in output or "F" in output:
                 output = False
@@ -262,6 +258,7 @@ class NodeEditableTextBoxVisualObject(VisualObject):
         elif type(self.n_node.node)==String:
             output = str(self.txt)
 
+        self.txtImg = displayText(self.txt, "sm")
         self.n_node.n_display[self.n_index][2](self.n_node.node, output)
 
     def keyAction(self, keys):
@@ -272,7 +269,7 @@ class NodeEditableTextBoxVisualObject(VisualObject):
             if key == -1:self.txt = self.txt[0:-1]
             else: self.txt += chr(key)
         if prevtxt != self.txt:
-            self.updateText(self.txt)
+            self.updateText()
 
     def render(self, img, pos, zoom):
         self.positionO.setPosition(addP(pos, multiplyP((20 + NODE_WIDTH.get()/2, (self.n_index+1) * NODE_SECTION_HEIGHT.get() - 3), zoom)))
@@ -302,8 +299,8 @@ class NodeConnectionPoint(VisualObject):
         else:
             pos = addP(self.n_node.positionO.getNodeSpacePosition(), (self.n_node.r_outputX, self.n_index * self.n_node.r_outputYMul + self.n_node.r_outputYAdd))
 
-        self.positionO = NodeRectangularPositionalBox((10,10), pos[0], pos[1])
-        self.visual = generateColorBox((10,10), (255,0,0,255))
+        self.positionO = NodeRectangularPositionalBox((10,10), pos[0]-5, pos[1]-5)
+        self.visual = generateColorBox((10,10), (255,255,255,127))
         
     def tick(self, img, visualactive, active):
         if active: self.lastInteraction = time.time()

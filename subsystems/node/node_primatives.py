@@ -199,6 +199,33 @@ class Unit(Node):
     def raw_output(self) -> float|int: 
         return self.__output.value
 
+@Input("Unit", [Unit], True)
+@Display("Value", False, lambda self: self.output.value)
+@Output("Raw Output", Number, lambda self: self.output)
+class RawUnit(Node):
+    '''
+        A class that simplifies a Unit to its raw form as a Number.
+        - Angle -> Degrees
+        - Distance -> Pixels
+        - Time -> Seconds
+    '''
+    def __init__(self):
+        super().__init__()
+        self.__output = Number()
+        self.set()
+    def set(self, unit:Unit = None):
+        self.__unit = unit
+    def update(self):
+        if validate(self.__unit):
+            self.__output.set(self.__unit.raw_output)
+        else: self.addError("Input(s) missing or contain errors!")
+    
+    @property
+    def output(self) -> Number:
+        return self.__output
+
+
+
 class Angle(Unit):
     '''
         A class for all types of Angle units to inherit from.
