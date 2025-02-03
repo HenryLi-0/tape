@@ -2,6 +2,8 @@
 
 ---
 
+**this is partially outdated.**
+
 Welcome to the Usage Manual for Tape v2.x! Tape v2.x is an overly unnecessary way to animate an image to move across your screen. Tape v2.x is a full rewrite of Tape v1.x, and approaches the idea in a different way!
 
 Tape v2.x, unlike Tape v1.x, is a node based animation editor using node structures to define the animation. This means that there is a node work area, where nodes, drag-and-drop-able boxes can be placed. Most nodes have inputs and outputs, while some may only have one. Additionally, some may have fields that the user can type into or select. 

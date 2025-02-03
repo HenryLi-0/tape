@@ -6,6 +6,8 @@
 
 Tape v2 is being worked on! It's currently in the `v2` branch, expected to merge into `main` in a couple weeks or months, depending on how busy I am! Tape v2 is expected to improve the editor and performance from Tape v1, along with using a newer rendering system! Tape v2 aims to be a near complete rewrite of Tape v1, so lots of changes and likely tons of bugs! Unfortunately, like when Tape v1 was being developed, contributions aren't being accepted until there's an actual ready release and is suitable for testing. However, feel free to report any bugs!
 
+**This is a demo release! And an alpha release! Meaning this is kinda unfinished and quite buggy!**
+
 ## Goal:
 
 Issue: No editing software I have can easily move solid images around the screen
@@ -22,7 +24,7 @@ Ok, time to get started!
 
 ![](</demo.png>)
 
-You can also find a video of it [here!](https://www.youtube.com/watch?v=9hZ3eRs_Sic)
+You can also find a video of it [here!](https://www.youtube.com/watch?v=9hZ3eRs_Sic) (outdated!)
 
 ### Getting Started:
 
