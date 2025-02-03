@@ -22,9 +22,9 @@ Ok, time to get started!
 
 ### Images:
 
-![](</demo.png>)
+see the releases page for this version!
 
-You can also find a video of it [here!](https://www.youtube.com/watch?v=9hZ3eRs_Sic) (outdated!)
+you can find the version 1 showcase [here!](https://www.youtube.com/watch?v=9hZ3eRs_Sic) (outdated!)
 
 ### Getting Started:
 
