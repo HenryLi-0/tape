@@ -245,9 +245,15 @@ class NodeEditableTextBoxVisualObject(VisualObject):
                 output = float(self.txt)
             except:
                 temp = list(str(self.txt))
+                decimal = False
                 for item in temp:
-                    if item not in "0123456789":
-                        while item in temp: temp.remove(item)
+                    if item not in "0123456789.":
+                        while item in temp:
+                            temp.remove(item)
+                    if decimal and item == ".":
+                        temp.remove(item)
+                    if item == ".":
+                        decimal = True
                     output = "".join(temp)
                     self.txt = output
         elif type(self.n_node.node)==Boolean:

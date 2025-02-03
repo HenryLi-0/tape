@@ -17,7 +17,7 @@ class Node:
     def set(self):
         pass
     def update(self):
-        return None
+        pass
     
     @property
     def id(self): return self.__id
@@ -189,15 +189,6 @@ class Unit(Node):
     '''
     def __init__(self):
         super().__init__()
-        self.__output = None
-
-    @property
-    def output(self) -> Number: 
-        return self.__output
-
-    @property
-    def raw_output(self) -> float|int: 
-        return self.__output.value
 
 @Input("Unit", [Unit], True)
 @Display("Value", False, lambda self: self.output.value)
@@ -215,6 +206,9 @@ class RawUnit(Node):
         self.set()
     def set(self, unit:Unit = None):
         self.__unit = unit
+        self.update()
+    def get(self):
+        return [self.__unit]
     def update(self):
         if validate(self.__unit):
             self.__output.set(self.__unit.raw_output)
@@ -235,8 +229,8 @@ class Angle(Unit):
 
 @Input("Angle", [Number, Angle], True)
 @Display("Value", False, lambda self: self.output.value)
-@Output("Angle", Number, lambda self: self.output)
-class Degrees(Angle):
+@Output("Angle", -1, lambda self: self)
+class Degrees(Angle, Unit):
     '''
         A unit of angle, representing 1/360th of a circle.
 
@@ -261,13 +255,21 @@ class Degrees(Angle):
         else: self.addError("Input(s) missing or contain errors!")
     
     @property
+    def output(self) -> Number: 
+        return self.__output
+
+    @property
+    def raw_output(self) -> float|int: 
+        return self.__output.value
+    
+    @property
     def raw_output(self) -> float|int: 
         return self.__output.value
 
 @Input("Angle", [Number, Angle], True)
 @Display("Value", False, lambda self: self.output.value)
-@Output("Angle", Number, lambda self: self.output)
-class Radians(Angle):
+@Output("Angle", -1, lambda self: self)
+class Radians(Angle, Unit):
     '''
         A unit of angle, where 2*PI radians represents a complete circle.
 
@@ -293,6 +295,14 @@ class Radians(Angle):
         else: self.addError("Input(s) missing or contain errors!")
     
     @property
+    def output(self) -> Number: 
+        return self.__output
+
+    @property
+    def raw_output(self) -> float|int: 
+        return self.__output.value
+    
+    @property
     def raw_output(self) -> float|int: 
         return self.__output.value*180/math.pi
 
@@ -300,13 +310,11 @@ class Distance(Unit):
     '''
         A class for all types of Distance units to inherit from.
     '''
-    def __init__(self):
-        super().__init__()
 
 @Input("Distance", [Number, Distance], True)
 @Display("Value", False, lambda self: self.output.value)
-@Output("Distance", Number, lambda self: self.output)
-class Pixel(Distance):
+@Output("Distance", -1, lambda self: self)
+class Pixels(Distance, Unit):
     '''
         A unit of measurement, where one pixel represents one screen pixel.
 
@@ -325,9 +333,17 @@ class Pixel(Distance):
     def update(self):
         if validate(self.__distance):
             if type(self.__distance) == Number:   self.__output.set(self.__distance.value)
-            elif type(self.__distance) == Pixel:  self.__output.set(self.__distance.output.value)
+            elif type(self.__distance) == Pixels:  self.__output.set(self.__distance.output.value)
             else: self.addError("Invalid input!")
         else: self.addError("Input(s) missing or contain errors!")
+    
+    @property
+    def output(self) -> Number: 
+        return self.__output
+
+    @property
+    def raw_output(self) -> float|int: 
+        return self.__output.value
     
     @property
     def raw_output(self) -> float|int: 
@@ -340,8 +356,8 @@ class Time(Unit):
 
 @Input("Time", [Number, Time], True)
 @Display("Value", False, lambda self: self.output.value)
-@Output("Time", Number, lambda self: self.output)
-class Milliseconds(Time):
+@Output("Time", -1, lambda self: self)
+class Milliseconds(Time, Unit):
     '''
         A unit of time, representing 1/1000th of a second.
 
@@ -369,13 +385,21 @@ class Milliseconds(Time):
         else: self.addError("Input(s) missing or contain errors!")
     
     @property
+    def output(self) -> Number: 
+        return self.__output
+
+    @property
+    def raw_output(self) -> float|int: 
+        return self.__output.value
+    
+    @property
     def raw_output(self) -> float|int: 
         return self.__output.value/1000
 
 @Input("Time", [Number, Time], True)
 @Display("Value", False, lambda self: self.output.value)
-@Output("Time", Number, lambda self: self.output)
-class Seconds(Time):
+@Output("Time", -1, lambda self: self)
+class Seconds(Time, Unit):
     '''
         A unit of time, representing a second.
 
@@ -403,13 +427,21 @@ class Seconds(Time):
         else: self.addError("Input(s) missing or contain errors!")
     
     @property
+    def output(self) -> Number: 
+        return self.__output
+
+    @property
+    def raw_output(self) -> float|int: 
+        return self.__output.value
+    
+    @property
     def raw_output(self) -> float|int: 
         return self.__output.value
 
 @Input("Time", [Number, Time], True)
 @Display("Value", False, lambda self: self.output.value)
-@Output("Time", Number, lambda self: self.output)
-class Minutes(Time):
+@Output("Time", -1, lambda self: self)
+class Minutes(Time, Unit):
     '''
         A unit of time, representing a minute.
 
@@ -437,13 +469,21 @@ class Minutes(Time):
         else: self.addError("Input(s) missing or contain errors!")
     
     @property
+    def output(self) -> Number: 
+        return self.__output
+
+    @property
+    def raw_output(self) -> float|int: 
+        return self.__output.value
+    
+    @property
     def raw_output(self) -> float|int: 
         return self.__output.value*60
 
 @Input("Time", [Number, Time], True)
 @Display("Value", False, lambda self: self.output.value)
-@Output("Time", Number, lambda self: self.output)
-class Hours(Time):
+@Output("Time", -1, lambda self: self)
+class Hours(Time, Unit):
     '''
         A unit of time, representing an hour.
 
@@ -471,13 +511,21 @@ class Hours(Time):
         else: self.addError("Input(s) missing or contain errors!")
     
     @property
+    def output(self) -> Number: 
+        return self.__output
+
+    @property
+    def raw_output(self) -> float|int: 
+        return self.__output.value
+    
+    @property
     def raw_output(self) -> float|int: 
         return self.__output.value*60*60
 
 @Input("Time", [Number, Time], True)
 @Display("Value", False, lambda self: self.output.value)
-@Output("Time", Number, lambda self: self.output)
-class Days(Time):
+@Output("Time", -1, lambda self: self)
+class Days(Time, Unit):
     '''
         A unit of time, representing a day.
 
@@ -503,6 +551,14 @@ class Days(Time):
             elif type(self.__time) == Days:           self.__output.set(self.__time.output.value)
             else: self.addError("Invalid input!")
         else: self.addError("Input(s) missing or contain errors!")
+    
+    @property
+    def output(self) -> Number: 
+        return self.__output
+
+    @property
+    def raw_output(self) -> float|int: 
+        return self.__output.value
     
     @property
     def raw_output(self) -> float|int: 
@@ -581,6 +637,7 @@ class FolderImport(Node):
             # TO-DO: finish, and make sure its safe
         else:
             self.addError(f"The file location isn't a folder/directory!")
+        self.update()
     def get(self):
         return [] # TO-DO: FINISH
     def update(self):
@@ -606,6 +663,7 @@ class Reroute(Node):
         self.set()
     def set(self, inputNode:Node = None):
         self.__inputNode = inputNode
+        self.update()
     def get(self):
         return [self.__inputNode]
     def update(self):

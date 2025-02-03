@@ -62,5 +62,4 @@ def validate(*inputs):
             if input.error.hasRecentError():
                 valid = False
                 break
-
     return valid

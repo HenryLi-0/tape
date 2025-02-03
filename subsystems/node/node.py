@@ -21,7 +21,7 @@ NODES = [
             # Angle 
                 Degrees, Radians, 
             # Distance 
-                Pixel, 
+                Pixels, 
             # Time
                 Milliseconds, Seconds, Minutes, Hours, Days,
             # IO
@@ -75,7 +75,7 @@ NODE_THEMES_ASSGINMENT = {
     RawUnit             : NodeThemes.BLUE,
     Degrees             : NodeThemes.BLUE,
     Radians             : NodeThemes.BLUE,
-    Pixel               : NodeThemes.BLUE,
+    Pixels               : NodeThemes.BLUE,
     Milliseconds        : NodeThemes.BLUE,
     Seconds             : NodeThemes.BLUE,
     Minutes             : NodeThemes.BLUE,

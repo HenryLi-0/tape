@@ -20,7 +20,7 @@ class DebugTab(Section):
             for error in temp:
                 if not(error in state.nodeErrors):
                     state.nodeErrors.append(error)
-                    while len(state.nodeErrors) > 50:
+                    while len(state.nodeErrors) > 15:
                         state.nodeErrors.pop(0)
         
         y = 150

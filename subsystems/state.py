@@ -61,12 +61,8 @@ class State:
         '''Tape'''
         self.tab = "a"
         self.previousTab = None
-        self.nodes = {
-            # "aaa" : Random(),
-            # "bbb" : Number(100)
-        }
-        # self.nodeConnections = [["bbb", 0, "aaa", 0]]
-        self.nodesIDs = list(self.nodes.keys())
+        self.nodes = {}
+        self.nodeIDs = list(self.nodes.keys())
         self.nodesConnectionData = list(self.nodes.keys())
         self.nodeErrors = []
         self.nodeConnections = []
@@ -79,8 +75,10 @@ class State:
         self.summonNode(Random(), (250, 0))
         self.summonNode(Number(), (250, 200))
 
-        self.summonNode(Coordinate(), (500, 0))
-        self.summonNode(RawUnit(), (750, 0))
+        self.summonNode(Pixels(), (500, 0))
+
+        self.summonNode(Coordinate(), (750, 0))
+        self.summonNode(RawUnit(), (1000, 0))
 
 
         self.workspaceX = 0
@@ -122,7 +120,7 @@ class State:
         # node connection creation logic
         if self.ivos[self.previousInteracting][1].type == "node connection point" and self.interacting != self.previousInteracting:
             if self.ivos[self.previousInteracting][1].out_connectionRequest != None:
-                here = self.ivos[self.previousInteracting][1].out_connectionRequest
+                here = addP(self.ivos[self.previousInteracting][1].out_connectionRequest, (self.workspaceX, self.workspaceY))
                 nodeSpace = []
                 for connectorID in self.nodeConnectors:
                     if self.ivos[connectorID][1].n_input:
@@ -131,37 +129,51 @@ class State:
                         nodeSpace.append(math.inf)
                 closest = self.nodeConnectors[nodeSpace.index(min(nodeSpace))]
                 if distanceP(self.ivos[closest][1].positionO.getNodeSpacePosition(), here) < 25:
-                    if self.ivos[self.previousInteracting][1].n_type in self.ivos[closest][1].n_type:
-                        # form a connection
-                        connection = [
-                            self.ivos[self.previousInteracting][1].n_nodeID,
-                            self.ivos[self.previousInteracting][1].n_index,
-                            self.ivos[closest][1].n_nodeID,
-                            self.ivos[closest][1].n_index
-                        ]
-                        self.nodeConnections.append(connection)
+                    # test if types match
+                    valid = False
+                    for parent in self.ivos[self.previousInteracting][1].n_type.__bases__:
+                        if parent in self.ivos[closest][1].n_type:
+                            valid = True
+                    print(self.ivos[closest][1].n_type)
+                    print(self.ivos[self.previousInteracting][1].n_type.__bases__)
+                    if self.ivos[self.previousInteracting][1].n_type in self.ivos[closest][1].n_type or valid:
+                        # check if input is taken and is not infinite
+                        valid = True
+                        for connection in self.nodeConnections:
+                            if connection[2] == self.ivos[closest][1].n_nodeID and connection[3] == self.ivos[closest][1].n_index:
+                                if not(self.ivos[closest][1].n_node.Input[self.ivos[closest][1].n_index][3]):
+                                    valid = False
+                        if valid:
+                            # form a connection
+                            connection = [
+                                self.ivos[self.previousInteracting][1].n_nodeID,
+                                self.ivos[self.previousInteracting][1].n_index,
+                                self.ivos[closest][1].n_nodeID,
+                                self.ivos[closest][1].n_index
+                            ]
+                            self.nodeConnections.append(connection)
 
-                        id = str(uuid.uuid4())
-                        self.nodesConnectionData.append([id, self.ivos[self.previousInteracting][1].n_nodeID, self.ivos[self.previousInteracting][1].n_index])
-                        self.ivos[id] = ["w", VisualNodeConnection(
-                            "connection",
-                            self.ivos[self.ivos[self.previousInteracting][1].n_nodeID][1],
-                            connection[1],
-                            self.ivos[self.ivos[closest][1].n_nodeID][1],
-                            connection[3])
-                        ]
-                        outputs = self.nodes[connection[0]].Output
-                        getter = outputs[connection[1]][2]
-                        newInputs = self.nodes[connection[2]].get()
-                        newInputs[connection[3]] = getter(self.nodes[connection[0]])
-                        self.nodes[connection[2]].set(*newInputs)
-                    else: pass
+                            id = str(uuid.uuid4())
+                            self.nodesConnectionData.append([id, self.ivos[self.previousInteracting][1].n_nodeID, self.ivos[self.previousInteracting][1].n_index])
+                            self.ivos[id] = ["w", VisualNodeConnection(
+                                "connection",
+                                self.ivos[self.ivos[self.previousInteracting][1].n_nodeID][1],
+                                connection[1],
+                                self.ivos[self.ivos[closest][1].n_nodeID][1],
+                                connection[3])
+                            ]
+                            outputs = self.nodes[connection[0]].Output
+                            getter = outputs[connection[1]][2]
+                            newInputs = self.nodes[connection[2]].get()
+                            newInputs[connection[3]] = getter(self.nodes[connection[0]])
+                            self.nodes[connection[2]].set(*newInputs)
+                            self.updateAllNodes()
+                        else: pass # not valid (taken)
+                    else: pass # not valid (wrong type)
                 else:
-                    print("clear")
                     for connection in self.nodeConnections:
                         if connection[0] == self.ivos[self.previousInteracting][1].n_nodeID and connection[1] == self.ivos[self.previousInteracting][1].n_index:
                             self.nodeConnections.remove(connection)
-                            
                             newInputs = self.nodes[connection[2]].get()
                             newInputs[connection[3]] = None
                             self.nodes[connection[2]].set(*newInputs)
@@ -169,15 +181,17 @@ class State:
                         if connection[1] == self.ivos[self.previousInteracting][1].n_nodeID and connection[2] == self.ivos[self.previousInteracting][1].n_index:
                             self.ivos.pop(connection[0])
                             self.nodesConnectionData.remove(connection)
-                            
-
-
+                    self.updateAllNodes()
                 self.ivos[self.previousInteracting][1].out_connectionRequest = None
+        # node updating logic 
+        # TO-DO: optimize
+        if self.ivos[self.previousInteracting][1].type == "node textbox" and self.interacting != self.previousInteracting:
+            self.updateAllNodes()
 
     def summonNode(self, node:Node, coord:tuple|list):
         id = str(uuid.uuid4())
         self.nodes[id] = node
-        self.nodesIDs = list(self.nodes.keys())
+        self.nodeIDs = list(self.nodes.keys())
 
         self.ivos[id] = ["w", VisualNode("test", coord, self.nodes[id])]
         
@@ -194,7 +208,10 @@ class State:
                 name = f"{id} - display - {node.Display[i][0]}"
                 self.ivos[name] = ["w",NodeEditableTextBoxVisualObject(name, self.ivos[id][1], i, "")]
 
-
+    def updateAllNodes(self):
+        for nodeID in self.nodeIDs:
+            self.ivos[nodeID][1].node.update()
+            # TO-DO: optimize
 
 
 

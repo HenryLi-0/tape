@@ -7,11 +7,11 @@ from subsystems.settings import *
 
 '''Location'''
 
-@Input("x", [Number, Pixel], True)
-@Input("y", [Number, Pixel], True)
+@Input("x", [Number, Pixels], True)
+@Input("y", [Number, Pixels], True)
 @Display("Value", False, lambda self: f"({self.x.raw_output}, {self.y.raw_output})")
-@Output("x", Pixel, lambda self: self.x)
-@Output("y", Pixel, lambda self: self.y)
+@Output("x", Pixels, lambda self: self.x)
+@Output("y", Pixels, lambda self: self.y)
 @Output("Coordinate", -1, lambda self: self.output)
 class Coordinate(Node):
     '''
@@ -24,10 +24,12 @@ class Coordinate(Node):
     def __init__(self):
         super().__init__()
         self.__output = self
-        self.__x = Pixel()
-        self.__y = Pixel()
+        self.__numx = Number()
+        self.__numy = Number()
+        self.__x = Pixels()
+        self.__y = Pixels()
         self.set()
-    def set(self, x:Number|Pixel = None, y:Number|Pixel = None):
+    def set(self, x:Number|Pixels = None, y:Number|Pixels = None):
         self.__xNode = x
         self.__yNode = y
         self.update()
@@ -35,11 +37,17 @@ class Coordinate(Node):
         return [self.__xNode, self.__yNode]
     def update(self):
         if validate(self.__xNode, self.__yNode):
-            if type(self.__xNode) == Number: self.__x.set(self.__xNode.value*ANIMATION_WIDTH.get())
-            elif type(self.__xNode) == Pixel: self.__x.set(self.__xNode)
+            if type(self.__xNode) == Number:
+                self.__numx.set(self.__xNode.value*ANIMATION_WIDTH.get())
+                self.__x.set(self.__numx)
+            elif type(self.__xNode) == Pixels:
+                self.__x.set(self.__xNode)
             else: self.addError("Invalid x!")
-            if type(self.__yNode) == Number: self.__y.set(Number(self.__yNode.value*ANIMATION_HEIGHT.get()))
-            elif type(self.__yNode) == Pixel: self.__y.set(self.__yNode)
+            if type(self.__yNode) == Number:
+                self.__numy.set(self.__yNode.value*ANIMATION_HEIGHT.get())
+                self.__y.set(self.__numy)
+            elif type(self.__yNode) == Pixels:
+                self.__y.set(self.__yNode)
             else: self.addError("Invalid y!")
         else: self.addError("Input(s) missing or contain errors!")
 
@@ -52,7 +60,7 @@ class Coordinate(Node):
 
 '''PATHING'''
 
-@Input("Value", [Coordinate, Number, Angle, Pixel], True)
+@Input("Value", [Coordinate, Number, Angle, Pixels], True)
 @Input("Time", [Time], True)
 @Display()
 @Output("Frame", -1, lambda self: self.output)
@@ -69,7 +77,7 @@ class Frame(Node):
         self.__output = None
         self.__time = None
         self.set()
-    def set(self, value:Coordinate|Number|Angle|Pixel = None, time:Time = None):
+    def set(self, value:Coordinate|Number|Angle|Pixels = None, time:Time = None):
         if issubclass(type(time), Time):
             self.__output = value
             self.__time = time
