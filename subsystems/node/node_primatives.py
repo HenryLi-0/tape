@@ -138,7 +138,7 @@ class Random(Node):
 
 
 @Input("File Location", [String], True)
-@Display("Valid File", False, lambda self: self.fileLocation)
+@Display("Valid File", False, lambda self: self.fileLocation.value)
 @Output("Valid File", String, lambda self: self.fileLocation)
 class FileLocation(Node):
     '''
@@ -152,33 +152,33 @@ class FileLocation(Node):
         self.__output = String(None)
         self.set()
     def set(self, location:String = None): # TO-DO: CONSIDER MOVING THIS, MAYBE, MAYBE NOT (SAFE FILE HANDLING IS IMPORTANT)
-        index = location.value.rfind(".")
-        if index == -1:
-            if os.path.exists(location.value):
-                self.__fileLocation = location.value
-                self.__extension = "/folder"
-            else:
-                self.addError(f"Directory {location.value} doesn't exist!")
-        else:
-            fileType = location.value[index:]
-            if fileType in [".txt", ".png", ".jpg", ".jpeg"]:
-                if os.path.exists(location.value):
-                    self.__fileLocation = location
-                    self.__extension = fileType
-                else:
-                    self.addError(f"File {location.value} doesn't exist!")
-            else:
-                self.addError(f"File extension {fileType} invalid! (for safety reasons)")
+        self.__location = location
         self.update()
     def get(self):
-        return [self.__fileLocation]
+        return [self.__location]
     def update(self):
-        if validate(self.__fileLocation):
-            self.__output.set(self.__fileLocation)
+        if validate(self.__location):
+            index = self.__location.value.rfind(".")
+            if index == -1:
+                if os.path.exists(self.__location.value):
+                    self.__location = self.__location.value
+                    self.__extension = "/folder"
+                else:
+                    self.addError(f"Directory {self.__location.value} doesn't exist!")
+            else:
+                fileType = self.__location.value[index:]
+                if fileType in [".txt", ".png", ".jpg", ".jpeg"]:
+                    if os.path.exists(self.__location.value):
+                        self.__extension = fileType
+                    else:
+                        self.addError(f"File {self.__location.value} doesn't exist!")
+                else:
+                    self.addError(f"File extension {fileType} invalid! (for safety reasons)")
+            self.__output.set(self.__location)
         else: self.addError("Input(s) missing or contain errors!")
     
     @property
-    def fileLocation(self) -> String: return self.__fileLocation
+    def fileLocation(self) -> String: return self.__output
 
 
 '''UNITS'''
@@ -631,7 +631,7 @@ class FolderImport(Node):
     def __init__(self):
         super().__init__()
         self.set()
-    def set(self, location:FileLocation):
+    def set(self, location:FileLocation = None):
         if location.__extension == "/folder":
             directory = location.fileLocation
             # TO-DO: finish, and make sure its safe
@@ -740,7 +740,7 @@ class GreaterThan(LogicalOperation):
         super().__init__()
         self.__output = Boolean(False)
         self.set()
-    def set(self, inputA:Number|Unit, inputB:Number|Unit):
+    def set(self, inputA:Number|Unit = None, inputB:Number|Unit = None):
         self.__inputA = inputA
         self.__inputB = inputB
         self.update()
@@ -783,7 +783,7 @@ class EqualTo(LogicalOperation):
         super().__init__()
         self.__output = Boolean(False)
         self.set()
-    def set(self, inputA:Number|Unit, inputB:Number|Unit):
+    def set(self, inputA:Number|Unit = None, inputB:Number|Unit = None):
         self.__inputA = inputA
         self.__inputB = inputB
         self.update()
@@ -826,7 +826,7 @@ class And(LogicalOperation):
         super().__init__()
         self.__output = Boolean(False)
         self.set()
-    def set(self, inputA:Boolean, inputB:Boolean):
+    def set(self, inputA:Boolean = None, inputB:Boolean = None):
         self.__inputA = inputA
         self.__inputB = inputB
         self.update()
@@ -858,7 +858,7 @@ class Or(LogicalOperation):
         super().__init__()
         self.__output = Boolean(False)
         self.set()
-    def set(self, inputA:Boolean, inputB:Boolean):
+    def set(self, inputA:Boolean = None, inputB:Boolean = None):
         self.__inputA = inputA
         self.__inputB = inputB
         self.update()
@@ -888,7 +888,7 @@ class Not(LogicalOperation):
         super().__init__()
         self.__output = Boolean(True)
         self.set()
-    def set(self, inputNode:Boolean):
+    def set(self, inputNode:Boolean = None):
         self.__inputNode = inputNode
         self.update()
     def get(self):
@@ -922,7 +922,7 @@ class If(LogicalOperation):
         super().__init__()
         self.__output = None
         self.set()
-    def set(self, inputTrue:Node, inputFalse:Node, boolean:Boolean):
+    def set(self, inputTrue:Node = None, inputFalse:Node = None, boolean:Boolean = None):
         self.__inputTrue = inputTrue
         self.__inputFalse = inputFalse
         self.__boolean = boolean

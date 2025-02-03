@@ -25,7 +25,7 @@ NODES = [
             # Time
                 Milliseconds, Seconds, Minutes, Hours, Days,
             # IO
-                ImageWrapper, ImageImport, FolderImport,
+                ImageImport, FolderImport,
             # Logic
                 Reroute, 
                 LessThan, GreaterThan, EqualTo,
@@ -61,6 +61,7 @@ class NodeThemes:
 
 NODE_THEMES_ASSGINMENT = {
     "default"           : NodeThemes.UNKNOWN,
+    Node                : NodeThemes.UNKNOWN,
     
     # Primatives
     Number              : NodeThemes.YELLOW,
@@ -73,9 +74,12 @@ NODE_THEMES_ASSGINMENT = {
     # Units
     Unit                : NodeThemes.BLUE,
     RawUnit             : NodeThemes.BLUE,
+    Angle               : NodeThemes.BLUE,
     Degrees             : NodeThemes.BLUE,
     Radians             : NodeThemes.BLUE,
-    Pixels               : NodeThemes.BLUE,
+    Distance            : NodeThemes.BLUE,
+    Pixels              : NodeThemes.BLUE,
+    Time                : NodeThemes.BLUE,
     Milliseconds        : NodeThemes.BLUE,
     Seconds             : NodeThemes.BLUE,
     Minutes             : NodeThemes.BLUE,

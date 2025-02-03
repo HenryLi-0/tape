@@ -8,6 +8,8 @@ class AnimationTab(Section):
         rmy = state.my - 10
 
         placeOver(img, displayText(f"hi i am animations", "m"), (20,20))
+        placeOver(img, displayText(f"i will come in a future update", "m"), (20,50))
+        placeOver(img, displayText(f"(probably the next one)", "m"), (20,80))
 
         for id in state.ivos:
             if state.ivos[id][0] == "a":

@@ -59,7 +59,7 @@ class State:
         '''Updating'''
         self.scheduledSectionUpdate = []
         '''Tape'''
-        self.tab = "a"
+        self.tab = "n"
         self.previousTab = None
         self.nodes = {}
         self.nodeIDs = list(self.nodes.keys())
@@ -80,12 +80,15 @@ class State:
         self.summonNode(Coordinate(), (750, 0))
         self.summonNode(RawUnit(), (1000, 0))
 
-
+        '''Tape UI'''
         self.workspaceX = 0
         self.workspaceY = 0
         self.workspaceZoom = 1
         self.workspaceXV = 0
         self.workspaceYV = 0
+        self.nodeListOffset = 0
+        self.nodeListVelocity = 0
+        self.nodeTabSelectedNode = None
 
 
     def mouseInSection(self, section):
@@ -113,6 +116,21 @@ class State:
         self.mouseInTabs =          self.mouseInSection("t")
         self.mouseInWorkspace =     self.mouseInSection("w")
 
+        '''Mouse scroll (tape v1 <3)'''
+        self.mouseScroll = mouseScroll
+        if abs(self.mouseScroll) > 0:
+            self.nodeListVelocity = 0
+            self.nodeListOffset += self.mouseScroll / 5
+        self.nodeListVelocity = self.nodeListVelocity * 0.9
+        self.nodeListOffset += self.nodeListVelocity
+        if self.nodeListOffset > len(NODES)*35-507:
+            self.nodeListOffset = len(NODES)*35-507
+            self.nodeListVelocity = 0
+        if self.nodeListOffset < 0: 
+            self.nodeListOffset = 0
+            self.nodeListVelocity = 0
+        self.nodeListOffset = round(self.nodeListOffset)
+
         '''tape'''
         if self.interacting in [-99, -98, -97, -96, -95]:
             self.tab = self.ivos[self.interacting][1].name[0].lower()
@@ -134,8 +152,6 @@ class State:
                     for parent in self.ivos[self.previousInteracting][1].n_type.__bases__:
                         if parent in self.ivos[closest][1].n_type:
                             valid = True
-                    print(self.ivos[closest][1].n_type)
-                    print(self.ivos[self.previousInteracting][1].n_type.__bases__)
                     if self.ivos[self.previousInteracting][1].n_type in self.ivos[closest][1].n_type or valid:
                         # check if input is taken and is not infinite
                         valid = True
@@ -167,7 +183,6 @@ class State:
                             newInputs = self.nodes[connection[2]].get()
                             newInputs[connection[3]] = getter(self.nodes[connection[0]])
                             self.nodes[connection[2]].set(*newInputs)
-                            self.updateAllNodes()
                         else: pass # not valid (taken)
                     else: pass # not valid (wrong type)
                 else:
@@ -183,6 +198,7 @@ class State:
                             self.nodesConnectionData.remove(connection)
                     self.updateAllNodes()
                 self.ivos[self.previousInteracting][1].out_connectionRequest = None
+            self.updateAllNodes()
         # node updating logic 
         # TO-DO: optimize
         if self.ivos[self.previousInteracting][1].type == "node textbox" and self.interacting != self.previousInteracting:

@@ -12,6 +12,8 @@ class SettingsTab(Section):
         for setting in SETTINGS:
             placeOver(img, displayText(f"{setting.name} ({setting.valid}): {setting.value}", "m"), (10, y))
             y += 30
+        
+        placeOver(img, displayText(f"Tape {VERSION}! - https://github.com/HenryLi-0/tape/releases", "s", colorTXT = (round(205+(50*-math.sin(state.ticks/25))),round(205+(50*math.sin(state.ticks/25))),round(205+(50*math.cos(state.ticks/25))),255)), (6,622))
 
         for id in state.ivos:
             if state.ivos[id][0] == "s":

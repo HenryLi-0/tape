@@ -65,25 +65,47 @@ class Interface:
             '''WORKSPACE ARROW KEYS NAVIGATION'''
             if KB_WS_NAV_N(keyQueue):
                 self.s.workspaceYV -= self.s.workspaceZoom*2.5
+                # keybind = "ws nav n"
             if KB_WS_NAV_E(keyQueue):
                 self.s.workspaceXV += self.s.workspaceZoom*2.5
+                # keybind = "ws nav e"
             if KB_WS_NAV_S(keyQueue):
                 self.s.workspaceYV += self.s.workspaceZoom*2.5
+                # keybind = "ws nav s"
             if KB_WS_NAV_W(keyQueue):
                 self.s.workspaceXV -= self.s.workspaceZoom*2.5
+                # keybind = "ws nav w"
             if KB_WS_NAV_NE(keyQueue):
                 self.s.workspaceXV += self.s.workspaceZoom*2.5
                 self.s.workspaceYV -= self.s.workspaceZoom*2.5
+                # keybind = "ws nav ne"
             if KB_WS_NAV_SE(keyQueue):
                 self.s.workspaceYV += self.s.workspaceZoom*2.5
                 self.s.workspaceYV += self.s.workspaceZoom*2.5
+                # keybind = "ws nav se"
             if KB_WS_NAV_SW(keyQueue):
                 self.s.workspaceXV -= self.s.workspaceZoom*2.5
                 self.s.workspaceYV += self.s.workspaceZoom*2.5
+                # keybind = "ws nav sw"
             if KB_WS_NAV_NW(keyQueue):
                 self.s.workspaceXV -= self.s.workspaceZoom*2.5
                 self.s.workspaceYV -= self.s.workspaceZoom*2.5
-        
+                # keybind = "ws nav nw"
+
+            '''NODE TAB SELECTION NAVIGATION'''
+            if KB_NT_NAV_N(keyQueue):
+                self.s.nodeListVelocity -= 25
+                keybind = "node tab nav n"
+            if KB_NT_NAV_S(keyQueue):
+                self.s.nodeListVelocity += 25
+                keybind = "node tab nav s"
+            
+            # TO-DO: make less jank
+            if KB_JANK_SUMMON(keyQueue) and abs(time.time() - self.s.keybindLastUpdate) > 0.5:
+                if self.s.nodeTabSelectedNode != None:
+                    self.s.summonNode(self.s.nodeTabSelectedNode(), addP((self.s.mx - 485, self.s.my - 10), (self.s.workspaceX, self.s.workspaceY)))
+                keybind = "summon node"
+
         self.s.workspaceXV *= 0.9
         self.s.workspaceYV *= 0.9
         self.s.workspaceX += self.s.workspaceXV
@@ -160,6 +182,15 @@ class Interface:
             for section in SECTIONS:
                 if self.s.mouseInSection(section) or self.s.mouseWasInSection(section):
                     self.s.scheduleSectionUpdate(section)
+
+        '''janky setup'''
+        # TO-DO: make less janky
+        if self.s.mouseInNodesTab and self.s.interacting == -999: # tape v1 <3
+            if self.s.mPressed and self.s.mRising:
+                target = math.floor((self.s.my - 10 - 25 + self.s.nodeListOffset)/30)
+                if 0 <= target and target <= len(NODES)-1:
+                    self.s.nodeTabSelectedNode = NODES[target]
+
 
 
 

@@ -13,13 +13,12 @@ class Workspace(Section):
         rmx = state.mx - 485
         rmy = state.my - 10
 
-        placeOver(img, scaleImage(state, PLACEHOLDER_IMAGE_5), scaleCoords(state, 110, 110))
-        placeOver(img, scaleImage(state, PLACEHOLDER_IMAGE_5), scaleCoords(state, 150, 150))
-
-
+        # placeOver(img, scaleImage(state, PLACEHOLDER_IMAGE_5), scaleCoords(state, 110, 110))
+        # placeOver(img, scaleImage(state, PLACEHOLDER_IMAGE_5), scaleCoords(state, 150, 150))
 
         placeOver(img, displayText(f"FPS: {state.fps}", "m", (0,0,0,50), (255,255,255,255)), (20,20))
-        placeOver(img, displayText(f"X,Y,ZOOM: {state.workspaceX, state.workspaceY, state.workspaceZoom}", "m", (0,0,0,50), (255,255,255,255)), (20,50))
+        placeOver(img, displayText(f"X,Y: {roundf(state.workspaceX, 2), roundf(state.workspaceY, 2)}", "m", (0,0,0,50), (255,255,255,255)), (20,50))
+        placeOver(img, displayText(f"ZOOM: {roundf(state.workspaceZoom, 2)}", "m", (0,0,0,50), (255,255,255,255)), (20,80))
 
         for id in state.ivos:
             if state.ivos[id][0] == "w":

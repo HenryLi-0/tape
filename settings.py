@@ -62,6 +62,10 @@ KB_WS_NAV_S     = lambda keys: (len(keys) == 1) and ("Down" in keys)
 KB_WS_NAV_SW    = lambda keys: (len(keys) == 2) and ("Down" in keys) and ("Left" in keys)
 KB_WS_NAV_W     = lambda keys: (len(keys) == 1) and ("Left" in keys)
 KB_WS_NAV_NW    = lambda keys: (len(keys) == 2) and ("Left" in keys) and ("Up" in keys)
+KB_NT_NAV_N       = lambda keys: (len(keys) == 1) and ("Up" in keys)
+KB_NT_NAV_S       = lambda keys: (len(keys) == 1) and ("Down" in keys)
+
+KB_JANK_SUMMON  = lambda keys: (len(keys) == 1) and ("S" in keys or "s" in keys)
 
 '''Constants - DO NOT CHANGE!!!'''
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 
@@ -72,7 +76,7 @@ from subsystems.simplefancy import *
 from subsystems.render import *
 
 # Version
-VERSION = "pre-v2.0.0"
+VERSION = "v2.0.0-alpha-demo"
 SYS_IVOS = [-999,-998,-997,-996]
 
 ROTATE_AROUND_ORIGIN = lambda x,y,d: [(x/abs(x))*math.cos(math.atan(y/x)+(d*math.pi/50))*math.sqrt(x*x+y*y), (x/abs(x))*math.sin(math.atan(y/x)+(d*math.pi/50))*math.sqrt(x*x+y*y)]
@@ -103,13 +107,13 @@ SECTIONS_DATA = {
 FULL_BACKGROUND = setBrightnessEffect(getImageRGBAFromPath(os.path.join("resources", "loading.png")), -10)
 SECTIONS_FRAME_INSTRUCTIONS = {
     " ": [[FULL_BACKGROUND, (0,0)]],
-    "a": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),(  -10,  -10)),
-    "n": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),(  -10,  -10)),
-    "d": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),(  -10,  -10)),
-    "e": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),(  -10,  -10)),
-    "s": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),(  -10,  -10)),
-    "t": generateThemedBorderRectangleInstructions(( 469,  38), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),(  -10, -650)),
-    "w": generateThemedBorderRectangleInstructions(( 871, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-25),( -485,  -10)),
+    "a": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-50),(  -10,  -10)),
+    "n": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-50),(  -10,  -10)),
+    "d": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-50),(  -10,  -10)),
+    "e": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-50),(  -10,  -10)),
+    "s": generateThemedBorderRectangleInstructions(( 469, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-50),(  -10,  -10)),
+    "t": generateThemedBorderRectangleInstructions(( 469,  38), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-50),(  -10, -650)),
+    "w": generateThemedBorderRectangleInstructions(( 871, 678), hexColorToRGBA(FRAME_COLOR), setBrightnessEffect(FULL_BACKGROUND,-50),( -485,  -10)),
 }
 SECTIONS = list(SECTIONS_DATA.keys())
 
