@@ -67,7 +67,7 @@ KB_WS_NAV_NW    = lambda keys: (len(keys) == 2) and ("Left" in keys) and ("Up" i
 '''Do not change these constants. Some are probably important. Some are used for testing purposes. 
    Editing certain constants will break things! You have been warned!'''
 from PIL import Image, ImageFont
-import numpy
+import numpy, time
 from subsystems.simplefancy import *
 from subsystems.render import *
 

@@ -15,6 +15,19 @@ class DebugTab(Section):
         placeOver(img, displayText(f"Mouse Press: {state.mPressed}", "m", colorTXT=(100,255,100,255) if state.mPressed else (255,100,100,255)), (200,90))
         placeOver(img, displayText(f"Key Queue: {state.risingKeyQueue}", "m"), (20,125))
 
+        for node in list(state.nodes.values()):
+            temp = node.error.getNewError()
+            for error in temp:
+                if not(error in state.nodeErrors):
+                    state.nodeErrors.append(error)
+                    while len(state.nodeErrors) > 50:
+                        state.nodeErrors.pop(0)
+        
+        y = 150
+        for error in state.nodeErrors:
+            placeOver(img, displayText(error, "sm"), (20, y))
+            y += 25
+
         for id in state.ivos:
             if state.ivos[id][0] == "d":
                 state.ivos[id][1].tick(img, state.interacting==id or ((state.lastInteraction==id) and (abs(time.time() - state.ivos[id][1].lastInteraction) < LAST_INTERACTION_KEY_TIME)), state.interacting==id)

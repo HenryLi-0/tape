@@ -13,7 +13,7 @@ class Node:
         self.__id = uuid.uuid4()
         self.__error = ActiveError()
     def addError(self, error):
-        self.__error.addError(f"{self.id}\n   {error}")
+        self.__error.addError(f"{str(self.id)[0:6]}... - {error}")
     def set(self):
         pass
     def update(self):

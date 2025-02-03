@@ -5,19 +5,23 @@ import time
 class ActiveError:
     def __init__(self, error = None):
         self.errors = []
+        self.newErrors = []
         self.lastErrorTime = time.time()
         self.addError(error)
     def addError(self, error):
         if len(self.errors) > 5: self.errors.pop(0)
         self.lastErrorTime = time.time()
-        self.errors.append(f"{time.time()} - {error}")
+        self.errors.append(f"{round((time.time() % 60) *100)/100} - {error}")
+        self.newErrors.append(f"{round((time.time() % 60) *100)/100} - {error}")
     def getError(self):
         return self.errors
     def hasRecentError(self):
         return abs(time.time() - self.lastErrorTime) < 0.2
-        
+    def getNewError(self):
+        temp = self.newErrors.copy()
+        self.newErrors = []
+        return temp
 
-        
 def Input(name = None, type = None, required = None, multiple = False):
     def decorator(inClass):
         if not hasattr(inClass, "Input"):

@@ -67,6 +67,8 @@ class State:
         }
         # self.nodeConnections = [["bbb", 0, "aaa", 0]]
         self.nodesIDs = list(self.nodes.keys())
+        self.nodesConnectionData = list(self.nodes.keys())
+        self.nodeErrors = []
         self.nodeConnections = []
         self.nodeConnectors = []
 
@@ -138,7 +140,10 @@ class State:
                             self.ivos[closest][1].n_index
                         ]
                         self.nodeConnections.append(connection)
-                        self.ivos[str(uuid.uuid4())] = ["w", VisualNodeConnection(
+
+                        id = str(uuid.uuid4())
+                        self.nodesConnectionData.append([id, self.ivos[self.previousInteracting][1].n_nodeID, self.ivos[self.previousInteracting][1].n_index])
+                        self.ivos[id] = ["w", VisualNodeConnection(
                             "connection",
                             self.ivos[self.ivos[self.previousInteracting][1].n_nodeID][1],
                             connection[1],
@@ -153,6 +158,19 @@ class State:
                     else: pass
                 else:
                     print("clear")
+                    for connection in self.nodeConnections:
+                        if connection[0] == self.ivos[self.previousInteracting][1].n_nodeID and connection[1] == self.ivos[self.previousInteracting][1].n_index:
+                            self.nodeConnections.remove(connection)
+                            
+                            newInputs = self.nodes[connection[2]].get()
+                            newInputs[connection[3]] = None
+                            self.nodes[connection[2]].set(*newInputs)
+                    for connection in self.nodesConnectionData:
+                        if connection[1] == self.ivos[self.previousInteracting][1].n_nodeID and connection[2] == self.ivos[self.previousInteracting][1].n_index:
+                            self.ivos.pop(connection[0])
+                            self.nodesConnectionData.remove(connection)
+                            
+
 
                 self.ivos[self.previousInteracting][1].out_connectionRequest = None
 
